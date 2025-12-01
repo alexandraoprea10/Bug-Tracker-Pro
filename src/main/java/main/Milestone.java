@@ -71,12 +71,12 @@ public class Milestone {
      * @param date
      */
     public void interactiuniTicket(final String date) {
-        System.out.println("suntem la comanda cu timestamp" + date);
+        // System.out.println("suntem la comanda cu timestamp" + date);
         if (nextPriorityStrategy(date)) {
-            System.out.println("SE FACE NEXT PRIORITY");
+            // System.out.println("SE FACE NEXT PRIORITY");
             this.specialMention = new NextPriority();
         } else if (setCriticalStragegy(date)) {
-            System.out.println("SE FACE CRITICAL STRAGEGY");
+            // System.out.println("SE FACE CRITICAL STRAGEGY");
             this.specialMention = new TransformCritical();
         }
         specialMention.interactiuniTichete(this, date, inventarTichete);

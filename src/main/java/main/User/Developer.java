@@ -29,24 +29,44 @@ public abstract class Developer extends Users {
      * @return
      */
     public abstract int getTicketType();
-
+    public int prioritateTichet(String priority) {
+        if (priority.equals("LOW")) {
+            return 1;
+        }
+        if (priority.equals("MEDIUM")) {
+            return 2;
+        }
+        if (priority.equals("HIGH")) {
+            return 3;
+        }
+        return 4;
+    }
+    public int tipTicket(String type) {
+        if (type.equals("BUG")) {
+            return 1;
+        }
+        if (type.equals("UI_FEEDBACK")) {
+            return 2;
+        }
+        return 3;
+    }
     /**
      * Verific daca poate rezolva tichetul.
-     * @param sen
      * @return
      */
-    public boolean eokPrioritatea(final String sen) {
+    public boolean eokPrioritatea(String priority) {
         int prioritate = 0;
-        if (sen.equals("JUNIOR")) {
+        if (this.seniority.equals("JUNIOR")) {
             prioritate = 2;
         }
-        if (sen.equals("MID")) {
+        if (this.seniority.equals("MID")) {
             prioritate = 3;
         }
-        if (sen.equals("SENIOR")) {
+        if (this.seniority.equals("SENIOR")) {
             prioritate = 4;
         }
-        if (prioritate <= getAccessPriority()) {
+        // System.out.println(this.getUsername() + "are prioritatea cu codu" + prioritate);
+        if (prioritate >= prioritateTichet(priority)) {
             return true;
         }
         return false;
@@ -54,10 +74,9 @@ public abstract class Developer extends Users {
 
     /**
      * Verific daca poate rezolva tichetul.
-     * @param ticketType
      * @return
      */
-    public boolean eokTichetul(final String ticketType) {
+    public boolean eokTichetul(String type) {
         int prioritate = 0;
         if (seniority.equals("JUNIOR")) {
             prioritate = 2;
@@ -68,7 +87,9 @@ public abstract class Developer extends Users {
         if (seniority.equals("SENIOR")) {
             prioritate = 3;
         }
-        if (prioritate <= getTicketType()) {
+//        System.out.println("tichetul are codul " + tipTicket(type));
+//        System.out.println("ce prioritate are tichetul" + prioritate);
+        if (prioritate >= getTicketType()) {
             return true;
         }
         return false;
@@ -118,13 +139,12 @@ public abstract class Developer extends Users {
     /**
      * Vedem daca se poate rezolva tichetul.
      * @param sen
-     * @param ticketType
      * @param expertiseAr
      * @return
      */
-    public boolean rezolvaTichetul(final String sen, final String ticketType,
-                                   final String expertiseAr) {
-        if (eokPrioritatea(sen) && eokTichetul(ticketType)
+    public boolean rezolvaTichetul(final String sen,
+                                   final String expertiseAr, final String priority, final String type) {
+        if (eokPrioritatea(priority) && eokTichetul(type)
                 && eokSpecializarea(expertiseAr)) {
             return true;
         }

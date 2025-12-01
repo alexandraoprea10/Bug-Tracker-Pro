@@ -9,12 +9,14 @@ public class Users {
     private String mail;
     private String role;
     private ArrayList<Ticket> tickets;
+    private ArrayList<Ticket> gaveupTickets;
     // constructori
     public Users(final String username, final String mail, final String role) {
         this.username = username;
         this.mail = mail;
         this.role = role;
         this.tickets = new ArrayList<>();
+        this.gaveupTickets = new ArrayList<>();
     }
     // getteri
 
@@ -49,6 +51,9 @@ public class Users {
     public ArrayList<Ticket> getTickets() {
         return tickets;
     }
+    public ArrayList<Ticket> getGaveupTickets() {
+        return gaveupTickets;
+    }
     // setteri
 
     /**
@@ -82,6 +87,9 @@ public class Users {
     public void setTickets(final ArrayList<Ticket> tickets) {
         this.tickets = tickets;
     }
+    public void setGaveupTickets(final ArrayList<Ticket> gaveupTickets) {
+        this.gaveupTickets = gaveupTickets;
+    }
 
     /**
      * Adauga un tichet in array ul de tichete
@@ -89,5 +97,8 @@ public class Users {
      */
     public void addTicket(final Ticket ticket) {
         this.tickets.add(ticket);
+    }
+    public void addGaveupTicket(final Ticket ticket) {
+        this.gaveupTickets.add(ticket);
     }
 }

@@ -1,5 +1,10 @@
 package main.Ticket;
 
+import main.Milestone;
+
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -14,9 +19,12 @@ public class Ticket {
     private String solvedAt;
     private String assignedTo;
     private List<String> comments;
+    private List<String> authors;
+    private List<String> date;
     private String expertiseArea;
     private String reportedBy;
     private String description;
+    private ArrayList<History> histories;
     // constructor
      public Ticket(final int id, final String type, final String title,
                    final String businessPriority, final String status,
@@ -35,6 +43,10 @@ public class Ticket {
          this.reportedBy = reportedBy;
          this.description = description;
          this.comments = null;
+         this.comments = new ArrayList<String>();
+         this.authors = new ArrayList<String>();
+         this.date = new ArrayList<String>();
+         this.histories = new ArrayList<>();
     }
     // getters
 
@@ -117,6 +129,21 @@ public class Ticket {
     public List<String> getComments() {
          return comments;
     }
+    public void addComment(final String comment) {
+        this.comments.add(comment);
+    }
+    public List<String> getAuthors() {
+        return authors;
+    }
+    public void addAuthor(final String author) {
+        this.authors.add(author);
+    }
+    public List<String> getDate() {
+        return date;
+    }
+    public void addDate(final String date) {
+        this.date.add(date);
+    }
 
     /**
      *  Retruneaza zona de experienta
@@ -140,6 +167,9 @@ public class Ticket {
      */
     public String getDescription() {
         return description;
+    }
+    public ArrayList<History> getHistories() {
+        return histories;
     }
     // setteri
 
@@ -182,7 +212,6 @@ public class Ticket {
     public void setStatus(final String status) {
          this.status = status;
     }
-
     /**
      * Seteaza cand a fost creat
      * @param createdAt
@@ -237,5 +266,60 @@ public class Ticket {
      */
     public void setDescription(final String description) {
          this.description = description;
+    }
+    public void setHistories(final ArrayList<History> histories) {
+        this.histories = histories;
+    }
+    public void addHistories(final History history) {
+        this.histories.add(history);
+    }
+
+    public void assignTicket(String by, String timestamp) {
+        History history = new History.Builder("ASSIGNED", by, timestamp)
+                .build();
+        histories.add(history);
+    }
+    public void deAssignTicket(String by, String timestamp) {
+        History history = new History.Builder("DE-ASSIGNED", by, timestamp)
+                .build();
+        histories.add(history);
+    }
+    public void changeStatus(int esteUndo, String to, String by, String timestamp) {
+        String from = "OPEN";
+        if (esteUndo == 0) {
+            if (to.equals("IN_PROGRESS")) {
+                from = "OPEN";
+            } else if (to.equals("RESOLVED")) {
+                from = "IN_PROGRESS";
+            } else if (to.equals("CLOSED")) {
+                from = "RESOLVED";
+            }
+        }
+        else {
+            if (to.equals("IN_PROGRESS")) {
+                from = "RESOLVED";
+            } else if (to.equals("RESOLVED")) {
+                from = "CLOSED";
+            } else if (to.equals("OPEN")) {
+                from = "IN_PROGRESS";
+            }
+        }
+        History history = new History.Builder("STATUS_CHANGED", by, timestamp)
+                .from(from)
+                .to(to)
+                .build();
+        histories.add(history);
+    }
+    public void addToMilestone(Milestone milestone, String by, String timestamp) {
+        History history = new History.Builder("ADDED_TO_MILESTONE", by, timestamp)
+                .milestone(milestone.getName())
+                .build();
+        histories.add(history);
+    }
+    public void removeFromDev(String from, String timestamp) {
+        History history = new History.Builder("REMOVED_FROM_DEV", "system", timestamp)
+                .from(from)
+                .build();
+        histories.add(history);
     }
 }

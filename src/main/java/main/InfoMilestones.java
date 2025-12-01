@@ -80,10 +80,13 @@ public class InfoMilestones {
                 }
                 node.set("assignedDevs", printDevs);
                 node.put("createdBy", milestone.getCreatedBy());
+                if (milestone.getCompletionPercentage() == 1.0) {
+                    milestone.setStatus("COMPLETED");
+                }
                 node.put("status", milestone.getStatus());
                 node.put("isBlocked", milestone.isBlocking());
                 int days = daystillDeadline(milestone.getDueDate(), timestamp);
-                System.out.println(days);
+                // System.out.println(days);
                 if (days < 0) {
                     int db = daystillDeadline(timestamp, milestone.getDueDate());
                     milestone.setOverdueBy(db);
@@ -163,7 +166,7 @@ public class InfoMilestones {
             Milestone milestone = milestones.get(k);
             String[] devel = milestone.getAssignedDevs();
             for (int i = 0; i < devel.length; i++) {
-                System.out.println(devel[i]);
+                // System.out.println(devel[i]);
                 if (devel[i].equals(username)) {
                     ok = 1;
                     break;
