@@ -3,7 +3,7 @@ package main.Ticket;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import lombok.experimental.NonFinal;
+import main.MagicNumbersInt;
 import main.Milestone;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class VeziTichete {
         ArrayNode arrayNode = mapper.createArrayNode();
         Collections.sort(this.inventarTichete, new Comparator<Ticket>() {
             @Override
-            public int compare(Ticket o1, Ticket o2) {
+            public int compare(final Ticket o1, final Ticket o2) {
                 int dataC = o1.getCreatedAt().compareTo(o2.getCreatedAt());
                 if (dataC != 0) {
                     return dataC;
@@ -99,9 +99,12 @@ public class VeziTichete {
     public ObjectNode viewTicketsReporter(final String username) {
         ObjectNode finalNode = mapper.createObjectNode();
         ArrayNode arrayNode = mapper.createArrayNode();
+        /**
+         * Sortare
+         */
         Collections.sort(this.inventarTichete, new Comparator<Ticket>() {
             @Override
-            public int compare(Ticket o1, Ticket o2) {
+            public int compare(final Ticket o1, final Ticket o2) {
                 int dataC = o1.getCreatedAt().compareTo(o2.getCreatedAt());
                 if (dataC != 0) {
                     return dataC;
@@ -143,8 +146,17 @@ public class VeziTichete {
         finalNode.set("tickets", arrayNode);
         return finalNode;
     }
-    public ObjectNode viewTicketsDeveloper(final ArrayList<Ticket> inventarTichete,
-                                           final ArrayList<Milestone> milestones, final String username) {
+
+    /**
+     * Printeaza tichtele din perspectiva developerilor.
+     * @param inventarTich
+     * @param milestones
+     * @param username
+     * @return
+     */
+    public ObjectNode viewTicketsDeveloper(final ArrayList<Ticket> inventarTich,
+                                           final ArrayList<Milestone> milestones,
+                                           final String username) {
         ObjectNode finalNode = mapper.createObjectNode();
         ArrayNode arrayNode = mapper.createArrayNode();
         for (int p = 0; p < milestones.size(); p++) {
@@ -155,7 +167,7 @@ public class VeziTichete {
                     int[] ticketsID = milestone.getTickets();
                     for (int t = 0;  t < ticketsID.length; t++) {
                         ObjectNode node = mapper.createObjectNode();
-                        Ticket ticket = returnTicket(inventarTichete, ticketsID[t]);
+                        Ticket ticket = returnTicket(inventarTich, ticketsID[t]);
                         if (ticket.getStatus().equals("OPEN")) {
                             node.put("id", ticket.getId());
                             node.put("type", ticket.getType());
@@ -190,24 +202,34 @@ public class VeziTichete {
         finalNode.set("tickets", arrayNode);
         return finalNode;
     }
-    private int codPrioritate(String businessPriority) {
+
+    /**
+     * Cod pentru prioritate(pentru strategy method).
+     * @param businessPriority
+     * @return
+     */
+    private int codPrioritate(final String businessPriority) {
         if (businessPriority.equals("LOW")) {
             return 1;
+        } else if (businessPriority.equals("MEDIUM")) {
+            return MagicNumbersInt.doi.getValue();
+        } else if (businessPriority.equals("HIGH")) {
+            return MagicNumbersInt.trei.getValue();
         }
-        else if (businessPriority.equals("MEDIUM")) {
-            return 2;
-        }
-        else if (businessPriority.equals("HIGH")) {
-            return 3;
-        }
-        return 4;
+        return MagicNumbersInt.patru.getValue();
     }
-    public ObjectNode printTickets(ArrayList<Ticket> tickets) {
+
+    /**
+     * Printeaza tichetele.
+     * @param tickets
+     * @return
+     */
+    public ObjectNode printTickets(final ArrayList<Ticket> tickets) {
         ObjectNode finalNode = mapper.createObjectNode();
         ArrayNode arrayNode = mapper.createArrayNode();
         Collections.sort(tickets, new Comparator<Ticket>() {
             @Override
-            public int compare(Ticket o1, Ticket o2) {
+            public int compare(final Ticket o1, final Ticket o2) {
                 int codO1 = codPrioritate(o1.getBusinessPriority());
                 int codO2 = codPrioritate(o2.getBusinessPriority());
                 int prioritateC = codO2 - codO1;
@@ -251,7 +273,13 @@ public class VeziTichete {
         finalNode.set("assignedTickets", arrayNode);
         return finalNode;
     }
-    public ObjectNode printHistoryTickets(ArrayList<Ticket> tickets) {
+
+    /**
+     * Printeaza istoricul tichetelor.
+     * @param tickets
+     * @return
+     */
+    public ObjectNode printHistoryTickets(final ArrayList<Ticket> tickets) {
         ObjectNode finalNode = mapper.createObjectNode();
         ArrayNode arrayNode = mapper.createArrayNode();
         for (int i = 0; i < tickets.size(); i++) {

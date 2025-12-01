@@ -51,6 +51,11 @@ public class Users {
     public ArrayList<Ticket> getTickets() {
         return tickets;
     }
+
+    /**
+     * Returneaza tichetele pe care developerul le a ignorat.
+     * @return
+     */
     public ArrayList<Ticket> getGaveupTickets() {
         return gaveupTickets;
     }
@@ -87,6 +92,11 @@ public class Users {
     public void setTickets(final ArrayList<Ticket> tickets) {
         this.tickets = tickets;
     }
+
+    /**
+     * Seteaza tihctele la care a renuntat developerul.
+     * @param gaveupTickets
+     */
     public void setGaveupTickets(final ArrayList<Ticket> gaveupTickets) {
         this.gaveupTickets = gaveupTickets;
     }
@@ -98,6 +108,11 @@ public class Users {
     public void addTicket(final Ticket ticket) {
         this.tickets.add(ticket);
     }
+
+    /**
+     * Adauga in lista de tichete refuzate.
+     * @param ticket
+     */
     public void addGaveupTicket(final Ticket ticket) {
         this.gaveupTickets.add(ticket);
     }

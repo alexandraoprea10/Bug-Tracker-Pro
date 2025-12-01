@@ -1,8 +1,6 @@
 package main.Ticket;
 
-import main.Milestone;
-
-public class History {
+public final class History {
     private String action;
     private String from;
     private String to;
@@ -16,28 +14,52 @@ public class History {
         private String by;
         private String milestone;
         private String timestamp;
-        public Builder(String action, String by, String timestamp) {
-            this.action = action;
-            this.by = by;
-            this.timestamp = timestamp;
+        public Builder(final String act, final String b,
+                       final String time) {
+            this.action = act;
+            this.by = b;
+            this.timestamp = time;
         }
-        public Builder from(String from) {
-            this.from = from;
+
+        /**
+         * Camp suplimentar
+         * @param f
+         * @return
+         */
+        public Builder from(final String f) {
+            this.from = f;
             return this;
         }
-        public Builder to(String to) {
-            this.to = to;
+
+        /**
+         * Camp suplimentar
+         * @param t
+         * @return
+         */
+        public Builder to(final String t) {
+            this.to = t;
             return this;
         }
-        public Builder milestone(String milestone) {
-            this.milestone = milestone;
+
+        /**
+         * Camp suplimentar
+         * @param miles
+         * @return
+         */
+        public Builder milestone(final String miles) {
+            this.milestone = miles;
             return this;
         }
+
+        /**
+         * Creeaza builder-ul.
+         * @return
+         */
         public History build() {
             return new History(this);
         }
     }
-    private History(Builder builder) {
+    private History(final Builder builder) {
         this.action = builder.action;
         this.from = builder.from;
         this.to = builder.to;
@@ -46,41 +68,101 @@ public class History {
         this.milestone = builder.milestone;
     }
     // getteri
+
+    /**
+     * Returneaza comanda facuta.
+     * @return
+     */
     public String getAction() {
         return action;
     }
+
+    /**
+     * Returneaza statusul precedent.
+     * @return
+     */
     public String getFrom() {
         return from;
     }
+
+    /**
+     * Returneaza statusul curent.
+     * @return
+     */
     public String getTo() {
         return to;
     }
+
+    /**
+     * Returneaza de cine a fost facuta actiunea.
+     * @return
+     */
     public String getBy() {
         return by;
     }
+
+    /**
+     * Returneaza timsetamp-ul.
+     * @return
+     */
     public String getTimestamp() {
         return timestamp;
     }
+
+    /**
+     * Returneaza milestone-ul
+     * @return
+     */
     public String getMilestone() {
         return milestone;
     }
     // setteri
-    public void setAction(String action) {
+
+    /**
+     * Seteaza actiunea
+     * @param action
+     */
+    public void setAction(final String action) {
         this.action = action;
     }
-    public void setFrom(String from) {
+
+    /**
+     * Seteaza statusul precedent,
+     * @param from
+     */
+    public void setFrom(final String from) {
         this.from = from;
     }
-    public void setTo(String to) {
+
+    /**
+     * Seteaza statusul curent.
+     * @param to
+     */
+    public void setTo(final String to) {
         this.to = to;
     }
-    public void setBy(String by) {
+
+    /**
+     * Seteaza de cine a fost facuta actiunea.
+     * @param by
+     */
+    public void setBy(final String by) {
         this.by = by;
     }
-    public void setTimestamp(String timestamp) {
+
+    /**
+     * Seteaza timsetampul.
+     * @param timestamp
+     */
+    public void setTimestamp(final String timestamp) {
         this.timestamp = timestamp;
     }
-    public void setMilestone(String milestone) {
+
+    /**
+     * Seteaza milestone ul.
+     * @param milestone
+     */
+    public void setMilestone(final String milestone) {
         this.milestone = milestone;
     }
 }

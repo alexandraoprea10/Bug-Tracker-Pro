@@ -91,7 +91,9 @@ public class Milestone {
         LocalDate now = LocalDate.parse(date);
         LocalDate due = LocalDate.parse(dueDate);
         int daysBetween = (int) ChronoUnit.DAYS.between(now, due) + 1;
-        if ((daysBetween - 1) % 3 == 0 && daysBetween >= 3 && !this.blocking) {
+        if ((daysBetween - 1) % MagicNumbersInt.trei.getValue() == 0
+                && daysBetween >= MagicNumbersInt.trei.getValue()
+                && !this.blocking) {
             return true;
         }
         return false;
@@ -102,7 +104,7 @@ public class Milestone {
      * @param date
      * @return
      */
-    private boolean setCriticalStragegy(String date) {
+    private boolean setCriticalStragegy(final String date) {
         LocalDate now = LocalDate.parse(date);
         LocalDate due = LocalDate.parse(dueDate);
         int daysBetween = (int) ChronoUnit.DAYS.between(now, due) + 1;

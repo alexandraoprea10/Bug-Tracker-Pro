@@ -1,5 +1,6 @@
 package main.User;
 
+import main.MagicNumbersInt;
 import main.Milestone;
 import main.Ticket.Ticket;
 
@@ -21,7 +22,9 @@ public class NextPriority implements SpecialMention {
         LocalDate dataMilestone = LocalDate.parse(milestone.getCreatedAt());
         LocalDate data = LocalDate.parse(date);
         int daysBetween = (int) ChronoUnit.DAYS.between(dataMilestone, data) + 1;
-        if ((daysBetween - 1) % 3 == 0 && daysBetween >= 3 && !milestone.isBlocking()) {
+        if ((daysBetween - 1) % MagicNumbersInt.trei.getValue() == 0
+                && daysBetween >= MagicNumbersInt.trei.getValue()
+                && !milestone.isBlocking()) {
             int[] idTick = milestone.getTickets();
             for (int i = 0; i < idTick.length; i++) {
                 for (int j = 0; j < inventarTichete.size(); j++) {

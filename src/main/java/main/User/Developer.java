@@ -1,5 +1,7 @@
 package main.User;
 
+import main.MagicNumbersInt;
+
 public abstract class Developer extends Users {
     private String date;
     private String expertiseArea;
@@ -29,41 +31,53 @@ public abstract class Developer extends Users {
      * @return
      */
     public abstract int getTicketType();
-    public int prioritateTichet(String priority) {
+
+    /**
+     * Verific prioritatea tichetului
+     * @param priority
+     * @return
+     */
+    public int prioritateTichet(final String priority) {
         if (priority.equals("LOW")) {
             return 1;
         }
         if (priority.equals("MEDIUM")) {
-            return 2;
+            return MagicNumbersInt.doi.getValue();
         }
         if (priority.equals("HIGH")) {
-            return 3;
+            return MagicNumbersInt.trei.getValue();
         }
-        return 4;
+        return MagicNumbersInt.patru.getValue();
     }
-    public int tipTicket(String type) {
+
+    /**
+     * Returneaza codul tichetului
+     * @param type
+     * @return
+     */
+    public int tipTicket(final String type) {
         if (type.equals("BUG")) {
             return 1;
         }
         if (type.equals("UI_FEEDBACK")) {
-            return 2;
+            return MagicNumbersInt.doi.getValue();
         }
-        return 3;
+        return MagicNumbersInt.trei.getValue();
     }
     /**
      * Verific daca poate rezolva tichetul.
      * @return
      */
-    public boolean eokPrioritatea(String priority) {
+    public boolean eokPrioritatea(final String priority) {
         int prioritate = 0;
         if (this.seniority.equals("JUNIOR")) {
-            prioritate = 2;
+            prioritate = MagicNumbersInt.doi.getValue();
         }
         if (this.seniority.equals("MID")) {
-            prioritate = 3;
+            prioritate = MagicNumbersInt.trei.getValue();
         }
         if (this.seniority.equals("SENIOR")) {
-            prioritate = 4;
+            prioritate = MagicNumbersInt.patru.getValue();
         }
         // System.out.println(this.getUsername() + "are prioritatea cu codu" + prioritate);
         if (prioritate >= prioritateTichet(priority)) {
@@ -76,16 +90,16 @@ public abstract class Developer extends Users {
      * Verific daca poate rezolva tichetul.
      * @return
      */
-    public boolean eokTichetul(String type) {
+    public boolean eokTichetul(final String type) {
         int prioritate = 0;
         if (seniority.equals("JUNIOR")) {
-            prioritate = 2;
+            prioritate = MagicNumbersInt.doi.getValue();
         }
         if (seniority.equals("MID")) {
-            prioritate = 3;
+            prioritate = MagicNumbersInt.trei.getValue();
         }
         if (seniority.equals("SENIOR")) {
-            prioritate = 3;
+            prioritate = MagicNumbersInt.trei.getValue();
         }
 //        System.out.println("tichetul are codul " + tipTicket(type));
 //        System.out.println("ce prioritate are tichetul" + prioritate);
@@ -143,7 +157,8 @@ public abstract class Developer extends Users {
      * @return
      */
     public boolean rezolvaTichetul(final String sen,
-                                   final String expertiseAr, final String priority, final String type) {
+                                   final String expertiseAr,
+                                   final String priority, final String type) {
         if (eokPrioritatea(priority) && eokTichetul(type)
                 && eokSpecializarea(expertiseAr)) {
             return true;

@@ -3,7 +3,6 @@ package main.User;
 import main.Milestone;
 import main.Ticket.Ticket;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 public interface SpecialMention {

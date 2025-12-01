@@ -75,6 +75,13 @@ public class App {
         }
         return null;
     }
+
+    /**
+     * Caut in toate milestoneurile unde e asignat userul.
+     * @param milestones
+     * @param username
+     * @return
+     */
     public static int checkforUser(final List<Milestone> milestones,
                                     final String username) {
         for (int i = 0; i <  milestones.size(); i++) {
@@ -88,7 +95,15 @@ public class App {
         }
         return 0;
     }
-    public static Ticket returnTicket(ArrayList<Ticket> inventarTichete, int id) {
+
+    /**
+     * Returnez tichetul cu id-ul respectiv.
+     * @param inventarTichete
+     * @param id
+     * @return
+     */
+    public static Ticket returnTicket(final ArrayList<Ticket> inventarTichete,
+                                      final int id) {
         for (int i = 0 ; i < inventarTichete.size(); i++) {
             Ticket ticket = inventarTichete.get(i);
             if (ticket.getId() == id) {
@@ -97,7 +112,15 @@ public class App {
         }
         return null;
     }
-    public static int checkForDevInMilestone(Milestone milestone, String username) {
+
+    /**
+     * Caut daca exista developerul in milestone.
+     * @param milestone
+     * @param username
+     * @return
+     */
+    public static int checkForDevInMilestone(final Milestone milestone,
+                                             final String username) {
         String[] assignedDevs = milestone.getAssignedDevs();
         for (int j = 0; j < assignedDevs.length; j++) {
             if (username.equals(assignedDevs[j])) {
@@ -123,35 +146,40 @@ public class App {
         node.put("timestamp", timestamp);
         return node;
     }
-    public static String printExpertiseArea(String expertiseArea) {
+
+    /**
+     * Verific daca expertiza e ok.
+     * @param expertiseArea
+     * @return
+     */
+    public static String printExpertiseArea(final String expertiseArea) {
         if (expertiseArea.equals("DB")) {
             return "BACKEND, DB, FULLSTACK";
-        }
-        else if (expertiseArea.equals("FRONTEND")) {
+        } else if (expertiseArea.equals("FRONTEND")) {
             return "DESIGN, FRONTEND, FULLSTACK";
-        }
-        else if (expertiseArea.equals("BACKEND")) {
+        } else if (expertiseArea.equals("BACKEND")) {
             return "BACKEND, FULLSTACK";
-        }
-        else if (expertiseArea.equals("DEVOPS")) {
+        } else if (expertiseArea.equals("DEVOPS")) {
             return "DEVOPS, FULLSTACK";
-        }
-        else if (expertiseArea.equals("DESIGN")) {
+        } else if (expertiseArea.equals("DESIGN")) {
             return "DESIGN, FRONTEND, FULLSTACK";
         }
         return null;
     }
-    public static String printPriority(String priority) {
+
+    /**
+     * Verific ce fel de expertiza poate rezolva.
+     * @param priority
+     * @return
+     */
+    public static String printPriority(final String priority) {
         if (priority.equals("LOW")) {
             return "JUNIOR, MID, SENIOR";
-        }
-        else if (priority.equals("MEDIUM")) {
+        } else if (priority.equals("MEDIUM")) {
             return "MID, SENIOR";
-        }
-        else if (priority.equals("HIGH")) {
+        } else if (priority.equals("HIGH")) {
             return "MID, SENIOR";
-        }
-        else if (priority.equals("CRITICAL")) {
+        } else if (priority.equals("CRITICAL")) {
             return "SENIOR";
         }
         return null;
@@ -171,13 +199,32 @@ public class App {
         }
         return null;
     }
-    public static int araportatBine(Ticket ticket, String username) {
+
+    /**
+     * Verific daca reporterul este cel cu numele de username
+     * @param ticket
+     * @param username
+     * @return
+     */
+    public static int araportatBine(final Ticket ticket,
+                                    final String username) {
         if (ticket.getReportedBy().equals(username)) {
             return 1;
         }
         return 0;
     }
-    public static int eAsignataBine(List<Users> users, String username, int ticketID) {
+
+    /**
+     * Verific daca se gaseste in lista de useri
+                        tichetul cu id-ul respectiv.
+     * @param users
+     * @param username
+     * @param ticketID
+     * @return
+     */
+    public static int eAsignataBine(final List<Users> users,
+                                    final String username,
+                                    final int ticketID) {
         Users user = returnUser(users, username);
         ArrayList<Ticket> tickets = user.getTickets();
         for (int i = 0; i < tickets.size(); i++) {
@@ -222,12 +269,17 @@ public class App {
         LocalDate start = LocalDate.parse(startTimestamp);
         LocalDate current = LocalDate.parse(currentTimestamp);
         int daysBetween = (int) ChronoUnit.DAYS.between(start, current) + 1;
-        if (daysBetween >= 12) {
+        if (daysBetween >= MagicNumbersInt.doisprezece.getValue()) {
             return 1;
         }
         return 0;
     }
-    public static void nextStatus(Ticket ticket) {
+
+    /**
+     * Setez statusul urmator(pentru changestatus).
+     * @param ticket
+     */
+    public static void nextStatus(final Ticket ticket) {
         if (ticket.getStatus().equals("OPEN")) {
             ticket.setStatus("IN_PROGRESS");
         } else if (ticket.getStatus().equals("IN_PROGRESS")) {
@@ -236,7 +288,12 @@ public class App {
             ticket.setStatus("CLOSED");
         }
     }
-    public static void previousStatus(Ticket ticket) {
+
+    /**
+     * Setez statusul anterior(pentru UNDOChangeStatus).
+     * @param ticket
+     */
+    public static void previousStatus(final Ticket ticket) {
         if (ticket.getStatus().equals("IN_PROGRESS")) {
             ticket.setStatus("OPEN");
         } else if (ticket.getStatus().equals("RESOLVED")) {
@@ -245,7 +302,14 @@ public class App {
             ticket.setStatus("RESOLVED");
         }
     }
-    public static void openAndClose(Milestone milestone, Ticket ticket) {
+
+    /**
+     * Actualizez vectorii de tichete open si close.
+     * @param milestone
+     * @param ticket
+     */
+    public static void openAndClose(final Milestone milestone,
+                                    final Ticket ticket) {
         int[] openTickets = milestone.getOpenTickets();
         int[] closedTickets = milestone.getClosedTickets();
         ArrayList<Integer> openT = new ArrayList<>();
@@ -269,16 +333,17 @@ public class App {
             int[] copieOpen = new int[openT.size()];
             int[] copieClose = new int[closedT.size()];
             // System.out.println("copie close" + copieClose.length);
-            for (int i = 0 ; i < openT.size(); i++) {
+            for (int i = 0; i < openT.size(); i++) {
                     copieOpen[i] = openT.get(i);
             }
-            for (int i = 0 ; i < closedT.size(); i++) {
+            for (int i = 0; i < closedT.size(); i++) {
                 copieClose[i] = closedT.get(i);
             }
             int nrTicheteClosed = copieClose.length;
             int nrTicheteTotal = milestone.getTickets().length;
             double completion = (double) nrTicheteClosed /  (double) nrTicheteTotal;
-            double result = Math.round(completion * 100.0) / 100.0;
+            double result = Math.round(completion * MagicNumbersDouble.osuta.getValue())
+                    / MagicNumbersDouble.osuta.getValue();
             milestone.setOpenTickets(copieOpen);
             milestone.setClosedTickets(copieClose);
             milestone.setCompletionPercentage(result);
@@ -362,10 +427,10 @@ public class App {
                       //      + milestone.getDueDate());
                     milestone.interactiuniTicket(timestamp);
                 }
-                for (int k = 0 ; k < milestones.size(); k++) {
+                for (int k = 0; k < milestones.size(); k++) {
                     Milestone milestone =  milestones.get(k);
                     int[] tickets = milestone.getTickets();
-                    for (int j = 0 ; j < tickets.length; j++) {
+                    for (int j = 0; j < tickets.length; j++) {
                         Ticket t = returnTicket(inventarTichete, tickets[j]);
                         openAndClose(milestone, t);
                     }
@@ -406,7 +471,8 @@ public class App {
                                 if (params.get("environment") != null) {
                                     environment = params.get("environment").asText();
                                 }
-                                int errorCode = -5;
+                                int errorCode =
+                                        MagicNumbersInt.minuscinci.getValue();
                                 if (params.get("errorCode") != null) {
                                     errorCode = Integer.parseInt(params.get("errorCode").asText());
                                 }
@@ -466,7 +532,9 @@ public class App {
                             outputs.add(node);
                         } else if (usr.getRole().equals("DEVELOPER")) {
                             ObjectNode node = printwhatiNeed(command, username, timestamp);
-                            ObjectNode printTickets = veziTichete.viewTicketsDeveloper(inventarTichete, milestones, username);
+                            ObjectNode printTickets = veziTichete.
+                                    viewTicketsDeveloper(inventarTichete,
+                                    milestones, username);
                             node.set("tickets", printTickets.get("tickets"));
                             outputs.add(node);
                         }
@@ -525,7 +593,7 @@ public class App {
                                         tickets, assignedDevs, username,
                                         timestamp, inventarTichete);
                                 int[] tick = milestone.getTickets();
-                                for (int p = 0 ; p < tick.length; p++) {
+                                for (int p = 0; p < tick.length; p++) {
                                     Ticket t = returnTicket(inventarTichete, tick[p]);
                                     t.addToMilestone(milestone, username, timestamp);
                                 }
@@ -551,17 +619,18 @@ public class App {
                         Users usrAT = returnUser(useri, username);
                         Developer developer = (Developer) usrAT;
                         Ticket ticket = returnTicket(inventarTichete, ticketID);
-//                        System.out.println("e ok expertiza" + developer.eokSpecializarea(ticket.getExpertiseArea()));
-//                        System.out.println("e ok tichetul" + developer.eokTichetul(ticket.getBusinessPriority()));
-//                        System.out.println("e ok prioritatea " + developer.eokPrioritatea(ticket.getBusinessPriority()));
                         String milestoneName = checkforTicket(milestones, ticketID);
                         Milestone milestone = returnMilestone(milestones, milestoneName);
-                        if (developer.rezolvaTichetul(developer.getSeniority(), ticket.getExpertiseArea(), ticket.getBusinessPriority(), ticket.getType())
-                        && checkForDevInMilestone(milestone, username) == 1 && ticket.getStatus().equals("OPEN") && !milestone.isBlocking()) {
+                        if (developer.rezolvaTichetul(developer.getSeniority(),
+                                ticket.getExpertiseArea(),
+                                ticket.getBusinessPriority(), ticket.getType())
+                        && checkForDevInMilestone(milestone, username) == 1
+                                && ticket.getStatus().equals("OPEN") && !milestone.isBlocking()) {
                             ticket.setStatus("IN_PROGRESS");
                             ticket.setAssignedAt(timestamp);
                             developer.addTicket(ticket);
-                            LinkedHashMap<String, Vector<Integer>> repartition = milestone.getRepartition();
+                            LinkedHashMap<String, Vector<Integer>>
+                                    repartition = milestone.getRepartition();
 //                            System.out.println(milestoneName);
 //                            System.out.println(repartition.keySet());
                             Vector<Integer> tickets =  repartition.get(username);
@@ -573,24 +642,29 @@ public class App {
                                 ObjectNode node = printwhatiNeed(command, username, timestamp);
                                 Users usr =  returnUser(useri, username);
                                 Developer dev =  (Developer) usr;
-                                node.put("error", "Developer " +  username + " cannot assign ticket " +
-                                        ticketID + " due to expertise area. Required: " +
-                                        printExpertiseArea(ticket.getExpertiseArea()) + "; Current: " + dev.getExpertiseArea() + ".");
+                                node.put("error", "Developer "
+                                        + username + " cannot assign ticket "
+                                        + ticketID + " due to expertise area. Required: "
+                                        + printExpertiseArea(ticket.getExpertiseArea())
+                                        + "; Current: " + dev.getExpertiseArea() + ".");
                                 outputs.add(node);
                             } else if (!developer.eokPrioritatea(ticket.getBusinessPriority())) {
                                 ObjectNode node = printwhatiNeed(command, username, timestamp);
                                 Users usr =  returnUser(useri, username);
                                 Developer dev =  (Developer) usr;
-                                node.put("error", "Developer " +  username + " cannot assign ticket " +
-                                        ticketID + " due to seniority level. Required: " +
-                                        printPriority(ticket.getBusinessPriority()) + "; Current: " + dev.getSeniority() + ".");
+                                node.put("error", "Developer "
+                                        + username + " cannot assign ticket "
+                                        + ticketID + " due to seniority level. Required: "
+                                        + printPriority(ticket.getBusinessPriority())
+                                        + "; Current: " + dev.getSeniority() + ".");
                                 outputs.add(node);
                             } else if (checkForDevInMilestone(milestone, username) == 0) {
                                 ObjectNode node = printwhatiNeed(command, username, timestamp);
                                 Users usr =  returnUser(useri, username);
                                 Developer dev =  (Developer) usr;
-                                node.put("error", "Developer " +  username + " is not assigned to milestone " +
-                                        milestoneName + ".");
+                                node.put("error", "Developer "
+                                        +  username + " is not assigned to milestone "
+                                        + milestoneName + ".");
                                 outputs.add(node);
                             } else if (!ticket.getStatus().equals("OPEN")) {
                                 ObjectNode node = printwhatiNeed(command, username, timestamp);
@@ -598,8 +672,9 @@ public class App {
                                 outputs.add(node);
                             } else if (milestone.isBlocking()) {
                                 ObjectNode node = printwhatiNeed(command, username, timestamp);
-                                node.put("error", "Cannot assign ticket " +
-                                                ticketID + " from blocked milestone " + milestoneName + ".");
+                                node.put("error", "Cannot assign ticket "
+                                        + ticketID + " from blocked milestone "
+                                        + milestoneName + ".");
                                 outputs.add(node);
                             }
                         }
@@ -621,15 +696,6 @@ public class App {
                         ticket.deAssignTicket(username, timestamp);
                         usrAT.getTickets().remove(ticket);
                         usrAT.getGaveupTickets().add(ticket);
-//                        Milestone milestone = returnByUserame(milestones, username);
-//                        System.out.println(milestone);
-//                        if (milestone != null) {
-//                        LinkedHashMap<String, Vector<Integer>> repartition = milestone.getRepartition();
-//                        if (repartition.containsKey(username)) {
-//                            Vector<Integer> tickets =  repartition.get(username);
-//                            tickets.remove(ticketID);
-//                        }
-//                        }
                     } else if (command.equals("addComment")) {
                         int ticketID = inputJson.get(i).get("ticketID").asInt();
                         String comment  = inputJson.get(i).get("comment").asText();
@@ -639,21 +705,32 @@ public class App {
                             ObjectNode node = printwhatiNeed(command, username, timestamp);
                             node.put("error", "Comments are not allowed on anonymous tickets.");
                             outputs.add(node);
-                        } else if (comment.length() < 10 && ticket != null) {
+                        } else if (comment.length() < MagicNumbersInt.zece.getValue()
+                                && ticket != null) {
                             ObjectNode node = printwhatiNeed(command, username, timestamp);
                             node.put("error", "Comment must be at least 10 characters long.");
                             outputs.add(node);
-                        } else if (usr.getRole().equals("REPORTER") && ticket.getStatus().equals("CLOSED") && ticket != null) {
+                        } else if (usr.getRole().equals("REPORTER")
+                                && ticket.getStatus().equals("CLOSED")
+                                && ticket != null) {
                             ObjectNode node = printwhatiNeed(command, username, timestamp);
                             node.put("error", "Reporters cannot comment on CLOSED tickets.");
                             outputs.add(node);
-                        } else if (usr.getRole().equals("REPORTER") && araportatBine(ticket, username) == 0 && ticket != null) {
+                        } else if (usr.getRole().equals("REPORTER")
+                                && araportatBine(ticket, username) == 0
+                                && ticket != null) {
                             ObjectNode node = printwhatiNeed(command, username, timestamp);
-                            node.put("error", "Reporter " + username + " cannot comment on ticket " + ticketID + ".");
+                            node.put("error", "Reporter "
+                                    + username + " cannot comment on ticket "
+                                    + ticketID + ".");
                             outputs.add(node);
-                        } else if (eAsignataBine(useri, username,ticketID) == 0 && usr.getRole().equals("DEVELOPER") && ticket != null) {
+                        } else if (eAsignataBine(useri, username, ticketID) == 0
+                                && usr.getRole().equals("DEVELOPER")
+                                && ticket != null) {
                             ObjectNode node = printwhatiNeed(command, username, timestamp);
-                            node.put("error", "Ticket " + ticketID + " is not assigned to the developer " + username + ".");
+                            node.put("error", "Ticket "
+                                    + ticketID + " is not assigned to the developer "
+                                    + username + ".");
                             outputs.add(node);
                         } else if (ticket != null) {
                             ticket.addComment(comment);
@@ -667,7 +744,7 @@ public class App {
                             ObjectNode node = printwhatiNeed(command, username, timestamp);
                             node.put("error", "Comments are not allowed on anonymous tickets.");
                             outputs.add(node);
-                        }else if (ticket != null && !ticket.getComments().isEmpty()) {
+                        } else if (ticket != null && !ticket.getComments().isEmpty()) {
                             int indexUsername = ticket.getAuthors().indexOf(username);
                             ticket.getComments().remove(indexUsername);
                             ticket.getAuthors().remove(indexUsername);
@@ -677,9 +754,13 @@ public class App {
                         int ticketID = inputJson.get(i).get("ticketID").asInt();
                         Ticket ticket = returnTicket(inventarTichete, ticketID);
                         Users usr = returnUser(useri, username);
-                        if (eAsignataBine(useri, username,ticketID) == 0 && usr.getRole().equals("DEVELOPER") && ticket != null) {
+                        if (eAsignataBine(useri, username, ticketID) == 0
+                                && usr.getRole().equals("DEVELOPER")
+                                && ticket != null) {
                             ObjectNode node = printwhatiNeed(command, username, timestamp);
-                            node.put("error", "Ticket " + ticketID + " is not assigned to developer " + username + ".");
+                            node.put("error", "Ticket "
+                                    + ticketID + " is not assigned to developer "
+                                    + username + ".");
                             outputs.add(node);
                         } else {
                             nextStatus(ticket);
@@ -689,9 +770,13 @@ public class App {
                         int ticketID = inputJson.get(i).get("ticketID").asInt();
                         Ticket ticket = returnTicket(inventarTichete, ticketID);
                         Users usr = returnUser(useri, username);
-                        if (eAsignataBine(useri, username,ticketID) == 0 && usr.getRole().equals("DEVELOPER") && ticket != null) {
+                        if (eAsignataBine(useri, username, ticketID) == 0
+                                && usr.getRole().equals("DEVELOPER")
+                                && ticket != null) {
                             ObjectNode node = printwhatiNeed(command, username, timestamp);
-                            node.put("error", "Ticket " + ticketID + " is not assigned to developer " + username + ".");
+                            node.put("error", "Ticket "
+                                    + ticketID + " is not assigned to developer "
+                                    + username + ".");
                             outputs.add(node);
                         } else {
                             previousStatus(ticket);
@@ -701,12 +786,14 @@ public class App {
                     } else if (command.equals("viewTicketHistory")) {
                         ObjectNode node = printwhatiNeed(command, username, timestamp);
                         ArrayList<Ticket> allTickets = new ArrayList<>();
-                        for (int m = 0 ; m < returnUser(useri, username).getTickets().size(); m++) {
+                        for (int m = 0;
+                             m < returnUser(useri, username).getTickets().size(); m++) {
                             Ticket t =  returnUser(useri, username).getTickets().get(m);
                             allTickets.add(t);
                         }
-                        for (int m = 0 ; m < returnUser(useri, username).getGaveupTickets().size(); m++) {
-                            Ticket t =  returnUser(useri, username).getGaveupTickets().get(m);
+                        for (int m = 0;
+                             m < returnUser(useri, username).getGaveupTickets().size(); m++) {
+                            Ticket t = returnUser(useri, username).getGaveupTickets().get(m);
                             allTickets.add(t);
                         }
                         ObjectNode printTickets = veziTichete.printHistoryTickets(allTickets);

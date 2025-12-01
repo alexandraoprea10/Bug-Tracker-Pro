@@ -2,9 +2,7 @@ package main.Ticket;
 
 import main.Milestone;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 
@@ -129,20 +127,45 @@ public class Ticket {
     public List<String> getComments() {
          return comments;
     }
-    public void addComment(final String comment) {
-        this.comments.add(comment);
+
+    /**
+     * Adauga comentariu
+     * @param comme
+     */
+    public void addComment(final String comme) {
+        this.comments.add(comme);
     }
+
+    /**
+     * Returneaza lista de autori
+     * @return
+     */
     public List<String> getAuthors() {
         return authors;
     }
-    public void addAuthor(final String author) {
-        this.authors.add(author);
+
+    /**
+     * Adauga autor in lista de autori.
+     * @param auth
+     */
+    public void addAuthor(final String auth) {
+        this.authors.add(auth);
     }
+
+    /**
+     * Returneaza lista de timestamps
+     * @return
+     */
     public List<String> getDate() {
         return date;
     }
-    public void addDate(final String date) {
-        this.date.add(date);
+
+    /**
+     * Adauga timestamp in lista de timestamp
+     * @param dat
+     */
+    public void addDate(final String dat) {
+        this.date.add(dat);
     }
 
     /**
@@ -168,6 +191,11 @@ public class Ticket {
     public String getDescription() {
         return description;
     }
+
+    /**
+     * Returneaza istoricul
+     * @return
+     */
     public ArrayList<History> getHistories() {
         return histories;
     }
@@ -267,24 +295,57 @@ public class Ticket {
     public void setDescription(final String description) {
          this.description = description;
     }
+
+    /**
+     * Seteaza lista de istoric.
+     * @param histories
+     */
     public void setHistories(final ArrayList<History> histories) {
         this.histories = histories;
     }
+
+    /**
+     * Adauga un istoric.
+     * @param history
+     */
     public void addHistories(final History history) {
         this.histories.add(history);
     }
 
-    public void assignTicket(String by, String timestamp) {
+    /**
+     * Cazul 1 pentru viewHistory.
+     * @param by
+     * @param timestamp
+     */
+    public void assignTicket(final String by,
+                             final String timestamp) {
         History history = new History.Builder("ASSIGNED", by, timestamp)
                 .build();
         histories.add(history);
     }
-    public void deAssignTicket(String by, String timestamp) {
+
+    /**
+     * Cazul 2 pentru viewHistory.
+     * @param by
+     * @param timestamp
+     */
+    public void deAssignTicket(final String by,
+                               final String timestamp) {
         History history = new History.Builder("DE-ASSIGNED", by, timestamp)
                 .build();
         histories.add(history);
     }
-    public void changeStatus(int esteUndo, String to, String by, String timestamp) {
+
+    /**
+     * Cazul 3 pentru viewHistory.
+     * @param esteUndo verific la ce comanda face asta-
+     *                 ori la undochangestatus ori la changestatus
+     * @param to
+     * @param by
+     * @param timestamp
+     */
+    public void changeStatus(final int esteUndo,
+                             final String to, final String by, final String timestamp) {
         String from = "OPEN";
         if (esteUndo == 0) {
             if (to.equals("IN_PROGRESS")) {
@@ -294,8 +355,7 @@ public class Ticket {
             } else if (to.equals("CLOSED")) {
                 from = "RESOLVED";
             }
-        }
-        else {
+        } else {
             if (to.equals("IN_PROGRESS")) {
                 from = "RESOLVED";
             } else if (to.equals("RESOLVED")) {
@@ -310,13 +370,27 @@ public class Ticket {
                 .build();
         histories.add(history);
     }
-    public void addToMilestone(Milestone milestone, String by, String timestamp) {
+
+    /**
+     * Cazul 4 pentru viewHistory.
+     * @param milestone
+     * @param by
+     * @param timestamp
+     */
+    public void addToMilestone(final Milestone milestone,
+                               final String by, final String timestamp) {
         History history = new History.Builder("ADDED_TO_MILESTONE", by, timestamp)
                 .milestone(milestone.getName())
                 .build();
         histories.add(history);
     }
-    public void removeFromDev(String from, String timestamp) {
+
+    /**
+     * Cazul 5 pentru viewHistory.
+     * @param from
+     * @param timestamp
+     */
+    public void removeFromDev(final String from, final String timestamp) {
         History history = new History.Builder("REMOVED_FROM_DEV", "system", timestamp)
                 .from(from)
                 .build();

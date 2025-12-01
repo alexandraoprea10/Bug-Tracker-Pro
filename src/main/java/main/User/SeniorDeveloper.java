@@ -1,5 +1,7 @@
 package main.User;
 
+import main.MagicNumbersInt;
+
 public class SeniorDeveloper extends Developer {
     public SeniorDeveloper(final String username, final String mail,
                            final String role, final String date,
@@ -13,7 +15,7 @@ public class SeniorDeveloper extends Developer {
      */
     @Override
     public int getAccessPriority() {
-        return 4;
+        return MagicNumbersInt.patru.getValue();
     }
 
     /**
@@ -22,6 +24,6 @@ public class SeniorDeveloper extends Developer {
      */
     @Override
     public int getTicketType() {
-        return 3;
+        return MagicNumbersInt.trei.getValue();
     }
 }
