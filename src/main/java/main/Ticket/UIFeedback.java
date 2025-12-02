@@ -1,5 +1,8 @@
 package main.Ticket;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class UIFeedback extends Ticket {
     private String uiElementId;
     private String businessValue;
@@ -17,10 +20,14 @@ public final class UIFeedback extends Ticket {
         private String assignedAt;
         private String solvedAt;
         private String assignedTo;
-        private String comments;
+        private List<String> comments;
+        private List<String> authors;
+        private List<String> date;
         private String expertiseArea;
         private String reportedBy;
         private String description;
+        private ArrayList<History> histories;
+        private boolean isAVailableForAssignment;
 
         private String uiElementId;
         private String businessValue;
@@ -44,6 +51,7 @@ public final class UIFeedback extends Ticket {
             this.uiElementId = uiElementId;
             this.businessValue = businessValue;
             this.usabilityScore = usabilityScore;
+            this.isAVailableForAssignment = false;
         }
 
         /**

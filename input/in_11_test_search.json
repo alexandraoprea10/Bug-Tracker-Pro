@@ -104,6 +104,7 @@
     "username": "gabriel_manager",
     "timestamp": "2025-10-02",
     "filters": {
+
       "searchType": "DEVELOPER",
       "expertiseArea": "FULLSTACK",
       "seniority": "SENIOR"

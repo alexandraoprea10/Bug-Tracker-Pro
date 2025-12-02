@@ -6,6 +6,7 @@ public abstract class Developer extends Users {
     private String date;
     private String expertiseArea;
     private String seniority;
+    private double performanceScore;
     // constructor
     public Developer(final String username, final String mail, final String role,
                      final String dt, final String expertiseA, final String sen) {
@@ -13,6 +14,7 @@ public abstract class Developer extends Users {
         this.date = dt;
         this.expertiseArea = expertiseA;
         this.seniority = sen;
+        this.performanceScore = 0.0;
     }
     // FACTORY METHOD
     // CODURI:
@@ -31,7 +33,6 @@ public abstract class Developer extends Users {
      * @return
      */
     public abstract int getTicketType();
-
     /**
      * Verific prioritatea tichetului
      * @param priority
@@ -190,6 +191,9 @@ public abstract class Developer extends Users {
     public String getSeniority() {
         return seniority;
     }
+    public double getPerformanceScore() {
+        return performanceScore;
+    }
     // setteri
 
     /**
@@ -214,5 +218,8 @@ public abstract class Developer extends Users {
      */
     public void setSeniority(final String seniority) {
         this.seniority = seniority;
+    }
+    public void setPerformanceScore(final double performanceScore) {
+        this.performanceScore = performanceScore;
     }
 }

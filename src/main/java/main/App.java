@@ -3,15 +3,12 @@ package main;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.sun.source.tree.AssignmentTree;
 import main.Ticket.*;
 import main.User.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -389,7 +386,7 @@ public class App {
                     List<String> subordinates =  new ArrayList<>();
                     JsonNode subordonati =  user.get("subordinates");
                     if (subordonati != null) {
-                        for (int p = 0; p < subordinates.size(); p++) {
+                        for (int p = 0; p < subordonati.size(); p++) {
                             JsonNode sub = subordonati.get(p);
                             String numeSubordonat = sub.asText();
                             subordinates.add(numeSubordonat);
@@ -411,7 +408,10 @@ public class App {
             ArrayList<Milestone> milestones = new ArrayList<>();
             InfoMilestones infoMilestones = new InfoMilestones();
             VeziTichete veziTichete = new VeziTichete();
+            TicketSearch ticketSearch = new TicketSearch();
+            DevelopersSearch developersSearch = new DevelopersSearch();
             for (int i = 0; i < inputJson.size(); i++) {
+                System.out.println("==============INCEPUTCOMANDA==============");
                 String command = inputJson.get(i).get("command").asText();
                 String username = inputJson.get(i).get("username").asText();
                 Users user = returnUser(useri, username);
@@ -628,6 +628,7 @@ public class App {
                                 && ticket.getStatus().equals("OPEN") && !milestone.isBlocking()) {
                             ticket.setStatus("IN_PROGRESS");
                             ticket.setAssignedAt(timestamp);
+                            ticket.setIsAVailableForAssignment(false);
                             developer.addTicket(ticket);
                             LinkedHashMap<String, Vector<Integer>>
                                     repartition = milestone.getRepartition();
@@ -692,6 +693,7 @@ public class App {
                         Ticket ticket = returnTicket(inventarTichete, ticketID);
                         ticket.setAssignedTo("");
                         ticket.setAssignedAt("");
+                        ticket.setIsAVailableForAssignment(true);
                         ticket.setStatus("OPEN");
                         ticket.deAssignTicket(username, timestamp);
                         usrAT.getTickets().remove(ticket);
@@ -799,9 +801,43 @@ public class App {
                         ObjectNode printTickets = veziTichete.printHistoryTickets(allTickets);
                         node.set("ticketHistory", printTickets.get("ticketHistory"));
                         outputs.add(node);
+                    } else if (command.equals("search")) {
+                        JsonNode filters = inputJson.get(i).get("filters");
+                        String searchType = filters.get("searchType").asText();
+                        ObjectNode node = printwhatiNeed(command, username, timestamp);
+                        node.put("searchType", searchType);
+                       // System.out.println(filters);
+                        if (user.getRole().equals("DEVELOPER")) {
+                            List<Ticket> ticheteGasite = ticketSearch.searchTicketsDeveloper(milestones, filters, username, inventarTichete, useri);
+//                            for (int b = 0; b < ticheteGasite.size(); b++) {
+//                                System.out.println(ticheteGasite.get(b).getTitle());
+//                            }
+                            ObjectNode printTickets = veziTichete.printFoundTicketsDeveloper(ticheteGasite);
+                            node.set("results", printTickets.get("results"));
+
+                        } else if (user.getRole().equals("MANAGER")) {
+                            if (searchType.equals("TICKET")) {
+                                List<Ticket> ticheteGasite = ticketSearch.searchTicketsManager(filters, inventarTichete);
+                                JsonNode keywords = filters.get("keywords");
+                                // System.out.println(keywords);
+                                ObjectNode printTickets = veziTichete.printFoundTicketsManager(ticheteGasite, keywords);
+                                node.set("results", printTickets.get("results"));
+                            } else if (searchType.equals("DEVELOPER")) {
+                                List<Users> developeriGasiti = developersSearch.searchDevelopers(user, filters, useri);
+                                ObjectNode printDevs = veziTichete.printFoundDevs(developeriGasiti);
+                                node.set("results", printDevs.get("results"));
+                            }
+                            // System.out.println("printeaza developersi/tichete");
+                        }
+                        outputs.add(node);
                     }
                     veziTichete.setInventarTichete(inventarTichete);
                 }
+                if (inventarTichete.size() >= 5) {
+                    Ticket t = returnTicket(inventarTichete, 4);
+                    System.out.println(t.getBusinessPriority() + " " + t.getCreatedAt() + " " + t.isAvailableForAssignment());
+                }
+                System.out.println("==============SFARSITCOMANDA==============");
             }
         } catch (IOException e) {
             return;

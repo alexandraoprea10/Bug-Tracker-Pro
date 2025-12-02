@@ -1,10 +1,13 @@
 package main.Ticket;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import main.MagicNumbersInt;
 import main.Milestone;
+import main.User.Developer;
+import main.User.Users;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -324,6 +327,93 @@ public class VeziTichete {
             arrayNode.add(node);
         }
         finalNode.set("ticketHistory", arrayNode);
+        return finalNode;
+    }
+    public ObjectNode printFoundTicketsDeveloper(final List<Ticket> tickets) {
+        ObjectNode finalNode = mapper.createObjectNode();
+        ArrayNode arrayNode = mapper.createArrayNode();
+        Collections.sort(tickets, new Comparator<Ticket>() {
+            @Override
+            public int compare(final Ticket o1, final Ticket o2) {
+                int dataC = o1.getCreatedAt().compareTo(o2.getCreatedAt());
+                if (dataC != 0) {
+                    return dataC;
+                }
+                return Integer.compare(o1.getId(), o2.getId());
+            }
+        });
+        for (int i = 0; i < tickets.size(); i++) {
+            ObjectNode node = mapper.createObjectNode();
+            Ticket ticket = tickets.get(i);
+            node.put("id", ticket.getId());
+            node.put("type", ticket.getType());
+            node.put("title", ticket.getTitle());
+            node.put("businessPriority", ticket.getBusinessPriority());
+            node.put("status", ticket.getStatus());
+            node.put("createdAt", ticket.getCreatedAt());
+            node.put("solvedAt", ticket.getSolvedAt());
+            node.put("reportedBy", ticket.getReportedBy());
+            arrayNode.add(node);
+        }
+        finalNode.set("results", arrayNode);
+        return finalNode;
+    }
+    public ObjectNode printFoundTicketsManager(final List<Ticket> tickets, JsonNode keywords) {
+        ObjectNode finalNode = mapper.createObjectNode();
+        ArrayNode arrayNode = mapper.createArrayNode();
+        Collections.sort(tickets, new Comparator<Ticket>() {
+            @Override
+            public int compare(final Ticket o1, final Ticket o2) {
+                int dataC = o1.getCreatedAt().compareTo(o2.getCreatedAt());
+                if (dataC != 0) {
+                    return dataC;
+                }
+                return Integer.compare(o1.getId(), o2.getId());
+            }
+        });
+        for (int i = 0; i < tickets.size(); i++) {
+            ObjectNode node = mapper.createObjectNode();
+            Ticket ticket = tickets.get(i);
+            node.put("id", ticket.getId());
+            node.put("type", ticket.getType());
+            node.put("title", ticket.getTitle());
+            node.put("businessPriority", ticket.getBusinessPriority());
+            node.put("status", ticket.getStatus());
+            node.put("createdAt", ticket.getCreatedAt());
+            node.put("solvedAt", ticket.getSolvedAt());
+            node.put("reportedBy", ticket.getReportedBy());
+            node.put("matchingWords", keywords);
+            arrayNode.add(node);
+        }
+        finalNode.set("results", arrayNode);
+        return finalNode;
+    }
+    public ObjectNode printFoundDevs(final List<Users> users) {
+        ObjectNode finalNode = mapper.createObjectNode();
+        ArrayNode arrayNode = mapper.createArrayNode();
+        Collections.sort(users, new Comparator<Users>() {
+            @Override
+            public int compare(final Users o1, final Users o2) {
+                Developer d1 = (Developer) o1;
+                Developer d2 = (Developer) o2;
+                int dataC = d1.getDate().compareTo(d2.getDate());
+                if (dataC != 0) {
+                    return dataC;
+                }
+                return d1.getUsername().compareTo(d2.getUsername());
+            }
+        });
+        for (int i = 0; i < users.size(); i++) {
+            ObjectNode node = mapper.createObjectNode();
+            Developer user = (Developer) users.get(i);
+            node.put("username", user.getUsername());
+            node.put("expertiseArea", user.getExpertiseArea());
+            node.put("seniority", user.getSeniority());
+            node.put("performanceScore", user.getPerformanceScore());
+            node.put("hireDate", user.getDate());
+            arrayNode.add(node);
+        }
+        finalNode.set("results", arrayNode);
         return finalNode;
     }
 }

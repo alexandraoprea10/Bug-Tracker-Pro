@@ -23,6 +23,7 @@ public class Ticket {
     private String reportedBy;
     private String description;
     private ArrayList<History> histories;
+    private boolean isAVailableForAssignment;
     // constructor
      public Ticket(final int id, final String type, final String title,
                    final String businessPriority, final String status,
@@ -45,6 +46,7 @@ public class Ticket {
          this.authors = new ArrayList<String>();
          this.date = new ArrayList<String>();
          this.histories = new ArrayList<>();
+         this.isAVailableForAssignment = true;
     }
     // getters
 
@@ -199,6 +201,9 @@ public class Ticket {
     public ArrayList<History> getHistories() {
         return histories;
     }
+    public boolean isAvailableForAssignment() {
+        return isAVailableForAssignment;
+    }
     // setteri
 
     /**
@@ -302,6 +307,9 @@ public class Ticket {
      */
     public void setHistories(final ArrayList<History> histories) {
         this.histories = histories;
+    }
+    public void setIsAVailableForAssignment(final boolean isAVailableForAssignment) {
+        this.isAVailableForAssignment = isAVailableForAssignment;
     }
 
     /**

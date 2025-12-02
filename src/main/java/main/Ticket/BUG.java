@@ -1,5 +1,8 @@
 package main.Ticket;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class BUG extends Ticket {
     private String expectedBehaviour;
     private String actualBehaviour;
@@ -18,10 +21,14 @@ public final class BUG extends Ticket {
         private String assignedAt;
         private String solvedAt;
         private String assignedTo;
-        private String comments;
+        private List<String> comments;
+        private List<String> authors;
+        private List<String> date;
         private String expertiseArea;
         private String reportedBy;
         private String description;
+        private ArrayList<History> histories;
+        private boolean isAVailableForAssignment;
 
         private String expectedBehaviour;
         private String actualBehaviour;
@@ -50,6 +57,7 @@ public final class BUG extends Ticket {
             this.expertiseArea = expertiseArea;
             this.reportedBy = reportedBy;
             this.description = description;
+            this.isAVailableForAssignment = true;
             this.expectedBehaviour = expectedBehaviour;
             this.actualBehaviour = actualBehaviour;
             this.frequency = frequency;
