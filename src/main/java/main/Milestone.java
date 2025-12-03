@@ -1,6 +1,7 @@
 package main;
 
 import main.Ticket.Ticket;
+import main.User.Developer;
 import main.User.NextPriority;
 import main.User.SpecialMention;
 import main.User.TransformCritical;
@@ -21,6 +22,7 @@ public class Milestone {
     private String createdAt;
     private int[] tickets;
     private String[] assignedDevs;
+    private ArrayList<Developer> assigneddevelopers;
     private String createdBy;
     private int daysUntilDue;
     private int overdueBy;
@@ -31,6 +33,8 @@ public class Milestone {
     private SpecialMention specialMention;
     private String status;
     private ArrayList<Ticket> inventarTichete;
+
+    private ArrayList<Developer> observatoriNotificari = new ArrayList<>();
     // constructor
     public Milestone(final String name, final String[] blockingFor,
                      final String dueDate, final int[] tickets,
@@ -63,8 +67,26 @@ public class Milestone {
         for (int i = 0; i < assignedDevs.length; i++) {
             this.repartition.put(assignedDevs[i], new Vector<>());
         }
+        this.assigneddevelopers = new ArrayList();
     }
-
+    public void notificareDevelopers(String message) {
+        for (int i = 0 ; i < this.observatoriNotificari.size() ; i++) {
+            Developer dev = this.observatoriNotificari.get(i);
+            dev.primesteNotificare(message);
+        }
+    }
+    public void milestoneCreat() {
+        String message = String.format("New milestone %s has been created with due date %s.", name, dueDate);
+        notificareDevelopers(message);
+    }
+    public void vineDueDate() {
+        String message = String.format("Milestone %s is due tomorrow. All unresolved tickets are now CRITICAL.", name);
+        notificareDevelopers(message);
+    }
+    public void aTrecutDue() {
+        String message = String.format("Milestone %s was unblocked after due date. All active tickets are now CRITICAL.", name);
+        notificareDevelopers(message);
+    }
     /**
      * INteractiunile cu tichetele din MILESTONE.
      * STRATEGY METHOD
@@ -235,6 +257,9 @@ public class Milestone {
     public int getOverdueBy() {
         return overdueBy;
     }
+    public ArrayList<Developer> getAssignedDevelopers() {
+        return assigneddevelopers;
+    }
     // setteri
 
     /**
@@ -356,5 +381,13 @@ public class Milestone {
     public void setOverdueBy(final int overdueBy) {
         this.overdueBy = overdueBy;
     }
-
+    public void setAssigneddevelopers(ArrayList<Developer> assigneddevelopers) {
+        this.assigneddevelopers = assigneddevelopers;
+    }
+    public void addAssignedDeveloper(final Developer developer) {
+        this.assigneddevelopers.add(developer);
+    }
+    public void setObservatoriNotificari(final ArrayList<Developer> devs) {
+        this.observatoriNotificari = devs;
+    }
 }

@@ -329,6 +329,12 @@ public class VeziTichete {
         finalNode.set("ticketHistory", arrayNode);
         return finalNode;
     }
+
+    /**
+     * Printeaza tihctele gasite(din persp developerului).
+     * @param tickets
+     * @return
+     */
     public ObjectNode printFoundTicketsDeveloper(final List<Ticket> tickets) {
         ObjectNode finalNode = mapper.createObjectNode();
         ArrayNode arrayNode = mapper.createArrayNode();
@@ -358,7 +364,15 @@ public class VeziTichete {
         finalNode.set("results", arrayNode);
         return finalNode;
     }
-    public ObjectNode printFoundTicketsManager(final List<Ticket> tickets, JsonNode keywords) {
+
+    /**
+     * Printeaza tichetele gasite(din persp manager-ului).
+     * @param tickets
+     * @param keywords
+     * @return
+     */
+    public ObjectNode printFoundTicketsManager(final List<Ticket> tickets,
+                                               final JsonNode keywords) {
         ObjectNode finalNode = mapper.createObjectNode();
         ArrayNode arrayNode = mapper.createArrayNode();
         Collections.sort(tickets, new Comparator<Ticket>() {
@@ -388,6 +402,12 @@ public class VeziTichete {
         finalNode.set("results", arrayNode);
         return finalNode;
     }
+
+    /**
+     * Printez developerii gasiti.
+     * @param users
+     * @return
+     */
     public ObjectNode printFoundDevs(final List<Users> users) {
         ObjectNode finalNode = mapper.createObjectNode();
         ArrayNode arrayNode = mapper.createArrayNode();

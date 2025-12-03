@@ -3,12 +3,14 @@ package main;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import main.Ticket.*;
 import main.User.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -23,7 +25,8 @@ import java.util.Vector;
 public class App {
     private static final String inputuserFile = "input/database/users.json";
 
-    private static final ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
+    private static final ObjectWriter writer =
+            new ObjectMapper().writer().withDefaultPrettyPrinter();
 
     /**
      * Returneaza milestone-ul
@@ -31,7 +34,8 @@ public class App {
      * @param name
      * @return
      */
-    public static Milestone returnMilestone(final List<Milestone> milestones, String name) {
+    public static Milestone returnMilestone(final List<Milestone> milestones,
+                                            final String name) {
         for (int i =  0; i < milestones.size(); i++) {
             Milestone milestone = milestones.get(i);
             if (milestone.getName().equals(name)) {
@@ -40,11 +44,19 @@ public class App {
         }
         return null;
     }
-    public static Milestone returnByUserame(final List<Milestone> milestones, String usename) {
-        for (int i =  0; i < milestones.size(); i++) {
+
+    /**
+     * Returneaza milestone-ul din care face parte developerul.
+     * @param milestones
+     * @param usename
+     * @return
+     */
+    public static Milestone returnByUserame(final List<Milestone> milestones,
+                                            final String usename) {
+        for (int i = 0; i < milestones.size(); i++) {
             Milestone milestone = milestones.get(i);
             String[] assignedDev = milestone.getAssignedDevs();
-            for (int j = 0 ; j < assignedDev.length; j++) {
+            for (int j = 0; j < assignedDev.length; j++) {
                 if (assignedDev[j].equals(usename)) {
                     return milestone;
                 }
@@ -101,7 +113,7 @@ public class App {
      */
     public static Ticket returnTicket(final ArrayList<Ticket> inventarTichete,
                                       final int id) {
-        for (int i = 0 ; i < inventarTichete.size(); i++) {
+        for (int i = 0; i < inventarTichete.size(); i++) {
             Ticket ticket = inventarTichete.get(i);
             if (ticket.getId() == id) {
                 return ticket;
@@ -364,9 +376,9 @@ public class App {
         String timestampTesting = "";
         File usrFile = new File(inputuserFile);
         try {
-            JsonNode users = mapper.readTree(usrFile);
-            for (int i = 0; i < users.size(); i++) {
-                JsonNode user = users.get(i);
+            JsonNode usersNode = mapper.readTree(usrFile);
+            for (int i = 0; i < usersNode.size(); i++) {
+                JsonNode user = usersNode.get(i);
                 String username =  user.get("username").asText();
                 String mail = user.get("email").asText();
                 String role  = user.get("role").asText();
@@ -399,7 +411,7 @@ public class App {
         } catch (IOException e) {
             return;
         }
-        // printUser(useri);
+        // printUser(useri)
         int id = 0;
         try {
             inputFile = new File(inputPath);
@@ -426,6 +438,34 @@ public class App {
                     // System.out.println("PENTRU MILESTONE " + milestone.getName()
                       //      + milestone.getDueDate());
                     milestone.interactiuniTicket(timestamp);
+                    LocalDate currentDate = LocalDate.parse(timestamp);
+                    LocalDate dateMilestone = LocalDate.parse(milestone.getDueDate());
+                    int daysBetween = (int) ChronoUnit.DAYS.between(currentDate, dateMilestone) + 1;
+                    System.out.println("COMANDA" + command + " a lui" + username);
+                    System.out.println("MILESTONE DATA" + milestone.getDueDate());
+                    System.out.println("DATA CURENTA" + timestamp);
+                    System.out.println("sunt" + daysBetween + "zile");
+                    // System.out.println(daysBetween  + "pentru milestone" + milestone.getName() + "din perspectiva" + username);
+                    if (daysBetween == 0 && !milestone.isBlocking()) {
+                        milestone.vineDueDate();
+                        for (int k = 0 ; k < milestone.getTickets().length; k++) {
+                            int ticketID =  milestone.getTickets()[k];
+                            Ticket t = returnTicket(inventarTichete, ticketID);
+                            if (!t.getStatus().equals("RESOLVED")) {
+                                t.setBusinessPriority("CRITICAL");
+                            }
+                        }
+                    }
+                    if (daysBetween < 0 && milestone.isBlocking()) {
+                        milestone.aTrecutDue();
+                        for (int k = 0 ; k < milestone.getTickets().length; k++) {
+                            int ticketID =  milestone.getTickets()[k];
+                            Ticket t = returnTicket(inventarTichete, ticketID);
+                            if (!t.getStatus().equals("RESOLVED")) {
+                                t.setBusinessPriority("CRITICAL");
+                            }
+                        }
+                    }
                 }
                 for (int k = 0; k < milestones.size(); k++) {
                     Milestone milestone =  milestones.get(k);
@@ -586,6 +626,7 @@ public class App {
                             if (developers != null) {
                                 for (int j = 0; j < developers.size(); j++) {
                                     assignedDevs[j] = developers.get(j).asText();
+                                    Developer dev = (Developer) returnUser(useri, assignedDevs[j]);
                                 }
                             }
                             if (nuCrea == 0) {
@@ -598,6 +639,12 @@ public class App {
                                     t.addToMilestone(milestone, username, timestamp);
                                 }
                                 milestones.add(milestone);
+                                for (int k = 0; k < milestone.getAssignedDevs().length; k++) {
+                                    Developer dev = (Developer) returnUser(useri, assignedDevs[k]);
+                                    milestone.addAssignedDeveloper(dev);
+                                }
+                                milestone.setObservatoriNotificari(milestone.getAssignedDevelopers());
+                                milestone.milestoneCreat();
                             }
                         }
                     } else if (command.equals("viewMilestones")) {
@@ -808,34 +855,46 @@ public class App {
                         node.put("searchType", searchType);
                        // System.out.println(filters);
                         if (user.getRole().equals("DEVELOPER")) {
-                            List<Ticket> ticheteGasite = ticketSearch.searchTicketsDeveloper(milestones, filters, username, inventarTichete, useri);
-//                            for (int b = 0; b < ticheteGasite.size(); b++) {
-//                                System.out.println(ticheteGasite.get(b).getTitle());
-//                            }
-                            ObjectNode printTickets = veziTichete.printFoundTicketsDeveloper(ticheteGasite);
+                            List<Ticket> ticheteGasite =
+                                    ticketSearch.searchTicketsDeveloper(milestones,
+                                            filters, username, inventarTichete, useri);
+                            ObjectNode printTickets =
+                                    veziTichete.printFoundTicketsDeveloper(ticheteGasite);
                             node.set("results", printTickets.get("results"));
 
                         } else if (user.getRole().equals("MANAGER")) {
                             if (searchType.equals("TICKET")) {
-                                List<Ticket> ticheteGasite = ticketSearch.searchTicketsManager(filters, inventarTichete);
+                                List<Ticket> ticheteGasite =
+                                        ticketSearch.searchTicketsManager(filters, inventarTichete);
                                 JsonNode keywords = filters.get("keywords");
                                 // System.out.println(keywords);
-                                ObjectNode printTickets = veziTichete.printFoundTicketsManager(ticheteGasite, keywords);
+                                ObjectNode printTickets =
+                                        veziTichete.printFoundTicketsManager(ticheteGasite, keywords);
                                 node.set("results", printTickets.get("results"));
                             } else if (searchType.equals("DEVELOPER")) {
-                                List<Users> developeriGasiti = developersSearch.searchDevelopers(user, filters, useri);
+                                List<Users> developeriGasiti =
+                                        developersSearch.searchDevelopers(user, filters, useri);
                                 ObjectNode printDevs = veziTichete.printFoundDevs(developeriGasiti);
                                 node.set("results", printDevs.get("results"));
                             }
                             // System.out.println("printeaza developersi/tichete");
                         }
                         outputs.add(node);
+                    } else if (command.equals("viewNotifications")) {
+                        ObjectNode node =  printwhatiNeed(command, username, timestamp);
+                        Developer dev = (Developer) user;
+                        ArrayNode printNotif = mapper.createArrayNode();
+                        for (int k = 0 ; k < dev.getNotifications().size(); k++) {
+                            Notifications notification =  dev.getNotifications().get(k);
+                            if (!notification.isSeen()) {
+                                notification.setSeen(true);
+                                printNotif.add(notification.getNotification());
+                            }
+                        }
+                        node.set("notifications", printNotif);
+                        outputs.add(node);
                     }
                     veziTichete.setInventarTichete(inventarTichete);
-                }
-                if (inventarTichete.size() >= 5) {
-                    Ticket t = returnTicket(inventarTichete, 4);
-                    System.out.println(t.getBusinessPriority() + " " + t.getCreatedAt() + " " + t.isAvailableForAssignment());
                 }
                 System.out.println("==============SFARSITCOMANDA==============");
             }

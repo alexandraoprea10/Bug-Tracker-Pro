@@ -201,6 +201,11 @@ public class Ticket {
     public ArrayList<History> getHistories() {
         return histories;
     }
+
+    /**
+     * Vad daca tichetul e asignat unui developer.
+     * @return
+     */
     public boolean isAvailableForAssignment() {
         return isAVailableForAssignment;
     }
@@ -308,6 +313,11 @@ public class Ticket {
     public void setHistories(final ArrayList<History> histories) {
         this.histories = histories;
     }
+
+    /**
+     * Setez daca tichetul a fost asignat unui developer.
+     * @param isAVailableForAssignment
+     */
     public void setIsAVailableForAssignment(final boolean isAVailableForAssignment) {
         this.isAVailableForAssignment = isAVailableForAssignment;
     }

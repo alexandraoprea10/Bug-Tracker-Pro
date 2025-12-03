@@ -1,7 +1,6 @@
 package main;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import main.User.Developer;
 import main.User.Manager;
 import main.User.Users;
@@ -12,7 +11,16 @@ import java.util.List;
 import static main.App.returnUser;
 
 public class DevelopersSearch {
-    public List<Users> searchDevelopers(Users user, JsonNode filter, ArrayList<Users> useri) {
+    /**
+     * Cauta developerii.
+     * @param user
+     * @param filter
+     * @param useri
+     * @return
+     */
+    public List<Users> searchDevelopers(final Users user,
+                                        final JsonNode filter,
+                                        final List<Users> useri) {
         Manager manager = (Manager) user;
         List<Users> developersFound = new ArrayList<>();
         String expertiseArea = null;
@@ -37,16 +45,19 @@ public class DevelopersSearch {
             Users usr = returnUser(useri, userC);
             if (usr.getRole().equals("DEVELOPER")) {
                 Developer developer = (Developer) usr;
-                if (expertiseArea != null && !expertiseArea.equals(developer.getExpertiseArea())) {
+                if (expertiseArea != null
+                        && !expertiseArea.equals(developer.getExpertiseArea())) {
                     continue;
                 }
                 if (seniority != null & !seniority.equals(developer.getSeniority())) {
                    continue;
                 }
-                if (filter.get("performanceScoreAbove") != null && developer.getPerformanceScore() < performanceScoreAbove) {
+                if (filter.get("performanceScoreAbove") != null
+                        && developer.getPerformanceScore() < performanceScoreAbove) {
                     continue;
                 }
-                if (filter.get("performanceScoreBelow") != null && developer.getPerformanceScore() > performanceScoreBelow) {
+                if (filter.get("performanceScoreBelow") != null
+                        && developer.getPerformanceScore() > performanceScoreBelow) {
                     continue;
                 }
                 developersFound.add(usr);

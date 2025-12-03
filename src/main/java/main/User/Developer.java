@@ -1,12 +1,16 @@
 package main.User;
 
 import main.MagicNumbersInt;
+import main.Notifications;
+
+import java.util.ArrayList;
 
 public abstract class Developer extends Users {
     private String date;
     private String expertiseArea;
     private String seniority;
     private double performanceScore;
+    private ArrayList<Notifications> notifications;
     // constructor
     public Developer(final String username, final String mail, final String role,
                      final String dt, final String expertiseA, final String sen) {
@@ -15,6 +19,7 @@ public abstract class Developer extends Users {
         this.expertiseArea = expertiseA;
         this.seniority = sen;
         this.performanceScore = 0.0;
+        this.notifications = new ArrayList<>();
     }
     // FACTORY METHOD
     // CODURI:
@@ -166,6 +171,19 @@ public abstract class Developer extends Users {
         }
         return false;
     }
+    public void primesteNotificare(String message) {
+        int ok = 0;
+        for (int i = 0 ; i < notifications.size() ; i++) {
+            Notifications notif =  notifications.get(i);
+            if (notif.getNotification().equals(message)) {
+                ok = 1;
+            }
+        }
+        if (ok == 0) {
+            Notifications notif = new Notifications(message);
+            this.notifications.add(notif);
+        }
+    }
     // getteri
 
     /**
@@ -191,8 +209,16 @@ public abstract class Developer extends Users {
     public String getSeniority() {
         return seniority;
     }
+
+    /**
+     * Returneaza performanta developerului.
+     * @return
+     */
     public double getPerformanceScore() {
         return performanceScore;
+    }
+    public ArrayList<Notifications> getNotifications() {
+        return notifications;
     }
     // setteri
 
@@ -219,7 +245,18 @@ public abstract class Developer extends Users {
     public void setSeniority(final String seniority) {
         this.seniority = seniority;
     }
+
+    /**
+     * Seteaza performanta developerului.
+     * @param performanceScore
+     */
     public void setPerformanceScore(final double performanceScore) {
         this.performanceScore = performanceScore;
+    }
+    public void setNotifications(final ArrayList<Notifications> notifications) {
+        this.notifications = notifications;
+    }
+    public void addNotification(final Notifications notification) {
+        this.notifications.add(notification);
     }
 }
