@@ -10,7 +10,6 @@ import main.User.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -288,7 +287,7 @@ public class App {
      * Setez statusul urmator(pentru changestatus).
      * @param ticket
      */
-    public static void nextStatus(final Ticket ticket, String timestamp) {
+    public static void nextStatus(final Ticket ticket, final String timestamp) {
         if (ticket.getStatus().equals("OPEN")) {
             ticket.setStatus("IN_PROGRESS");
         } else if (ticket.getStatus().equals("IN_PROGRESS")) {
@@ -444,14 +443,9 @@ public class App {
                     LocalDate currentDate = LocalDate.parse(timestamp);
                     LocalDate dateMilestone = LocalDate.parse(milestone.getDueDate());
                     int daysBetween = (int) ChronoUnit.DAYS.between(currentDate, dateMilestone) + 1;
-//                    System.out.println("COMANDA" + command + " a lui" + username);
-//                    System.out.println("MILESTONE DATA" + milestone.getDueDate());
-//                    System.out.println("DATA CURENTA" + timestamp);
-//                    System.out.println("sunt" + daysBetween + "zile");
-                    // System.out.println(daysBetween  + "pentru milestone" + milestone.getName() + "din perspectiva" + username);
                     if (daysBetween == 0 && !milestone.isBlocking()) {
                         milestone.vineDueDate();
-                        for (int k = 0 ; k < milestone.getTickets().length; k++) {
+                        for (int k = 0; k < milestone.getTickets().length; k++) {
                             int ticketID =  milestone.getTickets()[k];
                             Ticket t = returnTicket(inventarTichete, ticketID);
                             if (!t.getStatus().equals("RESOLVED")) {
@@ -461,7 +455,7 @@ public class App {
                     }
                     if (daysBetween < 0 && milestone.isBlocking()) {
                         milestone.aTrecutDue();
-                        for (int k = 0 ; k < milestone.getTickets().length; k++) {
+                        for (int k = 0; k < milestone.getTickets().length; k++) {
                             int ticketID =  milestone.getTickets()[k];
                             Ticket t = returnTicket(inventarTichete, ticketID);
                             if (!t.getStatus().equals("RESOLVED")) {
@@ -650,7 +644,8 @@ public class App {
                                     Developer dev = (Developer) returnUser(useri, assignedDevs[k]);
                                     milestone.addAssignedDeveloper(dev);
                                 }
-                                milestone.setObservatoriNotificari(milestone.getAssignedDevelopers());
+                                milestone.setObservatoriNotificari(
+                                        milestone.getAssignedDevelopers());
                                 milestone.milestoneCreat();
                             }
                         }
@@ -876,7 +871,8 @@ public class App {
                                 JsonNode keywords = filters.get("keywords");
                                 // System.out.println(keywords);
                                 ObjectNode printTickets =
-                                        veziTichete.printFoundTicketsManager(ticheteGasite, keywords);
+                                        veziTichete.printFoundTicketsManager(ticheteGasite,
+                                                keywords);
                                 node.set("results", printTickets.get("results"));
                             } else if (searchType.equals("DEVELOPER")) {
                                 List<Users> developeriGasiti =
@@ -891,7 +887,7 @@ public class App {
                         ObjectNode node =  printwhatiNeed(command, username, timestamp);
                         Developer dev = (Developer) user;
                         ArrayNode printNotif = mapper.createArrayNode();
-                        for (int k = 0 ; k < dev.getNotifications().size(); k++) {
+                        for (int k = 0; k < dev.getNotifications().size(); k++) {
                             Notifications notification =  dev.getNotifications().get(k);
                             if (!notification.isSeen()) {
                                 notification.setSeen(true);

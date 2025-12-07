@@ -69,22 +69,42 @@ public class Milestone {
         }
         this.assigneddevelopers = new ArrayList();
     }
-    public void notificareDevelopers(String message) {
-        for (int i = 0 ; i < this.observatoriNotificari.size() ; i++) {
+
+    /**
+     * OBSERVER PATTERN- TRimite notificari persoanelor din milestone-ul corespunzator.
+     * @param message
+     */
+    public void notificareDevelopers(final String message) {
+        for (int i = 0; i < this.observatoriNotificari.size(); i++) {
             Developer dev = this.observatoriNotificari.get(i);
             dev.primesteNotificare(message);
         }
     }
+
+    /**
+     * Notificare ca s-a creat milestone-ul.
+     */
     public void milestoneCreat() {
-        String message = String.format("New milestone %s has been created with due date %s.", name, dueDate);
+        String message = String.format("New milestone %s has been "
+                + "created with due date %s.", name, dueDate);
         notificareDevelopers(message);
     }
+
+    /**
+     * Notificare ca maine e deadline-ul pentru milestone.
+     */
     public void vineDueDate() {
-        String message = String.format("Milestone %s is due tomorrow. All unresolved tickets are now CRITICAL.", name);
+        String message = String.format("Milestone %s is due tomorrow. "
+                + "All unresolved tickets are now CRITICAL.", name);
         notificareDevelopers(message);
     }
+
+    /**
+     * Notofiicare ca a expirat deadline-ul pentru milestone.
+     */
     public void aTrecutDue() {
-        String message = String.format("Milestone %s was unblocked after due date. All active tickets are now CRITICAL.", name);
+        String message = String.format("Milestone %s was unblocked after due date. "
+                + "All active tickets are now CRITICAL.", name);
         notificareDevelopers(message);
     }
     /**
@@ -257,6 +277,11 @@ public class Milestone {
     public int getOverdueBy() {
         return overdueBy;
     }
+
+    /**
+     * Returneaza lista de assigned developers.
+     * @return
+     */
     public ArrayList<Developer> getAssignedDevelopers() {
         return assigneddevelopers;
     }
@@ -381,12 +406,27 @@ public class Milestone {
     public void setOverdueBy(final int overdueBy) {
         this.overdueBy = overdueBy;
     }
+
+    /**
+     * Seteaza lista de developeri asignati
+     * @param assigneddevelopers
+     */
     public void setAssigneddevelopers(ArrayList<Developer> assigneddevelopers) {
         this.assigneddevelopers = assigneddevelopers;
     }
+
+    /**
+     * Adauga un developer in lista de cei care vor fi notificati.
+     * @param developer
+     */
     public void addAssignedDeveloper(final Developer developer) {
         this.assigneddevelopers.add(developer);
     }
+
+    /**
+     * Seteaza lista de observatori care vor primi notificarea(Pentru Observer Pattern).
+     * @param devs
+     */
     public void setObservatoriNotificari(final ArrayList<Developer> devs) {
         this.observatoriNotificari = devs;
     }

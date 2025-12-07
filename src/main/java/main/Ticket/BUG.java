@@ -1,9 +1,12 @@
 package main.Ticket;
 
+import main.MagicNumbersDouble;
+import main.MagicNumbersInt;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class BUG extends Ticket {
+public final class BUG extends Ticket {
     private String expectedBehaviour;
     private String actualBehaviour;
     private String frequency;
@@ -74,33 +77,35 @@ public class BUG extends Ticket {
             if (frequency.equals("RARE")) {
                 this.freqCode = 1;
             } else if (frequency.equals("OCCASIONAL")) {
-                this.freqCode = 2;
+                this.freqCode = MagicNumbersInt.doi.getValue();
             } else if (frequency.equals("FREQUENT")) {
-                this.freqCode = 3;
+                this.freqCode = MagicNumbersInt.trei.getValue();
             } else if (frequency.equals("ALWAYS")) {
-                this.freqCode = 4;
+                this.freqCode = MagicNumbersInt.patru.getValue();
             }
             if (businessPriority.equals("LOW")) {
                 this.businesspriorityCode = 1;
             } else if (businessPriority.equals("MEDIUM")) {
-                this.businesspriorityCode = 2;
+                this.businesspriorityCode = MagicNumbersInt.doi.getValue();
             } else if (businessPriority.equals("HIGH")) {
-                this.businesspriorityCode = 3;
+                this.businesspriorityCode = MagicNumbersInt.trei.getValue();
             } else if (businessPriority.equals("CRITICAL")) {
-                this.businesspriorityCode = 4;
+                this.businesspriorityCode = MagicNumbersInt.patru.getValue();
             }
             if (severity.equals("MINOR")) {
                 this.severityCode = 1;
             } else if (severity.equals("MODERATE")) {
-                this.severityCode = 2;
+                this.severityCode = MagicNumbersInt.doi.getValue();
             } else if (severity.equals("SEVERE")) {
-                this.severityCode = 3;
+                this.severityCode = MagicNumbersInt.trei.getValue();
             }
             double inm = freqCode * businesspriorityCode * severityCode;
-            double res = (inm * 100.0) / 48.0;
+            double res = (inm * MagicNumbersDouble.osuta.getValue())
+                    / MagicNumbersDouble.patruzecisiopt.getValue();
             this.calculateImpact = res;
             double risk = freqCode * severityCode;
-            double res2 = (risk * 100.0) / 12.0;
+            double res2 = (risk * MagicNumbersDouble.osuta.getValue())
+                    / MagicNumbersDouble.doisprezece.getValue();
             this.calculateRisk = res2;
         }
 
@@ -151,7 +156,8 @@ public class BUG extends Ticket {
     private BUG(final Builder builder) {
         super(builder.id, "BUG", builder.title, builder.businessPriority,
                 builder.status, builder.createdAt, builder.expertiseArea,
-                builder.reportedBy, builder.description, builder.calculateImpact, builder.calculateRisk);
+                builder.reportedBy, builder.description,
+                builder.calculateImpact, builder.calculateRisk);
         this.expectedBehaviour = builder.expectedBehaviour;
         this.actualBehaviour = builder.actualBehaviour;
         this.frequency = builder.frequency;

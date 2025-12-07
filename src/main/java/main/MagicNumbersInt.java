@@ -5,7 +5,9 @@ public enum MagicNumbersInt {
     doi(2),
     trei(3),
     patru(4),
+    sase(6),
     zece(10),
+    unsprezece(11),
     doisprezece(12);
     private final int value;
     MagicNumbersInt(final int value) {

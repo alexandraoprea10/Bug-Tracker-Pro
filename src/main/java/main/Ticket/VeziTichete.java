@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import main.MagicNumbersDouble;
 import main.MagicNumbersInt;
 import main.Milestone;
 import main.User.Developer;
 import main.User.Users;
 
-import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -21,13 +21,13 @@ import static main.App.returnTicket;
 
 public class VeziTichete {
     private List<Ticket> inventarTichete;
-    private int BUGTickets;
-    private int UITickets;
-    private int FEATURETickets;
-    private int LOWPriority;
-    private int MEDIUMPriority;
-    private int HIGHPriority;
-    private int CRITICALPriority;
+    private int bugTickets;
+    private int uiTickets;
+    private int featureTickets;
+    private int lowPriority;
+    private int mediumPriority;
+    private int highPriority;
+    private int criticalPriority;
     private double impactForBUG;
     private double impactForUI;
     private double impactForFeature;
@@ -54,100 +54,260 @@ public class VeziTichete {
     public List<Ticket> getInventarTichete() {
         return inventarTichete;
     }
-    public int getBUGTickets() {
-        return BUGTickets;
+
+    /**
+     * Returneaza nr de tichete de tip BUG.
+     * @return
+     */
+    public int getbugTickets() {
+        return bugTickets;
     }
-    public int getUITickets() {
-        return UITickets;
+
+    /**
+     * Returneaza nr de tichete de tip UI_FEEDBACK.
+     * @return
+     */
+    public int getuiTickets() {
+        return uiTickets;
     }
-    public int getFEATURETickets() {
-        return FEATURETickets;
+
+    /**
+     * Returneaza nr de tichete de tip Feature_Request.
+     * @return
+     */
+    public int getfeatureTickets() {
+        return featureTickets;
     }
-    public int getLOWPriority() {
-        return LOWPriority;
+
+    /**
+     * Returneaza nr de tichete cu prioritatea LOW.
+     * @return
+     */
+    public int getlowPriority() {
+        return lowPriority;
     }
-    public int getMEDIUMPriority() {
-        return MEDIUMPriority;
+
+    /**
+     * Returneaza nr de tichete cu prioritatea MEDIUM.
+     * @return
+     */
+    public int getmediumPriority() {
+        return mediumPriority;
     }
-    public int getHIGHPriority() {
-        return HIGHPriority;
+
+    /**
+     * Returneaza nr de tichete cu prioritatea HIGH.
+     * @return
+     */
+    public int gethighPriority() {
+        return highPriority;
     }
-    public int getCRITICALPriority() {
-        return CRITICALPriority;
+
+    /**
+     * REturneaza nr de tichete cu prioritatea CRITICAL.
+     * @return
+     */
+    public int getcriticalPriority() {
+        return criticalPriority;
     }
+
+    /**
+     * Returneaza impactul tichetelor BUG
+     * @return
+     */
     public double getImpactForBUG() {
         return impactForBUG;
     }
+
+    /**
+     * Returneaza impactul tichetelor UI_Feedback
+     * @return
+     */
     public double getImpactForUI() {
         return impactForUI;
     }
+
+    /**
+     * Returneaza impactul tichetelor FeatureRequest
+     * @return
+     */
     public double getImpactForFeature() {
         return impactForFeature;
     }
+
+    /**
+     * REturneaza riscul tichetelor BUG.
+     * @return
+     */
     public double getRiskForBUG() {
         return riskForBug;
     }
+
+    /**
+     * Returneaza riscul tichetelor UI_FEedback
+     * @return
+     */
     public double getRiskForUI() {
         return riskForUI;
     }
+
+    /**
+     * Returneaza riscul tichetelor FeatureRequest.
+     * @return
+     */
     public double getRiskForFeature() {
         return riskForFeature;
     }
+
+    /**
+     * Returneaza eficienta tichetelor BUG.
+     * @return
+     */
     public  double getEfficiencyForBUG() {
         return efficiencyForBUG;
     }
+
+    /**
+     * Returneaza eficienta tichetelor UI_Feedback.
+     * @return
+     */
     public  double getEfficiencyForUI() {
         return efficiencyForUI;
     }
+
+    /**
+     * Returneaza eficienta tichetelor FeatureRequest.
+     * @return
+     */
     public  double getEfficiencyForFeature() {
         return efficiencyForFeature;
     }
-    public void setBUGTickets(int BUGTickets) {
-        this.BUGTickets = BUGTickets;
+
+    /**
+     * Seteaza nr de tichete de tip BUG
+     * @param bug
+     */
+    public void setbugTickets(final int bug) {
+        this.bugTickets = bug;
     }
-    public void setUITickets(int UITickets) {
-        this.UITickets = UITickets;
+
+    /**
+     * Seteaza nr de tichete de tip UI_Feedback
+     * @param ui
+     */
+    public void setuiTickets(final int ui) {
+        this.uiTickets = ui;
     }
-    public void setFEATURETickets(int FEATURETickets) {
-        this.FEATURETickets = FEATURETickets;
+
+    /**
+     * Seteaza nr de tichete de tip featurE_request.
+     * @param feature
+     */
+    public void setfeatureTickets(final int feature) {
+        this.featureTickets = feature;
     }
-    public void setLOWPriority(int LOWPriority) {
-        this.LOWPriority = LOWPriority;
+
+    /**
+     * Seteaza nr de tichete cu prioritatea LOW
+     * @param low
+     */
+    public void setlowPriority(final int low) {
+        this.lowPriority = low;
     }
-    public void setMEDIUMPriority(int MEDIUMPriority) {
-        this.MEDIUMPriority = MEDIUMPriority;
+
+    /**
+     * Seteaza nr de tichete cu prioritatea MEDIUM.
+     * @param medium
+     */
+    public void setmediumPriority(final int medium) {
+        this.mediumPriority = medium;
     }
-    public void setHIGHPriority(int HIGHPriority) {
-        this.HIGHPriority = HIGHPriority;
+
+    /**
+     * Seteaza nr de tichete cu prioritatea HIGH.
+     * @param high
+     */
+    public void sethighPriority(final int high) {
+        this.highPriority = high;
     }
-    public void setCRITICALPriority(int CRITICALPriority) {
-        this.CRITICALPriority = CRITICALPriority;
+
+    /**
+     * Seteaza nr de tichete cu prioritatea CRITICAL.
+     * @param critical
+     */
+    public void setcriticalPriority(final int critical) {
+        this.criticalPriority = critical;
     }
-    public void setImpactForBUG(double impactForBUG) {
+
+    /**
+     * Seteaza impactul pt tichetele BUG.
+     * @param impactForBUG
+     */
+    public void setImpactForBUG(final double impactForBUG) {
         this.impactForBUG = impactForBUG;
     }
-    public void setImpactForUI(double impactForUI) {
+
+    /**
+     * Seteaza impactul pt tichetele UI_feedback.
+     * @param impactForUI
+     */
+    public void setImpactForUI(final double impactForUI) {
         this.impactForUI = impactForUI;
     }
-    public void setImpactForFeature(double impactForFeature) {
+
+    /**
+     * Seteaza impactul pt tichetele featureRequest.
+     * @param impactForFeature
+     */
+    public void setImpactForFeature(final double impactForFeature) {
         this.impactForFeature = impactForFeature;
     }
-    public void setRiskForBUG(double riskForBUG) {
+
+    /**
+     * Seteaza riscul pt tichetele BUG.
+     * @param riskForBUG
+     */
+    public void setRiskForBUG(final double riskForBUG) {
         this.riskForBug = riskForBUG;
     }
-    public void setRiskForUI(double riskForUI) {
+
+    /**
+     * Seteaza riscul pt tichetele UI_Feedback.
+     * @param riskForUI
+     */
+    public void setRiskForUI(final double riskForUI) {
         this.riskForUI = riskForUI;
     }
-    public void setRiskForFeature(double riskForFeature) {
+
+    /**
+     * Seteaza riscul pt tichetele featureRequest.
+     * @param riskForFeature
+     */
+    public void setRiskForFeature(final double riskForFeature) {
         this.riskForFeature = riskForFeature;
     }
-    public void setEfficiencyForBUG(double efficiencyForBUG) {
+
+    /**
+     * Seteaza eficienta pt tichetele BUG.
+     * @param efficiencyForBUG
+     */
+    public void setEfficiencyForBUG(final double efficiencyForBUG) {
         this.efficiencyForBUG = efficiencyForBUG;
     }
-    public void setEfficiencyForUI(double efficiencyForUI) {
+
+    /**
+     * Seteaza eficienta pt tichetele UI_Feature.
+     * @param efficiencyForUI
+     */
+    public void setEfficiencyForUI(final double efficiencyForUI) {
         this.efficiencyForUI = efficiencyForUI;
     }
-    public void setEfficiencyForFeature(double efficiencyForFeature) {
+
+    /**
+     * Seteaza eficienta pt tichetele featureRequest.
+     * @param efficiencyForFeature
+     */
+    public void setEfficiencyForFeature(final double efficiencyForFeature) {
         this.efficiencyForFeature = efficiencyForFeature;
     }
     /**
@@ -335,12 +495,20 @@ public class VeziTichete {
         }
         return MagicNumbersInt.patru.getValue();
     }
-    private String calificativ(double risk) {
-        if (risk >= 0 && risk <= 24.0) {
+
+    /**
+     * Returnez calificativul(in functie de risc).
+     * @param risk
+     * @return
+     */
+    private String calificativ(final double risk) {
+        if (risk >= 0 && risk <= MagicNumbersDouble.douazecisipatru.getValue()) {
             return "NEGLIGIBLE";
-        } else if (risk >= 25.0 && risk <= 49.0) {
+        } else if (risk >= MagicNumbersDouble.douazecisicinci.getValue()
+                && risk <= MagicNumbersDouble.patruzecisinoua.getValue()) {
             return "MODERATE";
-        } else if (risk >= 50.0 && risk <= 74.0) {
+        } else if (risk >= MagicNumbersDouble.cincizeci.getValue()
+                && risk <= MagicNumbersDouble.saptezecisipatru.getValue()) {
             return "SIGNIFICANT";
         }
         return "MAJOR";
@@ -560,6 +728,10 @@ public class VeziTichete {
         finalNode.set("results", arrayNode);
         return finalNode;
     }
+
+    /**
+     * Seteaza nr de tichete, in functie de tip.
+     */
     public void setImpactandOthers() {
         double sumimpactBUG = 0.0;
         double sumimpactUI = 0.0;
@@ -567,60 +739,72 @@ public class VeziTichete {
         double sumRiskBUG = 0.0;
         double sumRiskUI = 0.0;
         double sumRiskFeature = 0.0;
-        for (int m = 0 ; m < inventarTichete.size(); m++) {
+        for (int m = 0; m < inventarTichete.size(); m++) {
             Ticket t = inventarTichete.get(m);
             if (t.getStatus().equals("OPEN") || t.getStatus().equals("IN_PROGRESS")) {
                 if (t.isBUG()) {
-                    this.setBUGTickets(this.getBUGTickets() + 1);
+                    this.setbugTickets(this.getbugTickets() + 1);
                     sumimpactBUG = sumimpactBUG + t.getCalculateImpact();
                     sumRiskBUG = sumRiskBUG + t.getCalculateRisk();
                 } else if (t.isUI()) {
-                    this.setUITickets(this.getUITickets() + 1);
+                    this.setuiTickets(this.getuiTickets() + 1);
                     sumimpactUI = sumimpactUI + t.getCalculateImpact();
                     sumRiskUI = sumRiskUI + t.getCalculateRisk();
                 } else if (t.isFeature()) {
-                    this.setFEATURETickets(this.getFEATURETickets() + 1);
+                    this.setfeatureTickets(this.getfeatureTickets() + 1);
                     sumimpactFeature = sumimpactFeature + t.getCalculateImpact();
                     sumRiskFeature = sumRiskFeature + t.getCalculateRisk();
                 }
                 if (t.getBusinessPriority().equals("LOW")) {
-                    this.setLOWPriority(this.getLOWPriority() + 1);
+                    this.setlowPriority(this.getlowPriority() + 1);
                 } else if (t.getBusinessPriority().equals("MEDIUM")) {
-                    this.setMEDIUMPriority(this.getMEDIUMPriority() + 1);
+                    this.setmediumPriority(this.getmediumPriority() + 1);
                 } else if (t.getBusinessPriority().equals("HIGH")) {
-                    this.setHIGHPriority(this.getHIGHPriority() + 1);
+                    this.sethighPriority(this.gethighPriority() + 1);
                 } else if (t.getBusinessPriority().equals("CRITICAL")) {
-                    this.setCRITICALPriority(this.getCRITICALPriority() + 1);
+                    this.setcriticalPriority(this.getcriticalPriority() + 1);
                 }
             }
         }
-        double resBUG = sumimpactBUG / this.getBUGTickets();
-        double resUI =  sumimpactUI / this.getUITickets();
-        double resFeature = sumimpactFeature / this.getFEATURETickets();
-        double resRBUG =  sumRiskBUG / this.getBUGTickets();
-        double resRiskUI =  sumRiskUI / this.getUITickets();
-        double resRiskFeature =  sumRiskFeature / this.getFEATURETickets();
-        this.setImpactForBUG(Math.round(resBUG * 100.0) / 100.0);
-        this.setImpactForUI(Math.round(resUI * 100.0) / 100.0);
-        this.setImpactForFeature(Math.round(resFeature * 100.0) / 100.0);
-        this.setRiskForBUG(Math.round(resRBUG * 100.0) / 100.0);
-        this.setRiskForUI(Math.round(resRiskUI * 100.0) / 100.0);
-        this.setRiskForFeature(Math.round(resRiskFeature * 100.0) / 100.0);
+        double resBUG = sumimpactBUG / this.getbugTickets();
+        double resUI =  sumimpactUI / this.getuiTickets();
+        double resFeature = sumimpactFeature / this.getfeatureTickets();
+        double resRBUG =  sumRiskBUG / this.getbugTickets();
+        double resRiskUI =  sumRiskUI / this.getuiTickets();
+        double resRiskFeature =  sumRiskFeature / this.getfeatureTickets();
+        this.setImpactForBUG(Math.round(resBUG * MagicNumbersDouble.osuta.getValue())
+                / MagicNumbersDouble.osuta.getValue());
+        this.setImpactForUI(Math.round(resUI * MagicNumbersDouble.osuta.getValue())
+                / MagicNumbersDouble.osuta.getValue());
+        this.setImpactForFeature(Math.round(resFeature * MagicNumbersDouble.osuta.getValue())
+                / MagicNumbersDouble.osuta.getValue());
+        this.setRiskForBUG(Math.round(resRBUG * MagicNumbersDouble.osuta.getValue())
+                / MagicNumbersDouble.osuta.getValue());
+        this.setRiskForUI(Math.round(resRiskUI * MagicNumbersDouble.osuta.getValue())
+                / MagicNumbersDouble.osuta.getValue());
+        this.setRiskForFeature(Math.round(resRiskFeature * MagicNumbersDouble.osuta.getValue())
+                / MagicNumbersDouble.osuta.getValue());
     }
+
+    /**
+     * Afiseaza nr de tichete, tipul lor si customer impact-ul fiecarui tip de tichet
+     * @return
+     */
     public ObjectNode generateCustomerImpact() {
         ObjectNode finalNode = mapper.createObjectNode();
         ObjectNode nrTickets =  mapper.createObjectNode();
-        nrTickets.put("totalTickets", this.getBUGTickets() + this.getUITickets() + this.getFEATURETickets());
+        nrTickets.put("totalTickets", this.getbugTickets()
+                + this.getuiTickets() + this.getfeatureTickets());
         ObjectNode ticketsByType = mapper.createObjectNode();
-        ticketsByType.put("BUG", this.getBUGTickets());
-        ticketsByType.put("FEATURE_REQUEST", this.getFEATURETickets());
-        ticketsByType.put("UI_FEEDBACK", this.getUITickets());
+        ticketsByType.put("BUG", this.getbugTickets());
+        ticketsByType.put("FEATURE_REQUEST", this.getfeatureTickets());
+        ticketsByType.put("UI_FEEDBACK", this.getuiTickets());
         nrTickets.set("ticketsByType", ticketsByType);
         ObjectNode ticketsbyPriority =  mapper.createObjectNode();
-        ticketsbyPriority.put("LOW", this.getLOWPriority());
-        ticketsbyPriority.put("MEDIUM", this.getMEDIUMPriority());
-        ticketsbyPriority.put("HIGH", this.getHIGHPriority());
-        ticketsbyPriority.put("CRITICAL", this.getCRITICALPriority());
+        ticketsbyPriority.put("LOW", this.getlowPriority());
+        ticketsbyPriority.put("MEDIUM", this.getmediumPriority());
+        ticketsbyPriority.put("HIGH", this.gethighPriority());
+        ticketsbyPriority.put("CRITICAL", this.getcriticalPriority());
         nrTickets.set("ticketsByPriority", ticketsbyPriority);
         ObjectNode customerImpact = mapper.createObjectNode();
         customerImpact.put("BUG", this.getImpactForBUG());
@@ -629,20 +813,26 @@ public class VeziTichete {
         nrTickets.set("customerImpactByType", customerImpact);
         return nrTickets;
     }
+
+    /**
+     * Afiseaza nr de tichete, tipul lor si riscul total al fiecarui tip de tichet
+     * @return
+     */
     public ObjectNode generateTicketsRisk() {
         ObjectNode finalNode = mapper.createObjectNode();
         ObjectNode nrTickets =  mapper.createObjectNode();
-        nrTickets.put("totalTickets", this.getBUGTickets() + this.getUITickets() + this.getFEATURETickets());
+        nrTickets.put("totalTickets", this.getbugTickets()
+                + this.getuiTickets() + this.getfeatureTickets());
         ObjectNode ticketsByType = mapper.createObjectNode();
-        ticketsByType.put("BUG", this.getBUGTickets());
-        ticketsByType.put("FEATURE_REQUEST", this.getFEATURETickets());
-        ticketsByType.put("UI_FEEDBACK", this.getUITickets());
+        ticketsByType.put("BUG", this.getbugTickets());
+        ticketsByType.put("FEATURE_REQUEST", this.getfeatureTickets());
+        ticketsByType.put("UI_FEEDBACK", this.getuiTickets());
         nrTickets.set("ticketsByType", ticketsByType);
         ObjectNode ticketsbyPriority =  mapper.createObjectNode();
-        ticketsbyPriority.put("LOW", this.getLOWPriority());
-        ticketsbyPriority.put("MEDIUM", this.getMEDIUMPriority());
-        ticketsbyPriority.put("HIGH", this.getHIGHPriority());
-        ticketsbyPriority.put("CRITICAL", this.getCRITICALPriority());
+        ticketsbyPriority.put("LOW", this.getlowPriority());
+        ticketsbyPriority.put("MEDIUM", this.getmediumPriority());
+        ticketsbyPriority.put("HIGH", this.gethighPriority());
+        ticketsbyPriority.put("CRITICAL", this.getcriticalPriority());
         nrTickets.set("ticketsByPriority", ticketsbyPriority);
         ObjectNode customerImpact = mapper.createObjectNode();
         customerImpact.put("BUG", calificativ(this.getRiskForBUG()));
@@ -651,6 +841,10 @@ public class VeziTichete {
         nrTickets.set("riskByType", customerImpact);
         return nrTickets;
     }
+
+    /**
+     * Calculeaza eficienta tichetului.
+     */
     public void calculateEfficiency() {
         int bugt = 0;
         int uit = 0;
@@ -658,7 +852,7 @@ public class VeziTichete {
         double sumBUG = 0.0;
         double sumFEATURE = 0.0;
         double sumUI = 0.0;
-        for (int m = 0 ; m < inventarTichete.size(); m++) {
+        for (int m = 0; m < inventarTichete.size(); m++) {
             Ticket t = inventarTichete.get(m);
             if (t.getStatus().equals("CLOSED") || t.getStatus().equals("RESOLVED")) {
                 LocalDate date1 = LocalDate.parse(t.getAssignedAt());
@@ -668,61 +862,77 @@ public class VeziTichete {
                 if (t.isBUG()) {
                     bugt++;
                     BUG bug = (BUG) t;
-                    double value = (bug.getBusinessPriorityCode() + bug.getSeverityCode()) * 10.0 / bug.getDaysToResolve();
-                    double res = (value * 100.0) / 70.0;
+                    double value = (bug.getBusinessPriorityCode() + bug.getSeverityCode())
+                            * MagicNumbersDouble.zece.getValue()
+                            / bug.getDaysToResolve();
+                    double res = (value * MagicNumbersDouble.osuta.getValue())
+                            / MagicNumbersDouble.saptezeci.getValue();
                     sumBUG = sumBUG + res;
                     t.setCalculateEfficiency(res);
                 } else if (t.isUI()) {
                     uit++;
                     UIFeedback ui = (UIFeedback) t;
-                    double value = (ui.getUsabilityScore() + ui.getbusinessvalueCode()) / ui.getDaysToResolve();
-                    double res = (value * 100.0) / 20.0;
+                    double value = (ui.getUsabilityScore() + ui.getbusinessvalueCode())
+                            / ui.getDaysToResolve();
+                    double res = (value * MagicNumbersDouble.osuta.getValue())
+                            / MagicNumbersDouble.douazeci.getValue();
                     sumUI = sumUI + res;
                     t.setCalculateEfficiency(res);
                 } else if (t.isFeature()) {
                     feature++;
                     FeatureRequest fr =  (FeatureRequest) t;
-                    double value = (fr.getBusinessvalueCode() + fr.getCustomerdemandCode()) / fr.getDaysToResolve();
-                    double res = (value * 100.0) / 20.0;
+                    double value = (fr.getBusinessvalueCode() + fr.getCustomerdemandCode())
+                            / fr.getDaysToResolve();
+                    double res = (value * MagicNumbersDouble.osuta.getValue())
+                            / MagicNumbersDouble.douazeci.getValue();
                     sumFEATURE = sumFEATURE + res;
                     t.setCalculateEfficiency(res);
                 }
                 if (t.getBusinessPriority().equals("LOW")) {
-                    this.setLOWPriority(this.getLOWPriority() + 1);
+                    this.setlowPriority(this.getlowPriority() + 1);
                 } else if (t.getBusinessPriority().equals("MEDIUM")) {
-                    this.setMEDIUMPriority(this.getMEDIUMPriority() + 1);
+                    this.setmediumPriority(this.getmediumPriority() + 1);
                 } else if (t.getBusinessPriority().equals("HIGH")) {
-                    this.setHIGHPriority(this.getHIGHPriority() + 1);
+                    this.sethighPriority(this.gethighPriority() + 1);
                 } else if (t.getBusinessPriority().equals("CRITICAL")) {
-                    this.setCRITICALPriority(this.getCRITICALPriority() + 1);
+                    this.setcriticalPriority(this.getcriticalPriority() + 1);
                 }
             }
         }
         double resBUG = sumBUG /  bugt;
         double resFEATURE = sumFEATURE / feature;
         double resUI = sumUI /  uit;
-        this.setBUGTickets(bugt);
-        this.setUITickets(uit);
-        this.setFEATURETickets(feature);
-        this.setEfficiencyForBUG(Math.round(resBUG * 100.0) / 100.0);
-        this.setEfficiencyForUI(Math.round(resUI * 100.0) / 100.0);
-        this.setEfficiencyForFeature(Math.round(resFEATURE * 100.0) / 100.0);
+        this.setbugTickets(bugt);
+        this.setuiTickets(uit);
+        this.setfeatureTickets(feature);
+        this.setEfficiencyForBUG(Math.round(resBUG * MagicNumbersDouble.osuta.getValue())
+                / MagicNumbersDouble.osuta.getValue());
+        this.setEfficiencyForUI(Math.round(resUI * MagicNumbersDouble.osuta.getValue())
+                / MagicNumbersDouble.osuta.getValue());
+        this.setEfficiencyForFeature(Math.round(resFEATURE * MagicNumbersDouble.osuta.getValue())
+                / MagicNumbersDouble.osuta.getValue());
     }
+
+    /**
+     * Afiseaza nr de tichete, tipul lor si eficienta fiecarui tip de tichet
+     * @return
+     */
     public ObjectNode generateEfficiency() {
         calculateEfficiency();
         ObjectNode finalNode = mapper.createObjectNode();
         ObjectNode nrTickets =  mapper.createObjectNode();
-        nrTickets.put("totalTickets", this.getBUGTickets() + this.getUITickets() + this.getFEATURETickets());
+        nrTickets.put("totalTickets", this.getbugTickets()
+                + this.getuiTickets() + this.getfeatureTickets());
         ObjectNode ticketsByType = mapper.createObjectNode();
-        ticketsByType.put("BUG", this.getBUGTickets());
-        ticketsByType.put("FEATURE_REQUEST", this.getFEATURETickets());
-        ticketsByType.put("UI_FEEDBACK", this.getUITickets());
+        ticketsByType.put("BUG", this.getbugTickets());
+        ticketsByType.put("FEATURE_REQUEST", this.getfeatureTickets());
+        ticketsByType.put("UI_FEEDBACK", this.getuiTickets());
         nrTickets.set("ticketsByType", ticketsByType);
         ObjectNode ticketsbyPriority =  mapper.createObjectNode();
-        ticketsbyPriority.put("LOW", this.getLOWPriority());
-        ticketsbyPriority.put("MEDIUM", this.getMEDIUMPriority());
-        ticketsbyPriority.put("HIGH", this.getHIGHPriority());
-        ticketsbyPriority.put("CRITICAL", this.getCRITICALPriority());
+        ticketsbyPriority.put("LOW", this.getlowPriority());
+        ticketsbyPriority.put("MEDIUM", this.getmediumPriority());
+        ticketsbyPriority.put("HIGH", this.gethighPriority());
+        ticketsbyPriority.put("CRITICAL", this.getcriticalPriority());
         nrTickets.set("ticketsByPriority", ticketsbyPriority);
         ObjectNode customerImpact = mapper.createObjectNode();
         customerImpact.put("BUG", this.getEfficiencyForBUG());

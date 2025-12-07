@@ -62,13 +62,13 @@ public class TicketSearch {
                         Ticket t = returnTicket(inventarTichete, tickets[k]);
                         if (t.getStatus().equals("OPEN")) {
                             if (businessPriority != null
-                                    && !t.getBusinessPriority().equals(businessPriority) ) {
+                                    && !t.getBusinessPriority().equals(businessPriority)) {
                                 continue;
                             }
-                            if (type != null && !t.getType().equals(type) ) {
+                            if (type != null && !t.getType().equals(type)) {
                                 continue;
                             }
-                            if (createdAt != null && !t.getCreatedAt().equals(createdAt) ) {
+                            if (createdAt != null && !t.getCreatedAt().equals(createdAt)) {
                                 continue;
                             }
                             if (createdBefore != null) {

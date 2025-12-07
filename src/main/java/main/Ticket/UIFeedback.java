@@ -1,5 +1,8 @@
 package main.Ticket;
 
+import main.MagicNumbersDouble;
+import main.MagicNumbersInt;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,27 +61,30 @@ public final class UIFeedback extends Ticket {
             if (businessValue.equals("S")) {
                 this.businessvalueCode = 1;
             } else if (businessValue.equals("M")) {
-                this.businessvalueCode = 3;
+                this.businessvalueCode = MagicNumbersInt.trei.getValue();
             } else if (businessValue.equals("L")) {
-                this.businessvalueCode = 6;
+                this.businessvalueCode = MagicNumbersInt.sase.getValue();
             } else if (businessValue.equals("XL")) {
-                this.businessvalueCode = 10;
+                this.businessvalueCode = MagicNumbersInt.zece.getValue();
             }
             double inm = businessvalueCode * usabilityScore;
-            double res = (inm * 100.0) / 100.0;
+            double res = (inm * MagicNumbersDouble.osuta.getValue())
+                    / MagicNumbersDouble.osuta.getValue();
             this.calculateImpact = res;
-            double inm2 = (11 - usabilityScore) & businessvalueCode;
-            double res2 = (inm * 100.0) / 100.0;
+            double inm2 = (MagicNumbersInt.unsprezece.getValue() - usabilityScore)
+                    * businessvalueCode;
+            double res2 = (inm * MagicNumbersDouble.osuta.getValue())
+                    / MagicNumbersDouble.osuta.getValue();
             this.calculateRisk = res2;
         }
 
         /**
          * uiElementId
-         * @param uiElementId parametru optional
+         * @param uiElement parametru optional
          * @return builder
          */
-        public Builder uiElementId(final String uiElementId) {
-            this.uiElementId = uiElementId;
+        public Builder uiElementId(final String uiElement) {
+            this.uiElementId = uiElement;
             return this;
         }
         /**
@@ -151,6 +157,11 @@ public final class UIFeedback extends Ticket {
     public String getSuggestedFix() {
         return suggestedFix;
     }
+
+    /**
+     * Returneaza codul de la businessvalue.
+     * @return
+     */
     public int getbusinessvalueCode() {
         return businessvalueCode;
     }

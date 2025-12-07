@@ -1,5 +1,6 @@
 package main.Ticket;
 
+import main.MagicNumbersInt;
 import main.Milestone;
 
 import java.util.ArrayList;
@@ -56,11 +57,11 @@ public abstract class Ticket {
          if (businessPriority.equals("LOW")) {
              this.businesspriorityCode = 1;
          } else if (businessPriority.equals("MEDIUM")) {
-             this.businesspriorityCode = 2;
+             this.businesspriorityCode = MagicNumbersInt.doi.getValue();
          } else if (businessPriority.equals("HIGH")) {
-             this.businesspriorityCode = 3;
+             this.businesspriorityCode = MagicNumbersInt.trei.getValue();
          } else if (businessPriority.equals("CRITICAL")) {
-             this.businesspriorityCode = 4;
+             this.businesspriorityCode = MagicNumbersInt.patru.getValue();
          }
          this.calculateImpact = calculateImpact;
          this.calculateRisk = calculateRisk;
@@ -226,18 +227,43 @@ public abstract class Ticket {
     public boolean isAvailableForAssignment() {
         return isAVailableForAssignment;
     }
+
+    /**
+     * REturneaza impact ticket.
+     * @return
+     */
     public double getCalculateImpact() {
         return calculateImpact;
     }
+
+    /**
+     * Returneaza riscul.
+     * @return
+     */
     public double getCalculateRisk() {
         return calculateRisk;
     }
+
+    /**
+     * Returneaza eficienta tichetului
+     * @return
+     */
     public double getCalculateEfficiency() {
         return calculateEfficiency;
     }
+
+    /**
+     * Returneaza in cate zile s-a rezolvat tichetul.
+     * @return
+     */
     public int getDaysToResolve() {
         return daysToResolve;
     }
+
+    /**
+     * Returnez codul de prioritate.
+     * @return
+     */
     public int getBusinessPriorityCode() {
         return businesspriorityCode;
     }
@@ -353,6 +379,11 @@ public abstract class Ticket {
     public void setIsAVailableForAssignment(final boolean isAVailableForAssignment) {
         this.isAVailableForAssignment = isAVailableForAssignment;
     }
+
+    /**
+     * Setez impactul.
+     * @param calculateImpact
+     */
     public void setCalculateImpact(final double calculateImpact) {
         this.calculateImpact = calculateImpact;
     }
@@ -364,12 +395,27 @@ public abstract class Ticket {
     public void addHistories(final History history) {
         this.histories.add(history);
     }
+
+    /**
+     * Seteaza riscul tichetului.
+     * @param calculateRisk
+     */
     public void setCalculateRisk(final double calculateRisk) {
         this.calculateRisk = calculateRisk;
     }
+
+    /**
+     * Setez eficienta tichetului.
+     * @param calculateEfficiency
+     */
     public void setCalculateEfficiency(final double calculateEfficiency) {
         this.calculateEfficiency = calculateEfficiency;
     }
+
+    /**
+     * Setez in cate zile s-a rezolvat tichetul.
+     * @param daysToResolve
+     */
     public void setDaysToResolve(final int daysToResolve) {
         this.daysToResolve = daysToResolve;
     }
@@ -458,7 +504,22 @@ public abstract class Ticket {
                 .build();
         histories.add(history);
     }
+
+    /**
+     * Verific ce tip de tichet este.
+     * @return
+     */
     public abstract boolean isBUG();
+
+    /**
+     * Verific ce tip de tichet este.
+     * @return
+     */
     public abstract boolean isUI();
+
+    /**
+     * Verific ce tip de tichet este.
+     * @return
+     */
     public abstract boolean isFeature();
 }

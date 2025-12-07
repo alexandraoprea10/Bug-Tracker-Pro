@@ -40,7 +40,7 @@ public class DevelopersSearch {
             performanceScoreBelow = filter.get("performanceScoreBelow").asDouble();
         }
         List<String> subordinates = manager.getSubordinates();
-        for (int i = 0 ; i < subordinates.size(); i++) {
+        for (int i = 0; i < subordinates.size(); i++) {
             String userC = subordinates.get(i);
             Users usr = returnUser(useri, userC);
             if (usr.getRole().equals("DEVELOPER")) {

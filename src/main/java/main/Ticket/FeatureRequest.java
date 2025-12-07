@@ -1,5 +1,8 @@
 package main.Ticket;
 
+import main.MagicNumbersDouble;
+import main.MagicNumbersInt;
+
 public class FeatureRequest extends Ticket {
     private String businessValue;
     private int businessvalueCode;
@@ -17,26 +20,28 @@ public class FeatureRequest extends Ticket {
         if (costumerD.equals("LOW")) {
             this.customerdemandCode = 1;
         } else if (costumerD.equals("MEDIUM")) {
-            this.customerdemandCode = 3;
+            this.customerdemandCode = MagicNumbersInt.trei.getValue();
         } else if (costumerD.equals("HIGH")) {
-            this.customerdemandCode = 6;
+            this.customerdemandCode = MagicNumbersInt.sase.getValue();
         } else if (costumerD.equals("VERY_HIGH")) {
-            this.customerdemandCode = 10;
+            this.customerdemandCode = MagicNumbersInt.zece.getValue();
         }
         if (businessValue.equals("S")) {
             this.businessvalueCode = 1;
         } else if (businessValue.equals("M")) {
-            this.businessvalueCode = 3;
+            this.businessvalueCode = MagicNumbersInt.trei.getValue();
         } else if (businessValue.equals("L")) {
-            this.businessvalueCode = 6;
+            this.businessvalueCode = MagicNumbersInt.sase.getValue();
         } else if (businessValue.equals("XL")) {
-            this.businessvalueCode = 10;
+            this.businessvalueCode = MagicNumbersInt.zece.getValue();
         }
         double inm = businessvalueCode * customerdemandCode;
-        double res = (inm * 100.0) / 100.0;
+        double res = (inm * MagicNumbersDouble.osuta.getValue())
+                / MagicNumbersDouble.osuta.getValue();
         setCalculateImpact(res);
         double inm1 = businessvalueCode + customerdemandCode;
-        double res1 = (inm1 * 100.0) / 20.0;
+        double res1 = (inm1 * MagicNumbersDouble.osuta.getValue())
+                / MagicNumbersDouble.douazeci.getValue();
         setCalculateRisk(res1);
     }
     // getteri
@@ -56,9 +61,19 @@ public class FeatureRequest extends Ticket {
     public String getCustomerDemand() {
         return customerDemand;
     }
+
+    /**
+     * Returneaza codul pt costumerdemand.
+     * @return
+     */
     public int getCustomerdemandCode() {
         return customerdemandCode;
     }
+
+    /**
+     * Returneaza codul tichetului dpdv al business-value-ului.
+     * @return
+     */
     public int getBusinessvalueCode() {
         return businessvalueCode;
     }
@@ -79,14 +94,29 @@ public class FeatureRequest extends Ticket {
     public void setCustomerDemand(final String customerDemand) {
         this.customerDemand = customerDemand;
     }
+
+    /**
+     * Returnez true doar pentru feature request.
+     * @return
+     */
     @Override
     public boolean isBUG() {
         return false;
     }
+
+    /**
+     * Returnez true doar pentru feature request.
+     * @return
+     */
     @Override
     public boolean isUI() {
         return false;
     }
+
+    /**
+     * Returnez true doar pentru feature request.
+     * @return
+     */
     @Override
     public boolean isFeature() {
         return true;

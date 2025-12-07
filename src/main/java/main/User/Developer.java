@@ -171,9 +171,14 @@ public abstract class Developer extends Users {
         }
         return false;
     }
-    public void primesteNotificare(String message) {
+
+    /**
+     * Primeste notificarea si o adauga in lista de notoficari(daca nu exista deja).
+     * @param message
+     */
+    public void primesteNotificare(final String message) {
         int ok = 0;
-        for (int i = 0 ; i < notifications.size() ; i++) {
+        for (int i = 0; i < notifications.size(); i++) {
             Notifications notif =  notifications.get(i);
             if (notif.getNotification().equals(message)) {
                 ok = 1;
@@ -217,6 +222,11 @@ public abstract class Developer extends Users {
     public double getPerformanceScore() {
         return performanceScore;
     }
+
+    /**
+     * Returneaza lista de notificari.
+     * @return
+     */
     public ArrayList<Notifications> getNotifications() {
         return notifications;
     }
@@ -253,9 +263,19 @@ public abstract class Developer extends Users {
     public void setPerformanceScore(final double performanceScore) {
         this.performanceScore = performanceScore;
     }
+
+    /**
+     * Seteaza lista de notificari.
+     * @param notifications
+     */
     public void setNotifications(final ArrayList<Notifications> notifications) {
         this.notifications = notifications;
     }
+
+    /**
+     * Adauga notoficare
+     * @param notification
+     */
     public void addNotification(final Notifications notification) {
         this.notifications.add(notification);
     }
