@@ -9,6 +9,9 @@ import main.Milestone;
 import main.User.Developer;
 import main.User.Users;
 
+import java.sql.SQLOutput;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,6 +21,22 @@ import static main.App.returnTicket;
 
 public class VeziTichete {
     private List<Ticket> inventarTichete;
+    private int BUGTickets;
+    private int UITickets;
+    private int FEATURETickets;
+    private int LOWPriority;
+    private int MEDIUMPriority;
+    private int HIGHPriority;
+    private int CRITICALPriority;
+    private double impactForBUG;
+    private double impactForUI;
+    private double impactForFeature;
+    private double riskForBug;
+    private double riskForUI;
+    private double riskForFeature;
+    private double efficiencyForBUG;
+    private double efficiencyForUI;
+    private double efficiencyForFeature;
     private final ObjectMapper mapper = new ObjectMapper();
 
     /**
@@ -35,7 +54,102 @@ public class VeziTichete {
     public List<Ticket> getInventarTichete() {
         return inventarTichete;
     }
-
+    public int getBUGTickets() {
+        return BUGTickets;
+    }
+    public int getUITickets() {
+        return UITickets;
+    }
+    public int getFEATURETickets() {
+        return FEATURETickets;
+    }
+    public int getLOWPriority() {
+        return LOWPriority;
+    }
+    public int getMEDIUMPriority() {
+        return MEDIUMPriority;
+    }
+    public int getHIGHPriority() {
+        return HIGHPriority;
+    }
+    public int getCRITICALPriority() {
+        return CRITICALPriority;
+    }
+    public double getImpactForBUG() {
+        return impactForBUG;
+    }
+    public double getImpactForUI() {
+        return impactForUI;
+    }
+    public double getImpactForFeature() {
+        return impactForFeature;
+    }
+    public double getRiskForBUG() {
+        return riskForBug;
+    }
+    public double getRiskForUI() {
+        return riskForUI;
+    }
+    public double getRiskForFeature() {
+        return riskForFeature;
+    }
+    public  double getEfficiencyForBUG() {
+        return efficiencyForBUG;
+    }
+    public  double getEfficiencyForUI() {
+        return efficiencyForUI;
+    }
+    public  double getEfficiencyForFeature() {
+        return efficiencyForFeature;
+    }
+    public void setBUGTickets(int BUGTickets) {
+        this.BUGTickets = BUGTickets;
+    }
+    public void setUITickets(int UITickets) {
+        this.UITickets = UITickets;
+    }
+    public void setFEATURETickets(int FEATURETickets) {
+        this.FEATURETickets = FEATURETickets;
+    }
+    public void setLOWPriority(int LOWPriority) {
+        this.LOWPriority = LOWPriority;
+    }
+    public void setMEDIUMPriority(int MEDIUMPriority) {
+        this.MEDIUMPriority = MEDIUMPriority;
+    }
+    public void setHIGHPriority(int HIGHPriority) {
+        this.HIGHPriority = HIGHPriority;
+    }
+    public void setCRITICALPriority(int CRITICALPriority) {
+        this.CRITICALPriority = CRITICALPriority;
+    }
+    public void setImpactForBUG(double impactForBUG) {
+        this.impactForBUG = impactForBUG;
+    }
+    public void setImpactForUI(double impactForUI) {
+        this.impactForUI = impactForUI;
+    }
+    public void setImpactForFeature(double impactForFeature) {
+        this.impactForFeature = impactForFeature;
+    }
+    public void setRiskForBUG(double riskForBUG) {
+        this.riskForBug = riskForBUG;
+    }
+    public void setRiskForUI(double riskForUI) {
+        this.riskForUI = riskForUI;
+    }
+    public void setRiskForFeature(double riskForFeature) {
+        this.riskForFeature = riskForFeature;
+    }
+    public void setEfficiencyForBUG(double efficiencyForBUG) {
+        this.efficiencyForBUG = efficiencyForBUG;
+    }
+    public void setEfficiencyForUI(double efficiencyForUI) {
+        this.efficiencyForUI = efficiencyForUI;
+    }
+    public void setEfficiencyForFeature(double efficiencyForFeature) {
+        this.efficiencyForFeature = efficiencyForFeature;
+    }
     /**
      * Seteaza inventarul de tichete
      * @param inventarTichete
@@ -220,6 +334,16 @@ public class VeziTichete {
             return MagicNumbersInt.trei.getValue();
         }
         return MagicNumbersInt.patru.getValue();
+    }
+    private String calificativ(double risk) {
+        if (risk >= 0 && risk <= 24.0) {
+            return "NEGLIGIBLE";
+        } else if (risk >= 25.0 && risk <= 49.0) {
+            return "MODERATE";
+        } else if (risk >= 50.0 && risk <= 74.0) {
+            return "SIGNIFICANT";
+        }
+        return "MAJOR";
     }
 
     /**
@@ -435,5 +559,176 @@ public class VeziTichete {
         }
         finalNode.set("results", arrayNode);
         return finalNode;
+    }
+    public void setImpactandOthers() {
+        double sumimpactBUG = 0.0;
+        double sumimpactUI = 0.0;
+        double sumimpactFeature = 0.0;
+        double sumRiskBUG = 0.0;
+        double sumRiskUI = 0.0;
+        double sumRiskFeature = 0.0;
+        for (int m = 0 ; m < inventarTichete.size(); m++) {
+            Ticket t = inventarTichete.get(m);
+            if (t.getStatus().equals("OPEN") || t.getStatus().equals("IN_PROGRESS")) {
+                if (t.isBUG()) {
+                    this.setBUGTickets(this.getBUGTickets() + 1);
+                    sumimpactBUG = sumimpactBUG + t.getCalculateImpact();
+                    sumRiskBUG = sumRiskBUG + t.getCalculateRisk();
+                } else if (t.isUI()) {
+                    this.setUITickets(this.getUITickets() + 1);
+                    sumimpactUI = sumimpactUI + t.getCalculateImpact();
+                    sumRiskUI = sumRiskUI + t.getCalculateRisk();
+                } else if (t.isFeature()) {
+                    this.setFEATURETickets(this.getFEATURETickets() + 1);
+                    sumimpactFeature = sumimpactFeature + t.getCalculateImpact();
+                    sumRiskFeature = sumRiskFeature + t.getCalculateRisk();
+                }
+                if (t.getBusinessPriority().equals("LOW")) {
+                    this.setLOWPriority(this.getLOWPriority() + 1);
+                } else if (t.getBusinessPriority().equals("MEDIUM")) {
+                    this.setMEDIUMPriority(this.getMEDIUMPriority() + 1);
+                } else if (t.getBusinessPriority().equals("HIGH")) {
+                    this.setHIGHPriority(this.getHIGHPriority() + 1);
+                } else if (t.getBusinessPriority().equals("CRITICAL")) {
+                    this.setCRITICALPriority(this.getCRITICALPriority() + 1);
+                }
+            }
+        }
+        double resBUG = sumimpactBUG / this.getBUGTickets();
+        double resUI =  sumimpactUI / this.getUITickets();
+        double resFeature = sumimpactFeature / this.getFEATURETickets();
+        double resRBUG =  sumRiskBUG / this.getBUGTickets();
+        double resRiskUI =  sumRiskUI / this.getUITickets();
+        double resRiskFeature =  sumRiskFeature / this.getFEATURETickets();
+        this.setImpactForBUG(Math.round(resBUG * 100.0) / 100.0);
+        this.setImpactForUI(Math.round(resUI * 100.0) / 100.0);
+        this.setImpactForFeature(Math.round(resFeature * 100.0) / 100.0);
+        this.setRiskForBUG(Math.round(resRBUG * 100.0) / 100.0);
+        this.setRiskForUI(Math.round(resRiskUI * 100.0) / 100.0);
+        this.setRiskForFeature(Math.round(resRiskFeature * 100.0) / 100.0);
+    }
+    public ObjectNode generateCustomerImpact() {
+        ObjectNode finalNode = mapper.createObjectNode();
+        ObjectNode nrTickets =  mapper.createObjectNode();
+        nrTickets.put("totalTickets", this.getBUGTickets() + this.getUITickets() + this.getFEATURETickets());
+        ObjectNode ticketsByType = mapper.createObjectNode();
+        ticketsByType.put("BUG", this.getBUGTickets());
+        ticketsByType.put("FEATURE_REQUEST", this.getFEATURETickets());
+        ticketsByType.put("UI_FEEDBACK", this.getUITickets());
+        nrTickets.set("ticketsByType", ticketsByType);
+        ObjectNode ticketsbyPriority =  mapper.createObjectNode();
+        ticketsbyPriority.put("LOW", this.getLOWPriority());
+        ticketsbyPriority.put("MEDIUM", this.getMEDIUMPriority());
+        ticketsbyPriority.put("HIGH", this.getHIGHPriority());
+        ticketsbyPriority.put("CRITICAL", this.getCRITICALPriority());
+        nrTickets.set("ticketsByPriority", ticketsbyPriority);
+        ObjectNode customerImpact = mapper.createObjectNode();
+        customerImpact.put("BUG", this.getImpactForBUG());
+        customerImpact.put("FEATURE_REQUEST", this.getImpactForFeature());
+        customerImpact.put("UI_FEEDBACK", this.getImpactForUI());
+        nrTickets.set("customerImpactByType", customerImpact);
+        return nrTickets;
+    }
+    public ObjectNode generateTicketsRisk() {
+        ObjectNode finalNode = mapper.createObjectNode();
+        ObjectNode nrTickets =  mapper.createObjectNode();
+        nrTickets.put("totalTickets", this.getBUGTickets() + this.getUITickets() + this.getFEATURETickets());
+        ObjectNode ticketsByType = mapper.createObjectNode();
+        ticketsByType.put("BUG", this.getBUGTickets());
+        ticketsByType.put("FEATURE_REQUEST", this.getFEATURETickets());
+        ticketsByType.put("UI_FEEDBACK", this.getUITickets());
+        nrTickets.set("ticketsByType", ticketsByType);
+        ObjectNode ticketsbyPriority =  mapper.createObjectNode();
+        ticketsbyPriority.put("LOW", this.getLOWPriority());
+        ticketsbyPriority.put("MEDIUM", this.getMEDIUMPriority());
+        ticketsbyPriority.put("HIGH", this.getHIGHPriority());
+        ticketsbyPriority.put("CRITICAL", this.getCRITICALPriority());
+        nrTickets.set("ticketsByPriority", ticketsbyPriority);
+        ObjectNode customerImpact = mapper.createObjectNode();
+        customerImpact.put("BUG", calificativ(this.getRiskForBUG()));
+        customerImpact.put("FEATURE_REQUEST", calificativ(this.getRiskForFeature()));
+        customerImpact.put("UI_FEEDBACK", calificativ(this.getRiskForUI()));
+        nrTickets.set("riskByType", customerImpact);
+        return nrTickets;
+    }
+    public void calculateEfficiency() {
+        int bugt = 0;
+        int uit = 0;
+        int feature = 0;
+        double sumBUG = 0.0;
+        double sumFEATURE = 0.0;
+        double sumUI = 0.0;
+        for (int m = 0 ; m < inventarTichete.size(); m++) {
+            Ticket t = inventarTichete.get(m);
+            if (t.getStatus().equals("CLOSED") || t.getStatus().equals("RESOLVED")) {
+                LocalDate date1 = LocalDate.parse(t.getAssignedAt());
+                LocalDate date2 = LocalDate.parse(t.getSolvedAt());
+                int daysBetween = (int) ChronoUnit.DAYS.between(date1, date2) + 1;
+                t.setDaysToResolve(daysBetween);
+                if (t.isBUG()) {
+                    bugt++;
+                    BUG bug = (BUG) t;
+                    double value = (bug.getBusinessPriorityCode() + bug.getSeverityCode()) * 10.0 / bug.getDaysToResolve();
+                    double res = (value * 100.0) / 70.0;
+                    sumBUG = sumBUG + res;
+                    t.setCalculateEfficiency(res);
+                } else if (t.isUI()) {
+                    uit++;
+                    UIFeedback ui = (UIFeedback) t;
+                    double value = (ui.getUsabilityScore() + ui.getbusinessvalueCode()) / ui.getDaysToResolve();
+                    double res = (value * 100.0) / 20.0;
+                    sumUI = sumUI + res;
+                    t.setCalculateEfficiency(res);
+                } else if (t.isFeature()) {
+                    feature++;
+                    FeatureRequest fr =  (FeatureRequest) t;
+                    double value = (fr.getBusinessvalueCode() + fr.getCustomerdemandCode()) / fr.getDaysToResolve();
+                    double res = (value * 100.0) / 20.0;
+                    sumFEATURE = sumFEATURE + res;
+                    t.setCalculateEfficiency(res);
+                }
+                if (t.getBusinessPriority().equals("LOW")) {
+                    this.setLOWPriority(this.getLOWPriority() + 1);
+                } else if (t.getBusinessPriority().equals("MEDIUM")) {
+                    this.setMEDIUMPriority(this.getMEDIUMPriority() + 1);
+                } else if (t.getBusinessPriority().equals("HIGH")) {
+                    this.setHIGHPriority(this.getHIGHPriority() + 1);
+                } else if (t.getBusinessPriority().equals("CRITICAL")) {
+                    this.setCRITICALPriority(this.getCRITICALPriority() + 1);
+                }
+            }
+        }
+        double resBUG = sumBUG /  bugt;
+        double resFEATURE = sumFEATURE / feature;
+        double resUI = sumUI /  uit;
+        this.setBUGTickets(bugt);
+        this.setUITickets(uit);
+        this.setFEATURETickets(feature);
+        this.setEfficiencyForBUG(Math.round(resBUG * 100.0) / 100.0);
+        this.setEfficiencyForUI(Math.round(resUI * 100.0) / 100.0);
+        this.setEfficiencyForFeature(Math.round(resFEATURE * 100.0) / 100.0);
+    }
+    public ObjectNode generateEfficiency() {
+        calculateEfficiency();
+        ObjectNode finalNode = mapper.createObjectNode();
+        ObjectNode nrTickets =  mapper.createObjectNode();
+        nrTickets.put("totalTickets", this.getBUGTickets() + this.getUITickets() + this.getFEATURETickets());
+        ObjectNode ticketsByType = mapper.createObjectNode();
+        ticketsByType.put("BUG", this.getBUGTickets());
+        ticketsByType.put("FEATURE_REQUEST", this.getFEATURETickets());
+        ticketsByType.put("UI_FEEDBACK", this.getUITickets());
+        nrTickets.set("ticketsByType", ticketsByType);
+        ObjectNode ticketsbyPriority =  mapper.createObjectNode();
+        ticketsbyPriority.put("LOW", this.getLOWPriority());
+        ticketsbyPriority.put("MEDIUM", this.getMEDIUMPriority());
+        ticketsbyPriority.put("HIGH", this.getHIGHPriority());
+        ticketsbyPriority.put("CRITICAL", this.getCRITICALPriority());
+        nrTickets.set("ticketsByPriority", ticketsbyPriority);
+        ObjectNode customerImpact = mapper.createObjectNode();
+        customerImpact.put("BUG", this.getEfficiencyForBUG());
+        customerImpact.put("FEATURE_REQUEST", this.getEfficiencyForFeature());
+        customerImpact.put("UI_FEEDBACK", this.getEfficiencyForUI());
+        nrTickets.set("efficiencyByType", customerImpact);
+        return nrTickets;
     }
 }

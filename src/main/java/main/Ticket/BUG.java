@@ -3,19 +3,22 @@ package main.Ticket;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class BUG extends Ticket {
+public class BUG extends Ticket {
     private String expectedBehaviour;
     private String actualBehaviour;
     private String frequency;
     private String severity;
     private String environment;
     private int errorCode;
+    private int freqCode;
+    private int severityCode;
     // builder
     public static final class Builder {
         private int id;
         private String type;
         private String title;
         private String businessPriority;
+        private int businesspriorityCode;
         private String status;
         private String createdAt;
         private String assignedAt;
@@ -29,6 +32,12 @@ public final class BUG extends Ticket {
         private String description;
         private ArrayList<History> histories;
         private boolean isAVailableForAssignment;
+        private int freqCode;
+        private int severityCode;
+        private double calculateImpact;
+        private double calculateRisk;
+        private double calculateEfficiency;
+        private double daysToResolve;
 
         private String expectedBehaviour;
         private String actualBehaviour;
@@ -62,6 +71,37 @@ public final class BUG extends Ticket {
             this.actualBehaviour = actualBehaviour;
             this.frequency = frequency;
             this.severity = severity;
+            if (frequency.equals("RARE")) {
+                this.freqCode = 1;
+            } else if (frequency.equals("OCCASIONAL")) {
+                this.freqCode = 2;
+            } else if (frequency.equals("FREQUENT")) {
+                this.freqCode = 3;
+            } else if (frequency.equals("ALWAYS")) {
+                this.freqCode = 4;
+            }
+            if (businessPriority.equals("LOW")) {
+                this.businesspriorityCode = 1;
+            } else if (businessPriority.equals("MEDIUM")) {
+                this.businesspriorityCode = 2;
+            } else if (businessPriority.equals("HIGH")) {
+                this.businesspriorityCode = 3;
+            } else if (businessPriority.equals("CRITICAL")) {
+                this.businesspriorityCode = 4;
+            }
+            if (severity.equals("MINOR")) {
+                this.severityCode = 1;
+            } else if (severity.equals("MODERATE")) {
+                this.severityCode = 2;
+            } else if (severity.equals("SEVERE")) {
+                this.severityCode = 3;
+            }
+            double inm = freqCode * businesspriorityCode * severityCode;
+            double res = (inm * 100.0) / 48.0;
+            this.calculateImpact = res;
+            double risk = freqCode * severityCode;
+            double res2 = (risk * 100.0) / 12.0;
+            this.calculateRisk = res2;
         }
 
         /**
@@ -111,13 +151,16 @@ public final class BUG extends Ticket {
     private BUG(final Builder builder) {
         super(builder.id, "BUG", builder.title, builder.businessPriority,
                 builder.status, builder.createdAt, builder.expertiseArea,
-                builder.reportedBy, builder.description);
+                builder.reportedBy, builder.description, builder.calculateImpact, builder.calculateRisk);
         this.expectedBehaviour = builder.expectedBehaviour;
         this.actualBehaviour = builder.actualBehaviour;
         this.frequency = builder.frequency;
         this.severity = builder.severity;
         this.environment = builder.environment;
         this.errorCode = builder.errorCode;
+        this.severityCode = builder.severityCode;
+        setCalculateImpact(builder.calculateImpact);
+        setCalculateRisk(builder.calculateRisk);
     }
     // getteri
     public String getExpectedBehaviour() {
@@ -138,6 +181,9 @@ public final class BUG extends Ticket {
     public int getErrorCode() {
         return errorCode;
     }
+    public int getSeverityCode() {
+        return severityCode;
+    }
     // setteri
     public void setExpectedBehaviour(final String expectedB) {
         this.expectedBehaviour = expectedB;
@@ -156,5 +202,17 @@ public final class BUG extends Ticket {
     }
     public void setErrorCode(final int error) {
         this.errorCode = error;
+    }
+    @Override
+    public boolean isBUG() {
+        return true;
+    }
+    @Override
+    public boolean isUI() {
+        return false;
+    }
+    @Override
+    public boolean isFeature() {
+        return false;
     }
 }

@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Ticket {
+public abstract class Ticket {
     private int id;
     private String type;
     private String title;
     private String businessPriority;
+    private int businesspriorityCode;
     private String status;
     private String createdAt;
     private String assignedAt;
@@ -24,11 +25,16 @@ public class Ticket {
     private String description;
     private ArrayList<History> histories;
     private boolean isAVailableForAssignment;
+    private double calculateImpact;
+    private double calculateRisk;
+    private double calculateEfficiency;
+    private int daysToResolve;
     // constructor
      public Ticket(final int id, final String type, final String title,
                    final String businessPriority, final String status,
                    final String createdAt, final String expertiseArea,
-                   final String reportedBy, final String description) {
+                   final String reportedBy, final String description,
+                   final double calculateImpact, final double calculateRisk) {
          this.id = id;
          this.type =  type;
          this.title = title;
@@ -47,6 +53,17 @@ public class Ticket {
          this.date = new ArrayList<String>();
          this.histories = new ArrayList<>();
          this.isAVailableForAssignment = true;
+         if (businessPriority.equals("LOW")) {
+             this.businesspriorityCode = 1;
+         } else if (businessPriority.equals("MEDIUM")) {
+             this.businesspriorityCode = 2;
+         } else if (businessPriority.equals("HIGH")) {
+             this.businesspriorityCode = 3;
+         } else if (businessPriority.equals("CRITICAL")) {
+             this.businesspriorityCode = 4;
+         }
+         this.calculateImpact = calculateImpact;
+         this.calculateRisk = calculateRisk;
     }
     // getters
 
@@ -209,6 +226,21 @@ public class Ticket {
     public boolean isAvailableForAssignment() {
         return isAVailableForAssignment;
     }
+    public double getCalculateImpact() {
+        return calculateImpact;
+    }
+    public double getCalculateRisk() {
+        return calculateRisk;
+    }
+    public double getCalculateEfficiency() {
+        return calculateEfficiency;
+    }
+    public int getDaysToResolve() {
+        return daysToResolve;
+    }
+    public int getBusinessPriorityCode() {
+        return businesspriorityCode;
+    }
     // setteri
 
     /**
@@ -321,6 +353,9 @@ public class Ticket {
     public void setIsAVailableForAssignment(final boolean isAVailableForAssignment) {
         this.isAVailableForAssignment = isAVailableForAssignment;
     }
+    public void setCalculateImpact(final double calculateImpact) {
+        this.calculateImpact = calculateImpact;
+    }
 
     /**
      * Adauga un istoric.
@@ -328,6 +363,15 @@ public class Ticket {
      */
     public void addHistories(final History history) {
         this.histories.add(history);
+    }
+    public void setCalculateRisk(final double calculateRisk) {
+        this.calculateRisk = calculateRisk;
+    }
+    public void setCalculateEfficiency(final double calculateEfficiency) {
+        this.calculateEfficiency = calculateEfficiency;
+    }
+    public void setDaysToResolve(final int daysToResolve) {
+        this.daysToResolve = daysToResolve;
     }
 
     /**
@@ -414,4 +458,7 @@ public class Ticket {
                 .build();
         histories.add(history);
     }
+    public abstract boolean isBUG();
+    public abstract boolean isUI();
+    public abstract boolean isFeature();
 }

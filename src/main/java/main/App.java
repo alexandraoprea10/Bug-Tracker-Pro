@@ -288,12 +288,14 @@ public class App {
      * Setez statusul urmator(pentru changestatus).
      * @param ticket
      */
-    public static void nextStatus(final Ticket ticket) {
+    public static void nextStatus(final Ticket ticket, String timestamp) {
         if (ticket.getStatus().equals("OPEN")) {
             ticket.setStatus("IN_PROGRESS");
         } else if (ticket.getStatus().equals("IN_PROGRESS")) {
             ticket.setStatus("RESOLVED");
+            ticket.setSolvedAt(timestamp);
         } else if (ticket.getStatus().equals("RESOLVED")) {
+            ticket.setSolvedAt(timestamp);
             ticket.setStatus("CLOSED");
         }
     }
@@ -306,6 +308,7 @@ public class App {
         if (ticket.getStatus().equals("IN_PROGRESS")) {
             ticket.setStatus("OPEN");
         } else if (ticket.getStatus().equals("RESOLVED")) {
+            ticket.setSolvedAt("");
             ticket.setStatus("IN_PROGRESS");
         } else if (ticket.getStatus().equals("CLOSED")) {
             ticket.setStatus("RESOLVED");
@@ -441,10 +444,10 @@ public class App {
                     LocalDate currentDate = LocalDate.parse(timestamp);
                     LocalDate dateMilestone = LocalDate.parse(milestone.getDueDate());
                     int daysBetween = (int) ChronoUnit.DAYS.between(currentDate, dateMilestone) + 1;
-                    System.out.println("COMANDA" + command + " a lui" + username);
-                    System.out.println("MILESTONE DATA" + milestone.getDueDate());
-                    System.out.println("DATA CURENTA" + timestamp);
-                    System.out.println("sunt" + daysBetween + "zile");
+//                    System.out.println("COMANDA" + command + " a lui" + username);
+//                    System.out.println("MILESTONE DATA" + milestone.getDueDate());
+//                    System.out.println("DATA CURENTA" + timestamp);
+//                    System.out.println("sunt" + daysBetween + "zile");
                     // System.out.println(daysBetween  + "pentru milestone" + milestone.getName() + "din perspectiva" + username);
                     if (daysBetween == 0 && !milestone.isBlocking()) {
                         milestone.vineDueDate();
@@ -534,11 +537,14 @@ public class App {
                                 inventarTichete.add(featureR);
                                 id++;
                             } else if (type.equals("UI_FEEDBACK")) {
-                                String uiElementId = params.get("uiElementId").asText();
+                                String uiElementId = null;
                                 String businessValue = params.get("businessValue").asText();
                                 int usabilityScore = Integer.parseInt(
                                         params.get("usabilityScore").asText());
                                 String screenshotUrl = null;
+                                if (params.get("uiElementId") != null) {
+                                    uiElementId = params.get("uiElementId").asText();
+                                }
                                 if (params.get("screenshotUrl") != null) {
                                     screenshotUrl = params.get("screenshotUrl").asText();
                                 }
@@ -548,8 +554,9 @@ public class App {
                                 }
                                 UIFeedback uiFeedback = new UIFeedback.Builder(id, title,
                                         businessPriority, timestamp, expertiseArea,
-                                        reportedBy, uiElementId,
+                                        reportedBy,
                                         businessValue, usabilityScore)
+                                        .uiElementId(uiElementId)
                                         .description(description)
                                         .screenshotUrl(screenshotUrl)
                                         .suggestedFix(suggestedFix)
@@ -812,7 +819,7 @@ public class App {
                                     + username + ".");
                             outputs.add(node);
                         } else {
-                            nextStatus(ticket);
+                            nextStatus(ticket, timestamp);
                             ticket.changeStatus(0, ticket.getStatus(), username, timestamp);
                         }
                     } else if (command.equals("undoChangeStatus")) {
@@ -892,6 +899,23 @@ public class App {
                             }
                         }
                         node.set("notifications", printNotif);
+                        outputs.add(node);
+                    } else if (command.equals("generateCustomerImpactReport")) {
+                        ObjectNode node =  printwhatiNeed(command, username, timestamp);
+                        veziTichete.setImpactandOthers();
+                        ObjectNode printImpact = veziTichete.generateCustomerImpact();
+                        node.set("report", printImpact);
+                        outputs.add(node);
+                    } else if (command.equals("generateTicketRiskReport")) {
+                        ObjectNode node =  printwhatiNeed(command, username, timestamp);
+                        veziTichete.setImpactandOthers();
+                        ObjectNode printImpact = veziTichete.generateTicketsRisk();
+                        node.set("report", printImpact);
+                        outputs.add(node);
+                    } else if (command.equals("generateResolutionEfficiencyReport")) {
+                        ObjectNode node =  printwhatiNeed(command, username, timestamp);
+                        ObjectNode printEfficiency = veziTichete.generateEfficiency();
+                        node.set("report", printEfficiency);
                         outputs.add(node);
                     }
                     veziTichete.setInventarTichete(inventarTichete);

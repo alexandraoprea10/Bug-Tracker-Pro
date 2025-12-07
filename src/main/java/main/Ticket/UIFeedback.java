@@ -6,6 +6,7 @@ import java.util.List;
 public final class UIFeedback extends Ticket {
     private String uiElementId;
     private String businessValue;
+    private int businessvalueCode;
     private int usabilityScore;
     private String screenshotUrl;
     private String suggestedFix;
@@ -28,15 +29,18 @@ public final class UIFeedback extends Ticket {
         private String description;
         private ArrayList<History> histories;
         private boolean isAVailableForAssignment;
+        private double calculateImpact;
+        private double calculateRisk;
 
         private String uiElementId;
         private String businessValue;
+        private int businessvalueCode;
         private int usabilityScore;
         private String screenshotUrl;
         private String suggestedFix;
         public Builder(final int id, final String title, final String businessPriority,
                        final String createdAt, final String expertiseArea,
-                       final String reportedBy, final String uiElementId,
+                       final String reportedBy,
                        final String businessValue, final int usabilityScore) {
             this.id = id;
             this.title = title;
@@ -48,12 +52,35 @@ public final class UIFeedback extends Ticket {
             this.assignedTo = "";
             this.expertiseArea = expertiseArea;
             this.reportedBy = reportedBy;
-            this.uiElementId = uiElementId;
             this.businessValue = businessValue;
             this.usabilityScore = usabilityScore;
             this.isAVailableForAssignment = false;
+            if (businessValue.equals("S")) {
+                this.businessvalueCode = 1;
+            } else if (businessValue.equals("M")) {
+                this.businessvalueCode = 3;
+            } else if (businessValue.equals("L")) {
+                this.businessvalueCode = 6;
+            } else if (businessValue.equals("XL")) {
+                this.businessvalueCode = 10;
+            }
+            double inm = businessvalueCode * usabilityScore;
+            double res = (inm * 100.0) / 100.0;
+            this.calculateImpact = res;
+            double inm2 = (11 - usabilityScore) & businessvalueCode;
+            double res2 = (inm * 100.0) / 100.0;
+            this.calculateRisk = res2;
         }
 
+        /**
+         * uiElementId
+         * @param uiElementId parametru optional
+         * @return builder
+         */
+        public Builder uiElementId(final String uiElementId) {
+            this.uiElementId = uiElementId;
+            return this;
+        }
         /**
          * Descriere
          * @param descr parametru optional
@@ -98,12 +125,15 @@ public final class UIFeedback extends Ticket {
         super(builder.id, "UI_FEEDBACK", builder.title,
                 builder.businessPriority, "OPEN",  builder.createdAt,
                 builder.expertiseArea, builder.reportedBy,
-                builder.description);
+                builder.description, builder.calculateImpact, builder.calculateRisk);
         this.uiElementId = builder.uiElementId;
         this.businessValue = builder.businessValue;
         this.usabilityScore = builder.usabilityScore;
         this.screenshotUrl = builder.screenshotUrl;
         this.suggestedFix = builder.suggestedFix;
+        this.businessvalueCode = builder.businessvalueCode;
+        setCalculateImpact(builder.calculateImpact);
+        setCalculateRisk(builder.calculateRisk);
     }
     // getteri
     public String getUiElementId() {
@@ -121,6 +151,9 @@ public final class UIFeedback extends Ticket {
     public String getSuggestedFix() {
         return suggestedFix;
     }
+    public int getbusinessvalueCode() {
+        return businessvalueCode;
+    }
     // setteri
     public void setUiElementId(final String uiElementId) {
         this.uiElementId = uiElementId;
@@ -136,5 +169,17 @@ public final class UIFeedback extends Ticket {
     }
     public void setSuggestedFix(final String suggestedFix) {
         this.suggestedFix = suggestedFix;
+    }
+    @Override
+    public boolean isBUG() {
+        return false;
+    }
+    @Override
+    public boolean isUI() {
+        return true;
+    }
+    @Override
+    public boolean isFeature() {
+        return false;
     }
 }
