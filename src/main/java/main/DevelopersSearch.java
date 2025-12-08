@@ -27,10 +27,10 @@ public class DevelopersSearch {
         String seniority = null;
         double performanceScoreAbove = 0.0;
         double performanceScoreBelow = 0.0;
-        if (filter.get("expertiseArea").asText() != null) {
+        if (filter.get("expertiseArea") != null) {
             expertiseArea = filter.get("expertiseArea").asText();
         }
-        if (filter.get("seniority").asText() != null) {
+        if (filter.get("seniority") != null) {
             seniority = filter.get("seniority").asText();
         }
         if (filter.get("performanceScoreAbove") != null) {
@@ -49,7 +49,7 @@ public class DevelopersSearch {
                         && !expertiseArea.equals(developer.getExpertiseArea())) {
                     continue;
                 }
-                if (seniority != null & !seniority.equals(developer.getSeniority())) {
+                if (seniority != null && !seniority.equals(developer.getSeniority())) {
                    continue;
                 }
                 if (filter.get("performanceScoreAbove") != null

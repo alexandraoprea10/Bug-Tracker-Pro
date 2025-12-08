@@ -445,7 +445,7 @@ public class VeziTichete {
                     for (int t = 0;  t < ticketsID.length; t++) {
                         ObjectNode node = mapper.createObjectNode();
                         Ticket ticket = returnTicket(inventarTich, ticketsID[t]);
-                        if (ticket.getStatus().equals("OPEN")) {
+                        if (ticket != null && ticket.getStatus().equals("OPEN")) {
                             node.put("id", ticket.getId());
                             node.put("type", ticket.getType());
                             node.put("title", ticket.getTitle());
@@ -939,6 +939,53 @@ public class VeziTichete {
         customerImpact.put("FEATURE_REQUEST", this.getEfficiencyForFeature());
         customerImpact.put("UI_FEEDBACK", this.getEfficiencyForUI());
         nrTickets.set("efficiencyByType", customerImpact);
+        return nrTickets;
+    }
+    public ObjectNode generateImpactandTicketsRisk() {
+        ObjectNode finalNode = mapper.createObjectNode();
+        ObjectNode nrTickets =  mapper.createObjectNode();
+        nrTickets.put("totalOpenTickets", this.getbugTickets()
+                + this.getuiTickets() + this.getfeatureTickets());
+        ObjectNode ticketsByType = mapper.createObjectNode();
+        ticketsByType.put("BUG", this.getbugTickets());
+        ticketsByType.put("FEATURE_REQUEST", this.getfeatureTickets());
+        ticketsByType.put("UI_FEEDBACK", this.getuiTickets());
+        nrTickets.set("openTicketsByType", ticketsByType);
+        ObjectNode ticketsbyPriority =  mapper.createObjectNode();
+        ticketsbyPriority.put("LOW", this.getlowPriority());
+        ticketsbyPriority.put("MEDIUM", this.getmediumPriority());
+        ticketsbyPriority.put("HIGH", this.gethighPriority());
+        ticketsbyPriority.put("CRITICAL", this.getcriticalPriority());
+        nrTickets.set("openTicketsByPriority", ticketsbyPriority);
+        ObjectNode riskImpact = mapper.createObjectNode();
+        riskImpact.put("BUG", calificativ(this.getRiskForBUG()));
+        riskImpact.put("FEATURE_REQUEST", calificativ(this.getRiskForFeature()));
+        riskImpact.put("UI_FEEDBACK", calificativ(this.getRiskForUI()));
+        nrTickets.set("riskByType", riskImpact);
+        ObjectNode customerImpact = mapper.createObjectNode();
+        customerImpact.put("BUG", this.getImpactForBUG());
+        customerImpact.put("FEATURE_REQUEST", this.getImpactForFeature());
+        customerImpact.put("UI_FEEDBACK", this.getImpactForUI());
+        nrTickets.set("impactByType", customerImpact);
+        String stability = null;
+        if (this.getbugTickets()
+                + this.getuiTickets() + this.getfeatureTickets() < 0) {
+            stability = "STABLE";
+        } else if (calificativ(this.getRiskForBUG()).equals("NEGLIGIBLE")
+                && calificativ(this.getRiskForFeature()).equals("NEGLIGIBLE")
+                && calificativ(this.getRiskForUI()).equals("NEGLIGIBLE")
+                && this.getImpactForBUG() <= 50.0
+                && this.getImpactForFeature() <= 50.0
+                && this.getImpactForUI() <= 50.0) {
+            stability = "STABLE";
+        } else if (calificativ(this.getRiskForBUG()).equals("SIGNIFICANT")
+                || calificativ(this.getRiskForFeature()).equals("SIGNIFICANT")
+                || calificativ(this.getRiskForUI()).equals("SIGNIFICANT")) {
+            stability = "UNSTABLE";
+        } else {
+            stability = "PARTIALLY STABLE";
+        }
+        nrTickets.put("appStability", stability);
         return nrTickets;
     }
 }

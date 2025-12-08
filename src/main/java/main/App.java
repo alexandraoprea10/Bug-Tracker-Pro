@@ -448,7 +448,7 @@ public class App {
                         for (int k = 0; k < milestone.getTickets().length; k++) {
                             int ticketID =  milestone.getTickets()[k];
                             Ticket t = returnTicket(inventarTichete, ticketID);
-                            if (!t.getStatus().equals("RESOLVED")) {
+                            if (t != null && !t.getStatus().equals("RESOLVED")) {
                                 t.setBusinessPriority("CRITICAL");
                             }
                         }
@@ -458,7 +458,7 @@ public class App {
                         for (int k = 0; k < milestone.getTickets().length; k++) {
                             int ticketID =  milestone.getTickets()[k];
                             Ticket t = returnTicket(inventarTichete, ticketID);
-                            if (!t.getStatus().equals("RESOLVED")) {
+                            if (t != null && !t.getStatus().equals("RESOLVED")) {
                                 t.setBusinessPriority("CRITICAL");
                             }
                         }
@@ -469,7 +469,9 @@ public class App {
                     int[] tickets = milestone.getTickets();
                     for (int j = 0; j < tickets.length; j++) {
                         Ticket t = returnTicket(inventarTichete, tickets[j]);
-                        openAndClose(milestone, t);
+                        if (t != null) {
+                            openAndClose(milestone, t);
+                        }
                     }
                 }
                 if (user == null) {
@@ -637,7 +639,9 @@ public class App {
                                 int[] tick = milestone.getTickets();
                                 for (int p = 0; p < tick.length; p++) {
                                     Ticket t = returnTicket(inventarTichete, tick[p]);
-                                    t.addToMilestone(milestone, username, timestamp);
+                                    if (t != null) {
+                                        t.addToMilestone(milestone, username, timestamp);
+                                    }
                                 }
                                 milestones.add(milestone);
                                 for (int k = 0; k < milestone.getAssignedDevs().length; k++) {
@@ -670,62 +674,64 @@ public class App {
                         Ticket ticket = returnTicket(inventarTichete, ticketID);
                         String milestoneName = checkforTicket(milestones, ticketID);
                         Milestone milestone = returnMilestone(milestones, milestoneName);
-                        if (developer.rezolvaTichetul(developer.getSeniority(),
-                                ticket.getExpertiseArea(),
-                                ticket.getBusinessPriority(), ticket.getType())
-                        && checkForDevInMilestone(milestone, username) == 1
-                                && ticket.getStatus().equals("OPEN") && !milestone.isBlocking()) {
-                            ticket.setStatus("IN_PROGRESS");
-                            ticket.setAssignedAt(timestamp);
-                            ticket.setIsAVailableForAssignment(false);
-                            developer.addTicket(ticket);
-                            LinkedHashMap<String, Vector<Integer>>
-                                    repartition = milestone.getRepartition();
+                        if (ticket != null) {
+                            if (developer.rezolvaTichetul(developer.getSeniority(),
+                                    ticket.getExpertiseArea(),
+                                    ticket.getBusinessPriority(), ticket.getType())
+                                    && checkForDevInMilestone(milestone, username) == 1
+                                    && ticket.getStatus().equals("OPEN") && !milestone.isBlocking()) {
+                                ticket.setStatus("IN_PROGRESS");
+                                ticket.setAssignedAt(timestamp);
+                                ticket.setIsAVailableForAssignment(false);
+                                developer.addTicket(ticket);
+                                LinkedHashMap<String, Vector<Integer>>
+                                        repartition = milestone.getRepartition();
 //                            System.out.println(milestoneName);
 //                            System.out.println(repartition.keySet());
-                            Vector<Integer> tickets =  repartition.get(username);
-                            tickets.add(ticketID);
-                            ticket.assignTicket(username, timestamp);
-                            ticket.changeStatus(0, ticket.getStatus(), username, timestamp);
-                        } else {
-                            if (!developer.eokSpecializarea(ticket.getExpertiseArea())) {
-                                ObjectNode node = printwhatiNeed(command, username, timestamp);
-                                Users usr =  returnUser(useri, username);
-                                Developer dev =  (Developer) usr;
-                                node.put("error", "Developer "
-                                        + username + " cannot assign ticket "
-                                        + ticketID + " due to expertise area. Required: "
-                                        + printExpertiseArea(ticket.getExpertiseArea())
-                                        + "; Current: " + dev.getExpertiseArea() + ".");
-                                outputs.add(node);
-                            } else if (!developer.eokPrioritatea(ticket.getBusinessPriority())) {
-                                ObjectNode node = printwhatiNeed(command, username, timestamp);
-                                Users usr =  returnUser(useri, username);
-                                Developer dev =  (Developer) usr;
-                                node.put("error", "Developer "
-                                        + username + " cannot assign ticket "
-                                        + ticketID + " due to seniority level. Required: "
-                                        + printPriority(ticket.getBusinessPriority())
-                                        + "; Current: " + dev.getSeniority() + ".");
-                                outputs.add(node);
-                            } else if (checkForDevInMilestone(milestone, username) == 0) {
-                                ObjectNode node = printwhatiNeed(command, username, timestamp);
-                                Users usr =  returnUser(useri, username);
-                                Developer dev =  (Developer) usr;
-                                node.put("error", "Developer "
-                                        +  username + " is not assigned to milestone "
-                                        + milestoneName + ".");
-                                outputs.add(node);
-                            } else if (!ticket.getStatus().equals("OPEN")) {
-                                ObjectNode node = printwhatiNeed(command, username, timestamp);
-                                node.put("error", "Only OPEN tickets can be assigned.");
-                                outputs.add(node);
-                            } else if (milestone.isBlocking()) {
-                                ObjectNode node = printwhatiNeed(command, username, timestamp);
-                                node.put("error", "Cannot assign ticket "
-                                        + ticketID + " from blocked milestone "
-                                        + milestoneName + ".");
-                                outputs.add(node);
+                                Vector<Integer> tickets = repartition.get(username);
+                                tickets.add(ticketID);
+                                ticket.assignTicket(username, timestamp);
+                                ticket.changeStatus(0, ticket.getStatus(), username, timestamp);
+                            } else {
+                                if (!developer.eokSpecializarea(ticket.getExpertiseArea())) {
+                                    ObjectNode node = printwhatiNeed(command, username, timestamp);
+                                    Users usr = returnUser(useri, username);
+                                    Developer dev = (Developer) usr;
+                                    node.put("error", "Developer "
+                                            + username + " cannot assign ticket "
+                                            + ticketID + " due to expertise area. Required: "
+                                            + printExpertiseArea(ticket.getExpertiseArea())
+                                            + "; Current: " + dev.getExpertiseArea() + ".");
+                                    outputs.add(node);
+                                } else if (!developer.eokPrioritatea(ticket.getBusinessPriority())) {
+                                    ObjectNode node = printwhatiNeed(command, username, timestamp);
+                                    Users usr = returnUser(useri, username);
+                                    Developer dev = (Developer) usr;
+                                    node.put("error", "Developer "
+                                            + username + " cannot assign ticket "
+                                            + ticketID + " due to seniority level. Required: "
+                                            + printPriority(ticket.getBusinessPriority())
+                                            + "; Current: " + dev.getSeniority() + ".");
+                                    outputs.add(node);
+                                } else if (checkForDevInMilestone(milestone, username) == 0) {
+                                    ObjectNode node = printwhatiNeed(command, username, timestamp);
+                                    Users usr = returnUser(useri, username);
+                                    Developer dev = (Developer) usr;
+                                    node.put("error", "Developer "
+                                            + username + " is not assigned to milestone "
+                                            + milestoneName + ".");
+                                    outputs.add(node);
+                                } else if (!ticket.getStatus().equals("OPEN")) {
+                                    ObjectNode node = printwhatiNeed(command, username, timestamp);
+                                    node.put("error", "Only OPEN tickets can be assigned.");
+                                    outputs.add(node);
+                                } else if (milestone.isBlocking()) {
+                                    ObjectNode node = printwhatiNeed(command, username, timestamp);
+                                    node.put("error", "Cannot assign ticket "
+                                            + ticketID + " from blocked milestone "
+                                            + milestoneName + ".");
+                                    outputs.add(node);
+                                }
                             }
                         }
                     } else if (command.equals("viewAssignedTickets")) {
@@ -740,13 +746,15 @@ public class App {
                         Users usrAT = returnUser(useri, username);
                         Developer developer = (Developer) usrAT;
                         Ticket ticket = returnTicket(inventarTichete, ticketID);
-                        ticket.setAssignedTo("");
-                        ticket.setAssignedAt("");
-                        ticket.setIsAVailableForAssignment(true);
-                        ticket.setStatus("OPEN");
-                        ticket.deAssignTicket(username, timestamp);
-                        usrAT.getTickets().remove(ticket);
-                        usrAT.getGaveupTickets().add(ticket);
+                        if (ticket != null) {
+                            ticket.setAssignedTo("");
+                            ticket.setAssignedAt("");
+                            ticket.setIsAVailableForAssignment(true);
+                            ticket.setStatus("OPEN");
+                            ticket.deAssignTicket(username, timestamp);
+                            usrAT.getTickets().remove(ticket);
+                            usrAT.getGaveupTickets().add(ticket);
+                        }
                     } else if (command.equals("addComment")) {
                         int ticketID = inputJson.get(i).get("ticketID").asInt();
                         String comment  = inputJson.get(i).get("comment").asText();
@@ -762,12 +770,14 @@ public class App {
                             node.put("error", "Comment must be at least 10 characters long.");
                             outputs.add(node);
                         } else if (usr.getRole().equals("REPORTER")
+                                && ticket != null
                                 && ticket.getStatus().equals("CLOSED")
                                 && ticket != null) {
                             ObjectNode node = printwhatiNeed(command, username, timestamp);
                             node.put("error", "Reporters cannot comment on CLOSED tickets.");
                             outputs.add(node);
                         } else if (usr.getRole().equals("REPORTER")
+                                && ticket != null
                                 && araportatBine(ticket, username) == 0
                                 && ticket != null) {
                             ObjectNode node = printwhatiNeed(command, username, timestamp);
@@ -814,8 +824,10 @@ public class App {
                                     + username + ".");
                             outputs.add(node);
                         } else {
-                            nextStatus(ticket, timestamp);
-                            ticket.changeStatus(0, ticket.getStatus(), username, timestamp);
+                            if (ticket != null) {
+                                nextStatus(ticket, timestamp);
+                                ticket.changeStatus(0, ticket.getStatus(), username, timestamp);
+                            }
                         }
                     } else if (command.equals("undoChangeStatus")) {
                         int ticketID = inputJson.get(i).get("ticketID").asInt();
@@ -830,8 +842,10 @@ public class App {
                                     + username + ".");
                             outputs.add(node);
                         } else {
-                            previousStatus(ticket);
-                            ticket.changeStatus(1, ticket.getStatus(), username, timestamp);
+                            if (ticket != null) {
+                                previousStatus(ticket);
+                                ticket.changeStatus(1, ticket.getStatus(), username, timestamp);
+                            }
                         }
 
                     } else if (command.equals("viewTicketHistory")) {
@@ -877,8 +891,10 @@ public class App {
                             } else if (searchType.equals("DEVELOPER")) {
                                 List<Users> developeriGasiti =
                                         developersSearch.searchDevelopers(user, filters, useri);
+                                if (!developeriGasiti.isEmpty()) {
                                 ObjectNode printDevs = veziTichete.printFoundDevs(developeriGasiti);
-                                node.set("results", printDevs.get("results"));
+                                    node.set("results", printDevs.get("results"));
+                                }
                             }
                             // System.out.println("printeaza developersi/tichete");
                         }
@@ -912,6 +928,12 @@ public class App {
                         ObjectNode node =  printwhatiNeed(command, username, timestamp);
                         ObjectNode printEfficiency = veziTichete.generateEfficiency();
                         node.set("report", printEfficiency);
+                        outputs.add(node);
+                    } else if (command.equals("appStabilityReport")) {
+                        ObjectNode node = printwhatiNeed(command, username, timestamp);
+                        veziTichete.setImpactandOthers();
+                        ObjectNode printStability = veziTichete.generateImpactandTicketsRisk();
+                        node.set("report", printStability);
                         outputs.add(node);
                     }
                     veziTichete.setInventarTichete(inventarTichete);
