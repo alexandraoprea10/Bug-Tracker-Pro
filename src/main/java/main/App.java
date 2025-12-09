@@ -288,8 +288,10 @@ public class App {
             ticket.setStatus("IN_PROGRESS");
         } else if (ticket.getStatus().equals("IN_PROGRESS")) {
             ticket.setStatus("RESOLVED");
+            ticket.setUltimulTimestampCR(timestamp);
             ticket.setSolvedAt(timestamp);
         } else if (ticket.getStatus().equals("RESOLVED")) {
+            ticket.setUltimulTimestampCR(timestamp);
             ticket.setStatus("CLOSED");
         }
     }
@@ -305,6 +307,7 @@ public class App {
             ticket.setSolvedAt("");
             ticket.setStatus("IN_PROGRESS");
         } else if (ticket.getStatus().equals("CLOSED")) {
+            ticket.setUltimulTimestampCR(ticket.getSolvedAt());
             ticket.setStatus("RESOLVED");
         }
     }
@@ -432,6 +435,7 @@ public class App {
             for (int i = 0; i < inputJson.size(); i++) {
                 System.out.println("==============INCEPUTCOMANDA==============");
                 String command = inputJson.get(i).get("command").asText();
+                System.out.println("COMANDA ESTE: " + command);
                 String username = inputJson.get(i).get("username").asText();
                 Users user = returnUser(useri, username);
                 String timestamp = inputJson.get(i).get("timestamp").asText();
@@ -444,13 +448,14 @@ public class App {
                     Milestone milestone =  milestones.get(p);
                     // System.out.println("PENTRU MILESTONE " + milestone.getName()
                       //      + milestone.getDueDate());
-                    if (!timestamp.equals(lastTimestamp) && !command.equals("generatePerformanceReport")) {
+                    if (!timestamp.equals(lastTimestamp)
+                            && !command.equals("generatePerformanceReport")) {
                         milestone.interactiuniTicket(timestamp);
                     }
                     LocalDate currentDate = LocalDate.parse(timestamp);
                     LocalDate dateMilestone = LocalDate.parse(milestone.getDueDate());
                     int daysBetween = (int) ChronoUnit.DAYS.between(currentDate, dateMilestone) + 1;
-                    if (daysBetween == 0 && !milestone.isBlocking() && !command.equals("generatePerformanceReport")) {
+                    if (daysBetween == 0 && !milestone.isBlocking()) {
                         milestone.vineDueDate();
                         for (int k = 0; k < milestone.getTickets().length; k++) {
                             int ticketID =  milestone.getTickets()[k];
@@ -460,7 +465,7 @@ public class App {
                             }
                         }
                     }
-                    if (daysBetween < 0 && milestone.isBlocking() && !command.equals("generatePerformanceReport")) {
+                    if (daysBetween < 0 && milestone.isBlocking()) {
                         milestone.aTrecutDue();
                         for (int k = 0; k < milestone.getTickets().length; k++) {
                             int ticketID =  milestone.getTickets()[k];
@@ -686,7 +691,8 @@ public class App {
                                     ticket.getExpertiseArea(),
                                     ticket.getBusinessPriority(), ticket.getType())
                                     && checkForDevInMilestone(milestone, username) == 1
-                                    && ticket.getStatus().equals("OPEN") && !milestone.isBlocking()) {
+                                    && ticket.getStatus().equals("OPEN")
+                                    && !milestone.isBlocking()) {
                                 ticket.setStatus("IN_PROGRESS");
                                 ticket.setAssignedAt(timestamp);
                                 ticket.setIsAVailableForAssignment(false);
@@ -710,7 +716,8 @@ public class App {
                                             + printExpertiseArea(ticket.getExpertiseArea())
                                             + "; Current: " + dev.getExpertiseArea() + ".");
                                     outputs.add(node);
-                                } else if (!developer.eokPrioritatea(ticket.getBusinessPriority())) {
+                                } else if (!developer.eokPrioritatea(
+                                        ticket.getBusinessPriority())) {
                                     ObjectNode node = printwhatiNeed(command, username, timestamp);
                                     Users usr = returnUser(useri, username);
                                     Developer dev = (Developer) usr;
@@ -745,8 +752,13 @@ public class App {
                         Users usrAT = returnUser(useri, username);
                         ArrayList<Ticket> tickets = usrAT.getTickets();
                         ObjectNode node = printwhatiNeed(command, username, timestamp);
-                        ObjectNode printTickets = veziTichete.printTickets(tickets);
-                        node.set("assignedTickets", printTickets.get("assignedTickets"));
+                        if (user.getRole().equals("DEVELOPER")) {
+                            ObjectNode printTickets = veziTichete.printTickets(tickets);
+                            node.set("assignedTickets", printTickets.get("assignedTickets"));
+                        } else {
+                            node.put("error:", "The user does not have permission to execute this "
+                                    + "command: required role DEVELOPER; user role " + user.getRole() + ".");
+                        }
                         outputs.add(node);
                     } else if (command.equals("undoAssignTicket")) {
                         int ticketID = inputJson.get(i).get("ticketID").asInt();
@@ -857,19 +869,49 @@ public class App {
 
                     } else if (command.equals("viewTicketHistory")) {
                         ObjectNode node = printwhatiNeed(command, username, timestamp);
-                        ArrayList<Ticket> allTickets = new ArrayList<>();
-                        for (int m = 0;
-                             m < returnUser(useri, username).getTickets().size(); m++) {
-                            Ticket t =  returnUser(useri, username).getTickets().get(m);
-                            allTickets.add(t);
+                        if (user.getRole().equals("DEVELOPER")) {
+                            ArrayList<Ticket> allTickets = new ArrayList<>();
+                            for (int m = 0;
+                                 m < returnUser(useri, username).getTickets().size(); m++) {
+                                Ticket t = returnUser(useri, username).getTickets().get(m);
+                                allTickets.add(t);
+                            }
+                            for (int m = 0;
+                                 m < returnUser(useri, username).getGaveupTickets().size(); m++) {
+                                Ticket t = returnUser(useri, username).getGaveupTickets().get(m);
+                                allTickets.add(t);
+                            }
+                            ObjectNode printTickets = veziTichete.printHistoryTickets(allTickets);
+                            node.set("ticketHistory", printTickets.get("ticketHistory"));
+                        } else if (user.getRole().equals("MANAGER")) {
+                            ArrayList<Ticket> tickets = new ArrayList<>();
+                            Manager manager = (Manager) user;
+                            for (int k = 0; k < milestones.size(); k++) {
+                                Milestone milestone = milestones.get(k);
+                                if (milestone.getCreatedBy().equals(username)) {
+                                    String[] assignedDev = milestone.getAssignedDevs();
+                                    for (int p = 0; p < assignedDev.length; p++) {
+                                        for (int m = 0;
+                                             m < returnUser(useri,
+                                                     assignedDev[p]).getTickets().size();
+                                        m++){
+                                            Ticket t = returnUser(useri,
+                                                    assignedDev[p]).getTickets().get(m);
+                                            tickets.add(t);
+                                        }
+                                        for (int m = 0;
+                                             m < returnUser(useri,
+                                                     assignedDev[p]).getGaveupTickets().size(); m++) {
+                                            Ticket t = returnUser(useri,
+                                                    assignedDev[p]).getGaveupTickets().get(m);
+                                            tickets.add(t);
+                                        }
+                                    }
+                                }
+                            }
+                            ObjectNode printTickets = veziTichete.printHistoryTickets(tickets);
+                            node.set("ticketHistory", printTickets.get("ticketHistory"));
                         }
-                        for (int m = 0;
-                             m < returnUser(useri, username).getGaveupTickets().size(); m++) {
-                            Ticket t = returnUser(useri, username).getGaveupTickets().get(m);
-                            allTickets.add(t);
-                        }
-                        ObjectNode printTickets = veziTichete.printHistoryTickets(allTickets);
-                        node.set("ticketHistory", printTickets.get("ticketHistory"));
                         outputs.add(node);
                     } else if (command.equals("search")) {
                         JsonNode filters = inputJson.get(i).get("filters");
@@ -896,8 +938,8 @@ public class App {
                                 node.set("results", printTickets.get("results"));
                             } else if (searchType.equals("DEVELOPER")) {
                                 ArrayNode arrayNode = mapper.createArrayNode();
-                                System.out.println(user.getUsername() + " " + command);
-                                List<Users> developeriGasiti =
+                                // System.out.println(user.getUsername() + " " + command);
+                                List<Developer> developeriGasiti =
                                         developersSearch.searchDevelopers(user, filters, useri);
                                 if (!developeriGasiti.isEmpty()) {
                                 ObjectNode printDevs = veziTichete.printFoundDevs(developeriGasiti);
@@ -948,8 +990,10 @@ public class App {
                     } else if (command.equals("generatePerformanceReport")) {
                         ObjectNode node = printwhatiNeed(command, username, timestamp);
                         Manager manager = (Manager) user;
-                        ArrayList<PerformanceReport> rep = veziTichete.calculatePerformance(useri, manager);
-                        ObjectNode printPerf = veziTichete.generatePerformanceReport(rep);
+                        ArrayList<PerformanceReport> rep =
+                                veziTichete.calculatePerformance(useri, manager);
+                        ObjectNode printPerf =
+                                veziTichete.generatePerformanceReport(rep);
                         node.set("report", printPerf.get("report"));
                         outputs.add(node);
                     }

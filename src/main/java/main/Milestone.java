@@ -105,6 +105,7 @@ public class Milestone {
     public void aTrecutDue() {
         String message = String.format("Milestone %s was unblocked after due date. "
                 + "All active tickets are now CRITICAL.", name);
+        this.setBlocking(false);
         notificareDevelopers(message);
     }
     /**
@@ -411,7 +412,7 @@ public class Milestone {
      * Seteaza lista de developeri asignati
      * @param assigneddevelopers
      */
-    public void setAssigneddevelopers(ArrayList<Developer> assigneddevelopers) {
+    public void setAssigneddevelopers(final ArrayList<Developer> assigneddevelopers) {
         this.assigneddevelopers = assigneddevelopers;
     }
 

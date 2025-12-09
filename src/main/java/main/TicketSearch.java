@@ -111,6 +111,21 @@ public class TicketSearch {
     }
 
     /**
+     * Cauta cuvantul pe care se da match.
+     * @param title
+     * @param search
+     * @return
+     */
+    public String cautaCuvantul(final String title, final String search) {
+        String[] imparte = title.split("\\s+");
+        for (int i = 0; i < imparte.length; i++) {
+            if (imparte[i].contains(search)) {
+                return imparte[i];
+            }
+        }
+        return null;
+    }
+    /**
      * Cauta tichtele care respecta regula(din persp managerului).
      * @param filters
      * @param inventarTichete
@@ -125,7 +140,7 @@ public class TicketSearch {
         String createdBefore = null;
         String createdAfter = null;
         boolean availableForAssignment = false;
-        String[] keywords = null;
+        ArrayList<String> keywords = new ArrayList<>();
         if (filters.get("businessPriority") != null) {
             businessPriority = filters.get("businessPriority").asText();
         }
@@ -145,7 +160,7 @@ public class TicketSearch {
             for (int j = 0; j <  filters.get("keywords").size(); j++) {
                 JsonNode keyword = filters.get("keywords").get(j);
                 String key = keyword.asText();
-                keywords = key.split(" ");
+                keywords.add(key);
             }
         }
         for (int i = 0; i < inventarTichete.size(); i++) {
@@ -180,17 +195,24 @@ public class TicketSearch {
                     && filters.get("availableForAssignment") != null) {
                 continue;
             }
+            ArrayList<String> match = new ArrayList<>();
             if (keywords != null) {
-                int ok = 0;
-                if (!t.getTitle().contains(keywords[0])) {
-                    ok = 1;
+                // System.out.println(keywords.length);
+                for (int j = 0; j < keywords.size(); j++) {
+                    if (cautaCuvantul(t.getTitle(), keywords.get(j)) != null) {
+                        match.add(cautaCuvantul(t.getTitle(), keywords.get(j)));
+                    }
+                    if (t.getDescription() != null
+                            && cautaCuvantul(t.getDescription(), keywords.get(j)) != null) {
+                        match.add(cautaCuvantul(t.getTitle(), keywords.get(j)));
+                    }
                 }
-                if (t.getDescription() != null && !t.getDescription().contains(keywords[0])) {
-                    ok = 1;
-                }
-                if (ok == 1) {
+                if (match.isEmpty()) {
                     continue;
                 }
+            }
+            if (!match.isEmpty()) {
+                t.setMatch(match);
             }
             tichete.add(t);
         }

@@ -68,6 +68,7 @@ public class InfoMilestones {
                 node.put("createdAt", milestone.getCreatedAt());
                 ArrayNode printTickets = mapper.createArrayNode();
                 int[] tichete = milestone.getTickets();
+                Arrays.sort(tichete);
                 for (int i = 0; i < tichete.length; i++) {
                     printTickets.add(tichete[i]);
                 }
@@ -104,12 +105,14 @@ public class InfoMilestones {
                 node.put("overdueBy", milestone.getOverdueBy());
                 ArrayNode printOpenTickets = mapper.createArrayNode();
                 int[] openTichete = milestone.getOpenTickets();
+                Arrays.sort(openTichete);
                 for (int i = 0; i < openTichete.length; i++) {
                     printOpenTickets.add(openTichete[i]);
                 }
                 node.set("openTickets", printOpenTickets);
                 ArrayNode printClosedTickets = mapper.createArrayNode();
                 int[] closedTichete = milestone.getClosedTickets();
+                Arrays.sort(closedTichete);
                 for (int i = 0; i < closedTichete.length; i++) {
                     printClosedTickets.add(closedTichete[i]);
                 }
@@ -118,6 +121,14 @@ public class InfoMilestones {
                 LinkedHashMap<String, Vector<Integer>> repartition = milestone.getRepartition();
                 ArrayNode printRepartition = mapper.createArrayNode();
                 String[] numeDeveloperi = repartition.keySet().toArray(new String[0]);
+                Arrays.sort(numeDeveloperi, new Comparator<String>() {
+                    @Override
+                    public int compare(final String o1, final String o2) {
+                        Vector<Integer> list1 = repartition.get(o1);
+                        Vector<Integer> list2 = repartition.get(o2);
+                        return Integer.compare(list1.size(), list2.size());
+                    }
+                });
                 for (int i = 0; i < numeDeveloperi.length; i++) {
                     String dev = numeDeveloperi[i];
                     Vector<Integer> tich = repartition.get(dev);
@@ -183,6 +194,7 @@ public class InfoMilestones {
                 node.put("createdAt", milestone.getCreatedAt());
                 ArrayNode printTickets = mapper.createArrayNode();
                 int[] tichete = milestone.getTickets();
+                Arrays.sort(tichete);
                 for (int i = 0; i < tichete.length; i++) {
                     printTickets.add(tichete[i]);
                 }
@@ -209,12 +221,14 @@ public class InfoMilestones {
                 node.put("overdueBy", milestone.getOverdueBy());
                 ArrayNode printOpenTickets = mapper.createArrayNode();
                 int[] openTichete = milestone.getOpenTickets();
+                Arrays.sort(openTichete);
                 for (int i = 0; i < openTichete.length; i++) {
                     printOpenTickets.add(openTichete[i]);
                 }
                 node.set("openTickets", printOpenTickets);
                 ArrayNode printClosedTickets = mapper.createArrayNode();
                 int[] closedTichete = milestone.getClosedTickets();
+                Arrays.sort(closedTichete);
                 for (int i = 0; i < closedTichete.length; i++) {
                     printClosedTickets.add(closedTichete[i]);
                 }

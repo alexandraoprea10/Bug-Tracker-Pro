@@ -18,11 +18,11 @@ public class DevelopersSearch {
      * @param useri
      * @return
      */
-    public List<Users> searchDevelopers(final Users user,
+    public List<Developer> searchDevelopers(final Users user,
                                         final JsonNode filter,
                                         final List<Users> useri) {
         Manager manager = (Manager) user;
-        List<Users> developersFound = new ArrayList<>();
+        List<Developer> developersFound = new ArrayList<>();
         String expertiseArea = null;
         String seniority = null;
         double performanceScoreAbove = 0.0;
@@ -60,7 +60,7 @@ public class DevelopersSearch {
                         && developer.getPerformanceScore() > performanceScoreBelow) {
                     continue;
                 }
-                developersFound.add(usr);
+                developersFound.add(developer);
             }
         }
         return developersFound;

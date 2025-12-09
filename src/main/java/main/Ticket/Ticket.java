@@ -31,6 +31,9 @@ public abstract class Ticket {
     private double calculateEfficiency;
     private int daysToResolve;
     private int averageResolutionTime;
+    private String ultimulTimestampCR;
+    private int daysToResolveEfficiency;
+    private ArrayList<String> match;
     // constructor
      public Ticket(final int id, final String type, final String title,
                    final String businessPriority, final String status,
@@ -67,6 +70,9 @@ public abstract class Ticket {
          this.calculateImpact = calculateImpact;
          this.calculateRisk = calculateRisk;
          this.averageResolutionTime = 0;
+         this.ultimulTimestampCR = "";
+         this.daysToResolveEfficiency = 0;
+         this.match = new ArrayList<>();
     }
     // getters
 
@@ -269,8 +275,37 @@ public abstract class Ticket {
     public int getBusinessPriorityCode() {
         return businesspriorityCode;
     }
+
+    /**
+     * Returneaza nr de zile dintre assignedAt si solvedAt.
+     * @return
+     */
     public int getAverageResolutionTime() {
         return averageResolutionTime;
+    }
+
+    /**
+     * Returneaza ultimul timestamp la care s-a facut tichetul closed/resolved.
+     * @return
+     */
+    public String getUltimulTimestampCR() {
+        return ultimulTimestampCR;
+    }
+
+    /**
+     * REturneaza nr de zile...
+     * @return
+     */
+    public int getDaysToResolveEfficiency() {
+        return daysToResolveEfficiency;
+    }
+
+    /**
+     * REturneaza setul de cuvinte care au dat match la search.
+     * @return
+     */
+    public ArrayList<String> getMatch() {
+        return match;
     }
     // setteri
 
@@ -394,6 +429,30 @@ public abstract class Ticket {
     }
 
     /**
+     * Seteaza ultimul timestamp cand tichetul e resolved/closed.
+     * @param ultimulTimestampCR
+     */
+    public void setUltimulTimestampCR(final String ultimulTimestampCR) {
+        this.ultimulTimestampCR = ultimulTimestampCR;
+    }
+
+    /**
+     * Calculeaza nr de zile dintre assignedAt si ultima modidifcare a statutului.
+     * @param daysToResolveEfficiency
+     */
+    public void setDaysToResolveEfficiency(final int daysToResolveEfficiency) {
+        this.daysToResolveEfficiency = daysToResolveEfficiency;
+    }
+
+    /**
+     * Seteaza setul de cuvinte care au dat match la search.
+     * @param match
+     */
+    public void setMatch(final ArrayList<String> match) {
+        this.match = match;
+    }
+
+    /**
      * Adauga un istoric.
      * @param history
      */
@@ -424,6 +483,11 @@ public abstract class Ticket {
     public void setDaysToResolve(final int daysToResolve) {
         this.daysToResolve = daysToResolve;
     }
+
+    /**
+     * Seteaza nr de zile dintre assignedAt si solvedAt.
+     * @param days
+     */
     public void setAverageResolutionTime(final int days) {
         this.averageResolutionTime = days;
     }

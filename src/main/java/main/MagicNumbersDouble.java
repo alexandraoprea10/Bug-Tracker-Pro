@@ -1,6 +1,10 @@
 package main;
 
 public enum MagicNumbersDouble {
+    zerotrei(0.3),
+    zerocinci(0.5),
+    zerosapte(0.7),
+    trrei(3.0),
     zece(10.0),
     doisprezece(12.0),
     douazeci(20.0),
