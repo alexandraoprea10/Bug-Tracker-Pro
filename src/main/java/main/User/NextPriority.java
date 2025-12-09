@@ -21,8 +21,8 @@ public class NextPriority implements SpecialMention {
                                     final ArrayList<Ticket> inventarTichete) {
         LocalDate dataMilestone = LocalDate.parse(milestone.getCreatedAt());
         LocalDate data = LocalDate.parse(date);
-        int daysBetween = (int) ChronoUnit.DAYS.between(dataMilestone, data) + 1;
-        if ((daysBetween - 1) % MagicNumbersInt.trei.getValue() == 0
+        int daysBetween = (int) ChronoUnit.DAYS.between(dataMilestone, data);
+        if ((daysBetween) % MagicNumbersInt.trei.getValue() == 0
                 && daysBetween >= MagicNumbersInt.trei.getValue()
                 && !milestone.isBlocking()) {
             int[] idTick = milestone.getTickets();

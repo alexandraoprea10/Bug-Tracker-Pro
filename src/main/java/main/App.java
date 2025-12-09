@@ -12,10 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * main.App represents the main application logic that processes input commands,
@@ -242,7 +239,6 @@ public class App {
         }
         return 0;
     }
-
     /**
      * Printeaza userii
      * @param useri
@@ -277,7 +273,7 @@ public class App {
         LocalDate start = LocalDate.parse(startTimestamp);
         LocalDate current = LocalDate.parse(currentTimestamp);
         int daysBetween = (int) ChronoUnit.DAYS.between(start, current) + 1;
-        if (daysBetween >= MagicNumbersInt.doisprezece.getValue()) {
+        if (daysBetween >= MagicNumbersInt.cincisprezece.getValue()) {
             return 1;
         }
         return 0;
@@ -294,7 +290,6 @@ public class App {
             ticket.setStatus("RESOLVED");
             ticket.setSolvedAt(timestamp);
         } else if (ticket.getStatus().equals("RESOLVED")) {
-            ticket.setSolvedAt(timestamp);
             ticket.setStatus("CLOSED");
         }
     }
@@ -311,6 +306,15 @@ public class App {
             ticket.setStatus("IN_PROGRESS");
         } else if (ticket.getStatus().equals("CLOSED")) {
             ticket.setStatus("RESOLVED");
+        }
+    }
+    public static void nextPriority(final Ticket t) {
+        if (t.getBusinessPriority().equals("LOW")) {
+            t.setBusinessPriority("MEDIUM");
+        } else if (t.getBusinessPriority().equals("MEDIUM")) {
+            t.setBusinessPriority("HIGH");
+        } else if (t.getBusinessPriority().equals("HIGH")) {
+            t.setBusinessPriority("CRITICAL");
         }
     }
 
@@ -376,6 +380,7 @@ public class App {
         ArrayList<Users> useri = new ArrayList<>();
         int okstartTesting = 0;
         String timestampTesting = "";
+        String lastTimestamp = null;
         File usrFile = new File(inputuserFile);
         try {
             JsonNode usersNode = mapper.readTree(usrFile);
@@ -439,11 +444,13 @@ public class App {
                     Milestone milestone =  milestones.get(p);
                     // System.out.println("PENTRU MILESTONE " + milestone.getName()
                       //      + milestone.getDueDate());
-                    milestone.interactiuniTicket(timestamp);
+                    if (!timestamp.equals(lastTimestamp) && !command.equals("generatePerformanceReport")) {
+                        milestone.interactiuniTicket(timestamp);
+                    }
                     LocalDate currentDate = LocalDate.parse(timestamp);
                     LocalDate dateMilestone = LocalDate.parse(milestone.getDueDate());
                     int daysBetween = (int) ChronoUnit.DAYS.between(currentDate, dateMilestone) + 1;
-                    if (daysBetween == 0 && !milestone.isBlocking()) {
+                    if (daysBetween == 0 && !milestone.isBlocking() && !command.equals("generatePerformanceReport")) {
                         milestone.vineDueDate();
                         for (int k = 0; k < milestone.getTickets().length; k++) {
                             int ticketID =  milestone.getTickets()[k];
@@ -453,7 +460,7 @@ public class App {
                             }
                         }
                     }
-                    if (daysBetween < 0 && milestone.isBlocking()) {
+                    if (daysBetween < 0 && milestone.isBlocking() && !command.equals("generatePerformanceReport")) {
                         milestone.aTrecutDue();
                         for (int k = 0; k < milestone.getTickets().length; k++) {
                             int ticketID =  milestone.getTickets()[k];
@@ -877,7 +884,6 @@ public class App {
                             ObjectNode printTickets =
                                     veziTichete.printFoundTicketsDeveloper(ticheteGasite);
                             node.set("results", printTickets.get("results"));
-
                         } else if (user.getRole().equals("MANAGER")) {
                             if (searchType.equals("TICKET")) {
                                 List<Ticket> ticheteGasite =
@@ -889,11 +895,15 @@ public class App {
                                                 keywords);
                                 node.set("results", printTickets.get("results"));
                             } else if (searchType.equals("DEVELOPER")) {
+                                ArrayNode arrayNode = mapper.createArrayNode();
+                                System.out.println(user.getUsername() + " " + command);
                                 List<Users> developeriGasiti =
                                         developersSearch.searchDevelopers(user, filters, useri);
                                 if (!developeriGasiti.isEmpty()) {
                                 ObjectNode printDevs = veziTichete.printFoundDevs(developeriGasiti);
                                     node.set("results", printDevs.get("results"));
+                                } else {
+                                    node.set("results", arrayNode);
                                 }
                             }
                             // System.out.println("printeaza developersi/tichete");
@@ -935,7 +945,15 @@ public class App {
                         ObjectNode printStability = veziTichete.generateImpactandTicketsRisk();
                         node.set("report", printStability);
                         outputs.add(node);
+                    } else if (command.equals("generatePerformanceReport")) {
+                        ObjectNode node = printwhatiNeed(command, username, timestamp);
+                        Manager manager = (Manager) user;
+                        ArrayList<PerformanceReport> rep = veziTichete.calculatePerformance(useri, manager);
+                        ObjectNode printPerf = veziTichete.generatePerformanceReport(rep);
+                        node.set("report", printPerf.get("report"));
+                        outputs.add(node);
                     }
+                    lastTimestamp = timestamp;
                     veziTichete.setInventarTichete(inventarTichete);
                 }
                 System.out.println("==============SFARSITCOMANDA==============");

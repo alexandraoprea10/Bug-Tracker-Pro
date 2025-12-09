@@ -2,6 +2,7 @@ package main.User;
 
 import main.MagicNumbersInt;
 import main.Notifications;
+import main.Ticket.Ticket;
 
 import java.util.ArrayList;
 

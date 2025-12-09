@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import main.MagicNumbersDouble;
 import main.MagicNumbersInt;
 import main.Milestone;
+import main.PerformanceReport;
 import main.User.Developer;
+import main.User.Manager;
 import main.User.Users;
 
 import java.time.LocalDate;
@@ -17,6 +19,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static java.lang.Math.max;
 import static main.App.returnTicket;
 
 public class VeziTichete {
@@ -987,5 +990,197 @@ public class VeziTichete {
         }
         nrTickets.put("appStability", stability);
         return nrTickets;
+    }
+    public static double averageResolvedTicketType(int bug, int feature, int ui) {
+        double res = (bug + feature + ui) / 3.0;
+        return Math.round(res * 100.0) / 100.0;
+    }
+
+    public static double standardDeviation(int bug, int feature, int ui) {
+        double mean = averageResolvedTicketType(bug, feature, ui);
+        double variance = (Math.pow(bug - mean, 2) + Math.pow(feature - mean, 2) + Math.pow(ui - mean, 2)) / 3.0;
+        double res =  Math.sqrt(variance);
+        return Math.round(res * 100.0) / 100.0;
+    }
+
+    public static double ticketDiversityFactor(int bug, int feature, int ui) {
+        double mean = averageResolvedTicketType(bug, feature, ui);
+
+        if (mean == 0.0) {
+            return 0.0;
+        }
+
+        double std = standardDeviation(bug, feature, ui);
+        double res = std / mean;
+        return Math.round(res * 100.0) / 100.0;
+    }
+    public static Users returnUser(final List<Users> useri, final String username) {
+        for (int i = 0; i < useri.size(); i++) {
+            Users user = useri.get(i);
+            if (user.getUsername().equals(username)) {
+                return user;
+            }
+        }
+        return null;
+    }
+    public int calculateclosedTickets(ArrayList<Ticket> tichete) {
+        int count = 0;
+        for (int i = 0 ; i < tichete.size(); i++) {
+            Ticket t = tichete.get(i);
+            if (t.getStatus().equals("CLOSED")) {
+                count++;
+            }
+        }
+        return count;
+    }
+    public int calculateopenTickets(ArrayList<Ticket> tichete) {
+        int count = 0;
+        for (int i = 0 ; i < tichete.size(); i++) {
+            Ticket t = tichete.get(i);
+            if (t.getStatus().equals("OPEN")) {
+                count++;
+            }
+        }
+        return count;
+    }
+    public int calculateBUG(ArrayList<Ticket> tichete) {
+        int count = 0;
+        for (int i = 0 ; i < tichete.size(); i++) {
+            Ticket t = tichete.get(i);
+            if (t.isBUG() && t.getStatus().equals("CLOSED")) {
+                count++;
+            }
+        }
+        return count;
+    }
+    public int calculateUI(ArrayList<Ticket> tichete) {
+        int count = 0;
+        for (int i = 0 ; i < tichete.size(); i++) {
+            Ticket t = tichete.get(i);
+            if (t.isUI() && t.getStatus().equals("CLOSED")) {
+                count++;
+            }
+        }
+        return count;
+    }
+    public int calculateFeature(ArrayList<Ticket> tichete) {
+        int count = 0;
+        for (int i = 0 ; i < tichete.size(); i++) {
+            Ticket t = tichete.get(i);
+            if (t.isFeature() && t.getStatus().equals("CLOSED")) {
+                count++;
+            }
+        }
+        return count;
+    }
+    public int calculateHighPriority(ArrayList<Ticket> tichete) {
+        int count = 0;
+        for (int i = 0 ; i < tichete.size(); i++) {
+            Ticket t = tichete.get(i);
+            if (t.getStatus().equals("CLOSED")
+                    && (t.getBusinessPriority().equals("HIGH") || t.getBusinessPriority().equals("CRITICAL"))) {
+                count++;
+            }
+        }
+        return count;
+    }
+    public void setAverageDate(ArrayList<Ticket> tickets) {
+        for (int i = 0; i < tickets.size(); i++) {
+            Ticket t = tickets.get(i);
+            LocalDate createdAt = LocalDate.parse(t.getAssignedAt());
+            LocalDate solvedAt = LocalDate.parse((t.getSolvedAt()));
+            int days = (int) ChronoUnit.DAYS.between(createdAt, solvedAt) + 1;
+            t.setAverageResolutionTime(days);
+        }
+    }
+    public double calculateAvgTime(ArrayList<Ticket> ticket) {
+        double sum = 0;
+        for (int i = 0; i < ticket.size(); i++) {
+            if (ticket.get(i).getStatus().equals("CLOSED")) {
+                sum = sum + ticket.get(i).getAverageResolutionTime();
+            }
+        }
+        int nr = calculateclosedTickets(ticket);
+        if (nr == 0) {
+            return 0.0;
+        }
+        double res = sum / nr;
+        return Math.round(res * 100.0) / 100.0;
+    }
+    public ArrayList<PerformanceReport> calculatePerformance(final List<Users> useri, Manager manager) {
+        setImpactandOthers();
+        ArrayList<PerformanceReport> rep = new ArrayList<>();
+        for (int i = 0 ; i < manager.getSubordinates().size(); i++) {
+            String usernameCurent = manager.getSubordinates().get(i);
+            Developer dev = (Developer) returnUser(useri, usernameCurent);
+            setAverageDate(dev.getTickets());
+            // System.out.println(usernameCurent + ": "  + calculateclosedTickets(dev.getTickets()));
+            if (dev.getSeniority().equals("JUNIOR")) {
+                    // System.out.println(calculateclosedTickets(dev.getTickets()));
+                    double averageResolvedTickets = averageResolvedTicketType(calculateBUG(dev.getTickets()), calculateFeature(dev.getTickets()), calculateUI(dev.getTickets()));
+                    double standardDeviation = standardDeviation(calculateBUG(dev.getTickets()), calculateFeature(dev.getTickets()), calculateUI(dev.getTickets()));
+                    double ticketDiveristyFactor = ticketDiversityFactor(calculateBUG(dev.getTickets()), calculateFeature(dev.getTickets()), calculateUI(dev.getTickets()));
+                    double performance = 0.0;
+                    double avgRes = calculateAvgTime(dev.getTickets());
+                    if (averageResolvedTickets != 0 || standardDeviation != 0 || ticketDiveristyFactor != 0) {
+                        double value  = max(0.0, 0.5 * calculateclosedTickets(dev.getTickets()) - ticketDiveristyFactor) + 5;
+                        performance = Math.round(value * 100.0) / 100.0;
+                    }
+                    dev.setPerformanceScore(performance);
+                    PerformanceReport report = new PerformanceReport(usernameCurent, calculateclosedTickets(dev.getTickets()), avgRes, performance, dev.getSeniority());
+//                    System.out.println(usernameCurent + " are: " + performance);
+//                    System.out.println("closed tickets " + calculateclosedTickets(dev.getTickets()));
+//                    System.out.println("avg res: " + avgRes);
+                    rep.add(report);
+            } else if (dev.getSeniority().equals("MID")) {
+                double closedTickets = calculateclosedTickets(dev.getTickets());
+                double highPriorityTicket = calculateHighPriority(dev.getTickets());
+                double avgRes = calculateAvgTime(dev.getTickets());
+                double performance = 0.0;
+                if (closedTickets != 0 || highPriorityTicket != 0 || avgRes != 0) {
+                    double value  = max(0, 0.5 * closedTickets + 0.7 * highPriorityTicket - 0.3 * avgRes) + 15;
+                    performance = Math.round(value * 100.0) / 100.0;
+                }
+                dev.setPerformanceScore(performance);
+                PerformanceReport report = new PerformanceReport(usernameCurent, calculateclosedTickets(dev.getTickets()), avgRes, performance, dev.getSeniority());
+                rep.add(report);
+            } else if (dev.getSeniority().equals("SENIOR")) {
+                double closedTickets = calculateclosedTickets(dev.getTickets());
+                double highPriorityTicket = calculateHighPriority(dev.getTickets());
+                double avgRes = calculateAvgTime(dev.getTickets());
+                double performance = 0.0;
+                if (closedTickets != 0 || highPriorityTicket != 0 || avgRes != 0) {
+                    double value = max(0, 0.5 * closedTickets + 1.0 * highPriorityTicket - 0.5 * avgRes) + 30;
+                    performance = Math.round(value * 100.0) / 100.0;
+                }
+                PerformanceReport report = new PerformanceReport(usernameCurent, calculateclosedTickets(dev.getTickets()), avgRes, performance, dev.getSeniority());
+                rep.add(report);
+                dev.setPerformanceScore(performance);
+            }
+            // System.out.println(dev.getUsername() + " are performance" + dev.getPerformanceScore());
+        }
+        Collections.sort(rep, new Comparator<PerformanceReport>() {
+            @Override
+            public int compare(final PerformanceReport o1, final PerformanceReport o2) {
+                return o1.getUsername().compareTo(o2.getUsername());
+            }
+        });
+        return rep;
+    }
+    public ObjectNode generatePerformanceReport(ArrayList<PerformanceReport> rep) {
+        ObjectNode node = mapper.createObjectNode();
+        ArrayNode printPerformance = mapper.createArrayNode();
+        for (int i = 0; i < rep.size(); i++) {
+            PerformanceReport report = rep.get(i);
+            ObjectNode printRep = mapper.createObjectNode();
+            printRep.put("username", report.getUsername());
+            printRep.put("closedTickets", report.getClosedTickets());
+            printRep.put("averageResolutionTime", report.getAverageResolutionTime());
+            printRep.put("performanceScore", report.getPerformanceScore());
+            printRep.put("seniority", report.getSeniority());
+            printPerformance.add(printRep);
+        }
+        node.set("report", printPerformance);
+        return node;
     }
 }

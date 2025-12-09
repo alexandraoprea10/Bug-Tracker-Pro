@@ -8,7 +8,8 @@ public enum MagicNumbersInt {
     sase(6),
     zece(10),
     unsprezece(11),
-    doisprezece(12);
+    doisprezece(12),
+    cincisprezece(15);
     private final int value;
     MagicNumbersInt(final int value) {
         this.value = value;

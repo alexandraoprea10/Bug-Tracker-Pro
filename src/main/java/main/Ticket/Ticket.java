@@ -30,6 +30,7 @@ public abstract class Ticket {
     private double calculateRisk;
     private double calculateEfficiency;
     private int daysToResolve;
+    private int averageResolutionTime;
     // constructor
      public Ticket(final int id, final String type, final String title,
                    final String businessPriority, final String status,
@@ -65,6 +66,7 @@ public abstract class Ticket {
          }
          this.calculateImpact = calculateImpact;
          this.calculateRisk = calculateRisk;
+         this.averageResolutionTime = 0;
     }
     // getters
 
@@ -267,6 +269,9 @@ public abstract class Ticket {
     public int getBusinessPriorityCode() {
         return businesspriorityCode;
     }
+    public int getAverageResolutionTime() {
+        return averageResolutionTime;
+    }
     // setteri
 
     /**
@@ -418,6 +423,9 @@ public abstract class Ticket {
      */
     public void setDaysToResolve(final int daysToResolve) {
         this.daysToResolve = daysToResolve;
+    }
+    public void setAverageResolutionTime(final int days) {
+        this.averageResolutionTime = days;
     }
 
     /**
