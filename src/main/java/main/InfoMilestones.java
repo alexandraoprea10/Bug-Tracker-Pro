@@ -3,10 +3,13 @@ package main;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import main.Ticket.Ticket;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+
+import static main.App.returnTicket;
 
 public class InfoMilestones {
     private final ObjectMapper mapper = new ObjectMapper();
@@ -33,6 +36,29 @@ public class InfoMilestones {
     }
 
     /**
+     * Returnez id-ul ultimului tichet asignat CLOSED.
+     * @param m
+     * @param inventarTichete
+     * @return
+     */
+    public int ultimulTichetAsignat(final Milestone m, final ArrayList<Ticket> inventarTichete) {
+        int[] ids = m.getTickets();
+        ArrayList<Ticket> ticks = new ArrayList<>();
+        for (int i = 0; i < ids.length; i++) {
+            int id = ids[i];
+            Ticket tick = returnTicket(inventarTichete, id);
+            ticks.add(tick);
+        }
+        Collections.sort(ticks, new Comparator<Ticket>() {
+            @Override
+            public int compare(final Ticket o1, final Ticket o2) {
+                int comparSolved = o2.getSolvedAt().compareTo(o1.getSolvedAt());
+                return comparSolved;
+            }
+        });
+        return ticks.get(0).getId();
+    }
+    /**
      * Printeaza milestonurile vizibile pentru manageri.
      * @param milestones
      * @param timestamp
@@ -40,7 +66,8 @@ public class InfoMilestones {
      * @return
      */
     public ObjectNode viewMilestonesManager(final ArrayList<Milestone> milestones,
-                                            final String timestamp, final String username) {
+                                            final String timestamp, final String username,
+                                            final ArrayList<Ticket> inventarTichete) {
         ObjectNode finalNode = mapper.createObjectNode();
         ArrayNode arrayNode = mapper.createArrayNode();
         Collections.sort(milestones, new Comparator<Milestone>() {
@@ -85,22 +112,43 @@ public class InfoMilestones {
                 }
                 node.put("status", milestone.getStatus());
                 node.put("isBlocked", milestone.isBlocking());
+                System.out.println(milestone.getDueDate());
+                System.out.println(timestamp);
                 int days = daystillDeadline(milestone.getDueDate(), timestamp);
-                // System.out.println(days);
-                if (days < 0) {
-                    int db = daystillDeadline(timestamp, milestone.getDueDate());
-                    milestone.setOverdueBy(db);
-                    milestone.setDaysUntilDue(0);
-                } else if (days > 0) {
-                    milestone.setOverdueBy(0);
-                    milestone.setDaysUntilDue(days);
-                } else if (days == 0) {
-                    int db = daystillDeadline(timestamp, milestone.getDueDate());
-                    if (db != 0) {
-                        milestone.setOverdueBy(db);
-                        milestone.setDaysUntilDue(0);
-                    }
-                }
+                System.out.println("sunt " + days + "zile ");
+                System.out.println("milestone cu numele " + milestone.getName()
+                        + " are inactivitate " + milestone.getInactivity());
+                    int ticketID = ultimulTichetAsignat(milestone, inventarTichete);
+                    Ticket t = returnTicket(inventarTichete, ticketID);
+                        if (days < 0) {
+                            if (milestone.getInactivity()) {
+                                int db = daystillDeadline(t.getUltimulTimestampCR(),
+                                        milestone.getDueDate());
+                                milestone.setOverdueBy(db);
+                                milestone.setDaysUntilDue(0);
+                            } else {
+                                int db = daystillDeadline(timestamp, milestone.getDueDate());
+                                milestone.setOverdueBy(db);
+                                milestone.setDaysUntilDue(0);
+                            }
+                        } else if (days > 0) {
+                            if (milestone.getInactivity()) {
+                                int db = daystillDeadline(t.getUltimulTimestampCR(),
+                                        milestone.getDueDate());
+                                milestone.setOverdueBy(0);
+                                milestone.setDaysUntilDue(db);
+                            } else {
+                                int db = daystillDeadline(timestamp, milestone.getDueDate());
+                                milestone.setOverdueBy(0);
+                                milestone.setDaysUntilDue(days);
+                            }
+                        } else if (days == 0) {
+                            int db = daystillDeadline(timestamp, milestone.getDueDate());
+                            if (db != 0) {
+                                milestone.setOverdueBy(db);
+                                milestone.setDaysUntilDue(0);
+                            }
+                        }
                 node.put("daysUntilDue", milestone.getDaysUntilDue());
                 node.put("overdueBy", milestone.getOverdueBy());
                 ArrayNode printOpenTickets = mapper.createArrayNode();
@@ -132,6 +180,7 @@ public class InfoMilestones {
                 for (int i = 0; i < numeDeveloperi.length; i++) {
                     String dev = numeDeveloperi[i];
                     Vector<Integer> tich = repartition.get(dev);
+                    Collections.sort(tich);
                     ObjectNode printDev = mapper.createObjectNode();
                     printDev.put("developer", dev);
                     ArrayNode setTichete = mapper.createArrayNode();

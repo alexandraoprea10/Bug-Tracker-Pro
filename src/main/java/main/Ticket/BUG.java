@@ -92,6 +92,9 @@ public final class BUG extends Ticket {
             } else if (businessPriority.equals("CRITICAL")) {
                 this.businesspriorityCode = MagicNumbersInt.patru.getValue();
             }
+            if (reportedBy.equals("")) {
+                this.businesspriorityCode = 1;
+            }
             if (severity.equals("MINOR")) {
                 this.severityCode = 1;
             } else if (severity.equals("MODERATE")) {
@@ -165,6 +168,7 @@ public final class BUG extends Ticket {
         this.environment = builder.environment;
         this.errorCode = builder.errorCode;
         this.severityCode = builder.severityCode;
+        this.freqCode = builder.freqCode;
         setCalculateImpact(builder.calculateImpact);
         setCalculateRisk(builder.calculateRisk);
     }
@@ -190,6 +194,9 @@ public final class BUG extends Ticket {
     public int getSeverityCode() {
         return severityCode;
     }
+    public int getFreqCode() {
+        return freqCode;
+    }
     // setteri
     public void setExpectedBehaviour(final String expectedB) {
         this.expectedBehaviour = expectedB;
@@ -209,6 +216,10 @@ public final class BUG extends Ticket {
     public void setErrorCode(final int error) {
         this.errorCode = error;
     }
+    public void setFreqCode(final int freqCode) {
+        this.freqCode = freqCode;
+    }
+
     @Override
     public boolean isBUG() {
         return true;

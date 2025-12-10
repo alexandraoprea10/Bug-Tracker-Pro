@@ -301,9 +301,7 @@ public class App {
      * @param ticket
      */
     public static void previousStatus(final Ticket ticket) {
-        if (ticket.getStatus().equals("IN_PROGRESS")) {
-            ticket.setStatus("OPEN");
-        } else if (ticket.getStatus().equals("RESOLVED")) {
+         if (ticket.getStatus().equals("RESOLVED")) {
             ticket.setSolvedAt("");
             ticket.setStatus("IN_PROGRESS");
         } else if (ticket.getStatus().equals("CLOSED")) {
@@ -319,6 +317,30 @@ public class App {
         } else if (t.getBusinessPriority().equals("HIGH")) {
             t.setBusinessPriority("CRITICAL");
         }
+    }
+
+    /**
+     * Calculeaza nr de tichete closed
+     * @param milestone
+     * @param inventarTichete
+     * @return
+     */
+    public static int calculateClosedTickets(final Milestone milestone,
+                                             final ArrayList<Ticket> inventarTichete) {
+        int bune = 0;
+        if (!milestone.isBlocking()) {
+            int[] ticketsID = milestone.getTickets();
+            for (int i = 0; i < ticketsID.length; i++) {
+                Ticket t = returnTicket(inventarTichete, ticketsID[i]);
+                if (t != null && (t.getStatus().equals("CLOSED"))) {
+                    bune++;
+                }
+            }
+        }
+        if (bune == milestone.getTickets().length) {
+            return 1;
+        }
+        return 0;
     }
 
     /**
@@ -366,6 +388,22 @@ public class App {
             milestone.setClosedTickets(copieClose);
             milestone.setCompletionPercentage(result);
         }
+    }
+
+    /**
+     * Returneaza indexul la care se afla ticket-ul cu id-ul id.
+     * @param tickets
+     * @param id
+     * @return
+     */
+    public static int returnIndex(final Vector<Integer> tickets,
+                                  final int id) {
+        for (int i = 0; i < tickets.size(); i++) {
+            if (tickets.get(i) == id) {
+                return i;
+            }
+        }
+        return -1;
     }
     /**
      * Runs the application: reads commands from an input file,
@@ -446,6 +484,10 @@ public class App {
                 // System.out.println("=======COMANDA NOUA==========");
                 for (int p = 0; p < milestones.size(); p++) {
                     Milestone milestone =  milestones.get(p);
+                    if (calculateClosedTickets(milestone, inventarTichete) == 1) {
+                        System.out.println("INTRA AICI");
+                        milestone.setInactivity(true);
+                    }
                     // System.out.println("PENTRU MILESTONE " + milestone.getName()
                       //      + milestone.getDueDate());
                     if (!timestamp.equals(lastTimestamp)
@@ -614,6 +656,7 @@ public class App {
                                             blockingFor[j]);
                                     if (celBlocat != null) {
                                         celBlocat.setBlocking(true);
+                                        celBlocat.addBlockers(name);
                                     }
                                 }
                             }
@@ -670,7 +713,7 @@ public class App {
                         Users userul = returnUser(useri, username);
                         if (userul.getRole().equals("MANAGER")) {
                             ObjectNode printMilestones = infoMilestones.viewMilestonesManager(
-                                    milestones, timestamp, username);
+                                    milestones, timestamp, username, inventarTichete);
                             node.set("milestones", printMilestones.get("milestones"));
                             // outputs.add(node);
                         } else if (userul.getRole().equals("DEVELOPER")) {
@@ -703,8 +746,11 @@ public class App {
 //                            System.out.println(repartition.keySet());
                                 Vector<Integer> tickets = repartition.get(username);
                                 tickets.add(ticketID);
-                                ticket.assignTicket(username, timestamp);
-                                ticket.changeStatus(0, ticket.getStatus(), username, timestamp);
+                                if (!ticket.isNuMaiPuneInHistory()) {
+                                    ticket.assignTicket(username, timestamp);
+                                }
+                                    ticket.changeStatus(ticket, 0,
+                                            ticket.getStatus(), username, timestamp);
                             } else {
                                 if (!developer.eokSpecializarea(ticket.getExpertiseArea())) {
                                     ObjectNode node = printwhatiNeed(command, username, timestamp);
@@ -757,7 +803,8 @@ public class App {
                             node.set("assignedTickets", printTickets.get("assignedTickets"));
                         } else {
                             node.put("error:", "The user does not have permission to execute this "
-                                    + "command: required role DEVELOPER; user role " + user.getRole() + ".");
+                                    + "command: required role DEVELOPER; user role "
+                                    + user.getRole() + ".");
                         }
                         outputs.add(node);
                     } else if (command.equals("undoAssignTicket")) {
@@ -765,9 +812,21 @@ public class App {
                         Users usrAT = returnUser(useri, username);
                         Developer developer = (Developer) usrAT;
                         Ticket ticket = returnTicket(inventarTichete, ticketID);
+                        String milestoneName = checkforTicket(milestones, ticketID);
+                        Milestone milestone = returnMilestone(milestones, milestoneName);
+                        LinkedHashMap<String, Vector<Integer>>
+                                repartition = milestone.getRepartition();
+                        if (repartition != null) {
+                            Vector<Integer> tickets = repartition.get(username);
+                            if (tickets != null && !tickets.isEmpty()) {
+                                int index = returnIndex(tickets, ticketID);
+                                tickets.remove(index);
+                            }
+                        }
                         if (ticket != null) {
                             ticket.setAssignedTo("");
                             ticket.setAssignedAt("");
+                            ticket.setNuMaiPuneInHistory(true);
                             ticket.setIsAVailableForAssignment(true);
                             ticket.setStatus("OPEN");
                             ticket.deAssignTicket(username, timestamp);
@@ -844,8 +903,16 @@ public class App {
                             outputs.add(node);
                         } else {
                             if (ticket != null) {
-                                nextStatus(ticket, timestamp);
-                                ticket.changeStatus(0, ticket.getStatus(), username, timestamp);
+                                String nimName = checkforTicket(milestones, ticketID);
+                                Milestone milestone = returnMilestone(milestones, nimName);
+                                if (!milestone.isBlocking()) {
+                                    System.out.println("tichetul cu id " + ticketID + " care se afla in milestone-ul " + nimName + " care e " + milestone.isBlocking() + " i se schimba prioritatea de la " + ticket.getBusinessPriority());
+                                    nextStatus(ticket, timestamp);
+                                }
+                                if (!ticket.isNuMaiPuneInHistory()) {
+                                    ticket.changeStatus(ticket, 0,
+                                            ticket.getStatus(), username, timestamp);
+                                }
                             }
                         }
                     } else if (command.equals("undoChangeStatus")) {
@@ -862,8 +929,16 @@ public class App {
                             outputs.add(node);
                         } else {
                             if (ticket != null) {
-                                previousStatus(ticket);
-                                ticket.changeStatus(1, ticket.getStatus(), username, timestamp);
+                                String nimName = checkforTicket(milestones, ticketID);
+                                Milestone milestone = returnMilestone(milestones, nimName);
+                                if (!milestone.isBlocking()) {
+                                    System.out.println("tichetul cu id " + ticketID + " care se afla in milestone-ul " + nimName + " care e " + milestone.isBlocking() + " i se schimba prioritatea LA UNDO de la " + ticket.getBusinessPriority());
+                                    previousStatus(ticket);
+                                }
+                                if (!ticket.isNuMaiPuneInHistory()) {
+                                    ticket.changeStatus(ticket, 1,
+                                            ticket.getStatus(), username, timestamp);
+                                }
                             }
                         }
 
@@ -894,7 +969,7 @@ public class App {
                                         for (int m = 0;
                                              m < returnUser(useri,
                                                      assignedDev[p]).getTickets().size();
-                                        m++){
+                                        m++) {
                                             Ticket t = returnUser(useri,
                                                     assignedDev[p]).getTickets().get(m);
                                             tickets.add(t);
@@ -911,6 +986,10 @@ public class App {
                             }
                             ObjectNode printTickets = veziTichete.printHistoryTickets(tickets);
                             node.set("ticketHistory", printTickets.get("ticketHistory"));
+                        } else {
+                            node.put("error", "The user does not have permission "
+                                    + "to execute this command: required role DEVELOPER, MANAGER; "
+                                    + "user role " + user.getRole() + ".");
                         }
                         outputs.add(node);
                     } else if (command.equals("search")) {
@@ -996,8 +1075,32 @@ public class App {
                                 veziTichete.generatePerformanceReport(rep);
                         node.set("report", printPerf.get("report"));
                         outputs.add(node);
+                    } else if (command.equals("startTestingPhase")) {
+                        timestampTesting = timestamp;
                     }
                     lastTimestamp = timestamp;
+                    for (int k = 0; k < milestones.size(); k++) {
+                        int nrBune = 0;
+                        int total = 0;
+                        Milestone milestone = milestones.get(k);
+                        if (!milestone.getIsBlockedBy().isEmpty() && milestone.isBlocking()) {
+                            String block = milestone.getIsBlockedBy().get(0);
+                            Milestone blockedMilestone = returnMilestone(milestones, block);
+                            if (blockedMilestone != null) {
+                                if (calculateClosedTickets(blockedMilestone,
+                                        inventarTichete) == 1) {
+                                    milestone.ticheteClosed(blockedMilestone, inventarTichete);
+                                milestone.setBlocking(false);
+                            }
+                            }
+                        }
+                    }
+                    for (int p = 0; p < inventarTichete.size(); p++) {
+                        Ticket t = inventarTichete.get(p);
+                        System.out.println("tichetul cu id ul " + t.getId()
+                                + " are prioritatea " + t.getBusinessPriority()
+                                + " si status " + t.getStatus());
+                    }
                     veziTichete.setInventarTichete(inventarTichete);
                 }
                 System.out.println("==============SFARSITCOMANDA==============");

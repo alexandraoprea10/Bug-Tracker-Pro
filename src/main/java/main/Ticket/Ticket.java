@@ -25,6 +25,7 @@ public abstract class Ticket {
     private String reportedBy;
     private String description;
     private ArrayList<History> histories;
+    private boolean nuMaiPuneInHistory;
     private boolean isAVailableForAssignment;
     private double calculateImpact;
     private double calculateRisk;
@@ -73,6 +74,7 @@ public abstract class Ticket {
          this.ultimulTimestampCR = "";
          this.daysToResolveEfficiency = 0;
          this.match = new ArrayList<>();
+         this.nuMaiPuneInHistory = false;
     }
     // getters
 
@@ -307,6 +309,14 @@ public abstract class Ticket {
     public ArrayList<String> getMatch() {
         return match;
     }
+
+    /**
+     * Returneaza daca mai pune in history sau nu.
+     * @return
+     */
+    public boolean isNuMaiPuneInHistory() {
+        return nuMaiPuneInHistory;
+    }
     // setteri
 
     /**
@@ -453,6 +463,14 @@ public abstract class Ticket {
     }
 
     /**
+     * Nu mai adauga in history.
+     * @param nuMaiPuneInHistory
+     */
+    public void setNuMaiPuneInHistory(final boolean nuMaiPuneInHistory) {
+        this.nuMaiPuneInHistory = nuMaiPuneInHistory;
+    }
+
+    /**
      * Adauga un istoric.
      * @param history
      */
@@ -524,7 +542,7 @@ public abstract class Ticket {
      * @param by
      * @param timestamp
      */
-    public void changeStatus(final int esteUndo,
+    public void changeStatus(final Ticket ticket, final int esteUndo,
                              final String to, final String by, final String timestamp) {
         String from = "OPEN";
         if (esteUndo == 0) {
@@ -544,11 +562,25 @@ public abstract class Ticket {
                 from = "IN_PROGRESS";
             }
         }
-        History history = new History.Builder("STATUS_CHANGED", by, timestamp)
-                .from(from)
-                .to(to)
-                .build();
-        histories.add(history);
+        int ok = 0;
+        for (int i = 0; i < ticket.getHistories().size(); i++) {
+            History his = ticket.getHistories().get(i);
+            String act = his.getAction();
+            String by2 = his.getBy();
+            String timestamp2 = his.getTimestamp();
+            if (from.equals(his.getFrom())
+                    &&  to.equals(his.getTo())
+                    && timestamp2.equals(timestamp)) {
+                ok = 1;
+            }
+        }
+        if (!ticket.isNuMaiPuneInHistory() && ok == 0) {
+            History history = new History.Builder("STATUS_CHANGED", by, timestamp)
+                    .from(from)
+                    .to(to)
+                    .build();
+            histories.add(history);
+        }
     }
 
     /**

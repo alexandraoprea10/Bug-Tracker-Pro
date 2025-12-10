@@ -21,10 +21,11 @@ public class NextPriority implements SpecialMention {
                                     final ArrayList<Ticket> inventarTichete) {
         LocalDate dataMilestone = LocalDate.parse(milestone.getCreatedAt());
         LocalDate data = LocalDate.parse(date);
-        int daysBetween = (int) ChronoUnit.DAYS.between(dataMilestone, data);
-        if ((daysBetween) % MagicNumbersInt.trei.getValue() == 0
-                && daysBetween >= MagicNumbersInt.trei.getValue()
+        int daysBetween = (int) ChronoUnit.DAYS.between(dataMilestone, data) + 1;
+        if (milestone.getLast3days() != (daysBetween) / MagicNumbersInt.trei.getValue()
+                && daysBetween > 0
                 && !milestone.isBlocking()) {
+            System.out.println("Intra aici sa schimbe prioritatea");
             int[] idTick = milestone.getTickets();
             for (int i = 0; i < idTick.length; i++) {
                 for (int j = 0; j < inventarTichete.size(); j++) {
@@ -40,6 +41,8 @@ public class NextPriority implements SpecialMention {
                     }
                 }
             }
+            milestone.setLast3days(daysBetween
+                    / MagicNumbersInt.trei.getValue());
         }
     }
 }

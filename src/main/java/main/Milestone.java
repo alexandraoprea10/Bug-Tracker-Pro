@@ -8,15 +8,16 @@ import main.User.TransformCritical;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Vector;
+import java.util.*;
 
 import static java.lang.Math.abs;
+import static main.App.returnTicket;
 
 public class Milestone {
     private String name;
     private String[] blockingFor;
+    private ArrayList<String> isBlockedBy;
+    private int last3days;
     private boolean blocking;
     private String dueDate;
     private String createdAt;
@@ -33,6 +34,7 @@ public class Milestone {
     private SpecialMention specialMention;
     private String status;
     private ArrayList<Ticket> inventarTichete;
+    private boolean inactivity;
 
     private ArrayList<Developer> observatoriNotificari = new ArrayList<>();
     // constructor
@@ -68,6 +70,9 @@ public class Milestone {
             this.repartition.put(assignedDevs[i], new Vector<>());
         }
         this.assigneddevelopers = new ArrayList();
+        this.isBlockedBy = new ArrayList<>();
+        this.last3days = 0;
+        this.inactivity = false;
     }
 
     /**
@@ -108,6 +113,44 @@ public class Milestone {
         this.setBlocking(false);
         notificareDevelopers(message);
     }
+
+    /**
+     * Returneaza care e ultimul tichet setat CLOSE.
+     * @param m
+     * @param inventarTichete
+     * @return
+     */
+    public int ultimulTichetAsignat(final Milestone m,
+                                    final ArrayList<Ticket> inventarTichet) {
+        int[] ids = m.getTickets();
+        ArrayList<Ticket> ticks = new ArrayList<>();
+        for (int i = 0; i < ids.length; i++) {
+            int id = ids[i];
+            Ticket tick = returnTicket(inventarTichet, id);
+            ticks.add(tick);
+        }
+        Collections.sort(ticks, new Comparator<Ticket>() {
+            @Override
+            public int compare(final Ticket o1, final Ticket o2) {
+               int comparSolved = o2.getSolvedAt().compareTo(o1.getSolvedAt());
+               return comparSolved;
+            }
+        });
+        return ticks.get(0).getId();
+    }
+
+    /**
+     * Notificare daca se inchide si ultimul tichet.
+     * @param m
+     * @param inventarTiche
+     */
+    public void ticheteClosed(final Milestone m,
+                              final ArrayList<Ticket> inventarTiche) {
+        int ultimulTichet = ultimulTichetAsignat(m, inventarTiche);
+        String message = String.format("Milestone %s is now unblocked "
+                + "as ticket %d has been CLOSED.", name, ultimulTichet);
+        notificareDevelopers(message);
+    }
     /**
      * INteractiunile cu tichetele din MILESTONE.
      * STRATEGY METHOD
@@ -133,9 +176,12 @@ public class Milestone {
     private boolean nextPriorityStrategy(final String date) {
         LocalDate now = LocalDate.parse(date);
         LocalDate due = LocalDate.parse(dueDate);
+        LocalDate createdAt = LocalDate.parse(getCreatedAt());
         int daysBetween = (int) ChronoUnit.DAYS.between(now, due) + 1;
-        if ((daysBetween - 1) % MagicNumbersInt.trei.getValue() == 0
-                && daysBetween >= MagicNumbersInt.trei.getValue()
+        int db = (int) ChronoUnit.DAYS.between(createdAt, now) + 1;
+        int before = this.getLast3days();
+        // this.setLast3days(db / 3);
+        if (before != this.getLast3days()
                 && !this.blocking) {
             return true;
         }
@@ -280,6 +326,14 @@ public class Milestone {
     }
 
     /**
+     * Returneaza ultimele 3 zile
+     * @return
+     */
+    public int getLast3days() {
+        return last3days;
+    }
+
+    /**
      * Returneaza lista de assigned developers.
      * @return
      */
@@ -302,6 +356,22 @@ public class Milestone {
      */
     public  void setBlocking(final boolean blocking) {
         this.blocking = blocking;
+    }
+
+    /**
+     * Returneaza lista de blocanti.
+     * @return
+     */
+    public ArrayList<String> getIsBlockedBy() {
+        return isBlockedBy;
+    }
+
+    /**
+     * Returneaza inactivitatea.
+     * @return
+     */
+    public boolean getInactivity() {
+        return inactivity;
     }
 
     /**
@@ -416,6 +486,18 @@ public class Milestone {
         this.assigneddevelopers = assigneddevelopers;
     }
 
+    public void setIsBlockedBy(final ArrayList<String> isBlockedBy) {
+        this.isBlockedBy = isBlockedBy;
+    }
+
+    /**
+     * Adauga blockerii.
+     * @param blocker
+     */
+    public void addBlockers(final String blocker) {
+        this.isBlockedBy.add(blocker);
+    }
+
     /**
      * Adauga un developer in lista de cei care vor fi notificati.
      * @param developer
@@ -430,5 +512,21 @@ public class Milestone {
      */
     public void setObservatoriNotificari(final ArrayList<Developer> devs) {
         this.observatoriNotificari = devs;
+    }
+
+    /**
+     * Seteaza ultimele 3 zile
+     * @param last3days
+     */
+    public void setLast3days(final int last3days) {
+        this.last3days = last3days;
+    }
+
+    /**
+     * Seteaza daca milestone-ul e inactiv.
+     * @param inactivity
+     */
+    public void setInactivity(final boolean inactivity) {
+        this.inactivity = inactivity;
     }
 }

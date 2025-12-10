@@ -770,6 +770,7 @@ public class VeziTichete {
             if (t.getStatus().equals("OPEN") || t.getStatus().equals("IN_PROGRESS")) {
                 if (t.isBUG()) {
                     bug++;
+                    System.out.println("tichetul are impactul " + t.getCalculateImpact());
                     sumimpactBUG = sumimpactBUG + t.getCalculateImpact();
                     sumRiskBUG = sumRiskBUG + t.getCalculateRisk();
                 } else if (t.isUI()) {
@@ -892,10 +893,10 @@ public class VeziTichete {
                 int daysBetween = (int) ChronoUnit.DAYS.between(date1, date2) + 1;
                 t.setDaysToResolveEfficiency(daysBetween);
                 if (t.isBUG()) {
-                    System.out.println("NUME TICHET CLOSED " + t.getTitle());
+                    BUG b = (BUG) t;
                     bugt++;
                     BUG bug = (BUG) t;
-                    double value = (bug.getBusinessPriorityCode() + bug.getSeverityCode())
+                    double value = (bug.getFreqCode() + bug.getSeverityCode())
                             * MagicNumbersDouble.zece.getValue()
                             / bug.getDaysToResolveEfficiency();
                     double res = (value * MagicNumbersDouble.osuta.getValue())

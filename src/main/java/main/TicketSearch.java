@@ -196,7 +196,7 @@ public class TicketSearch {
                 continue;
             }
             ArrayList<String> match = new ArrayList<>();
-            if (keywords != null) {
+            if (!keywords.isEmpty()) {
                 // System.out.println(keywords.length);
                 for (int j = 0; j < keywords.size(); j++) {
                     if (cautaCuvantul(t.getTitle(), keywords.get(j)) != null) {
