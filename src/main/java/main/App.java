@@ -485,11 +485,8 @@ public class App {
                 for (int p = 0; p < milestones.size(); p++) {
                     Milestone milestone =  milestones.get(p);
                     if (calculateClosedTickets(milestone, inventarTichete) == 1) {
-                        System.out.println("INTRA AICI");
                         milestone.setInactivity(true);
                     }
-                    // System.out.println("PENTRU MILESTONE " + milestone.getName()
-                      //      + milestone.getDueDate());
                     if (!timestamp.equals(lastTimestamp)
                             && !command.equals("generatePerformanceReport")) {
                         milestone.interactiuniTicket(timestamp);
@@ -740,6 +737,7 @@ public class App {
                                 ticket.setAssignedAt(timestamp);
                                 ticket.setIsAVailableForAssignment(false);
                                 developer.addTicket(ticket);
+                                ticket.setAssignedTo(username);
                                 LinkedHashMap<String, Vector<Integer>>
                                         repartition = milestone.getRepartition();
 //                            System.out.println(milestoneName);
@@ -812,26 +810,32 @@ public class App {
                         Users usrAT = returnUser(useri, username);
                         Developer developer = (Developer) usrAT;
                         Ticket ticket = returnTicket(inventarTichete, ticketID);
-                        String milestoneName = checkforTicket(milestones, ticketID);
-                        Milestone milestone = returnMilestone(milestones, milestoneName);
-                        LinkedHashMap<String, Vector<Integer>>
-                                repartition = milestone.getRepartition();
-                        if (repartition != null) {
-                            Vector<Integer> tickets = repartition.get(username);
-                            if (tickets != null && !tickets.isEmpty()) {
-                                int index = returnIndex(tickets, ticketID);
-                                tickets.remove(index);
+                        if (ticket.getStatus().equals("IN_PROGRESS")) {
+                            String milestoneName = checkforTicket(milestones, ticketID);
+                            Milestone milestone = returnMilestone(milestones, milestoneName);
+                            LinkedHashMap<String, Vector<Integer>>
+                                    repartition = milestone.getRepartition();
+                            if (repartition != null) {
+                                Vector<Integer> tickets = repartition.get(username);
+                                if (tickets != null && !tickets.isEmpty()) {
+                                    int index = returnIndex(tickets, ticketID);
+                                    tickets.remove(index);
+                                }
                             }
-                        }
-                        if (ticket != null) {
-                            ticket.setAssignedTo("");
-                            ticket.setAssignedAt("");
-                            ticket.setNuMaiPuneInHistory(true);
-                            ticket.setIsAVailableForAssignment(true);
-                            ticket.setStatus("OPEN");
-                            ticket.deAssignTicket(username, timestamp);
-                            usrAT.getTickets().remove(ticket);
-                            usrAT.getGaveupTickets().add(ticket);
+                            if (ticket != null) {
+                                ticket.setAssignedTo("");
+                                ticket.setAssignedAt("");
+                                ticket.setNuMaiPuneInHistory(true);
+                                ticket.setIsAVailableForAssignment(true);
+                                ticket.setStatus("OPEN");
+                                ticket.deAssignTicket(username, timestamp);
+                                usrAT.getTickets().remove(ticket);
+                                usrAT.getGaveupTickets().add(ticket);
+                            }
+                        } else {
+                            ObjectNode node = printwhatiNeed(command, username, timestamp);
+                            node.put("error", "Only IN_PROGRESS tickets can be unassigned.");
+                            outputs.add(node);
                         }
                     } else if (command.equals("addComment")) {
                         int ticketID = inputJson.get(i).get("ticketID").asInt();
@@ -1099,7 +1103,22 @@ public class App {
                         Ticket t = inventarTichete.get(p);
                         System.out.println("tichetul cu id ul " + t.getId()
                                 + " are prioritatea " + t.getBusinessPriority()
-                                + " si status " + t.getStatus());
+                                + " si status " + t.getStatus() + " si e asignat de " + t.getAssignedTo());
+                        if (t.getStatus().equals("CLOSED")) {
+                            System.out.println("tichetul a fost inchis " + t.getUltimulTimestampCR());
+                        }
+                        Users usr2  = returnUser(useri, t.getAssignedTo());
+                        Developer dev = (Developer) usr2;
+                        if (dev != null && !dev.rezolvaTichetul(dev.getSeniority(), t.getExpertiseArea(), t.getBusinessPriority(), t.getType()) && (t.getStatus().equals("OPEN") || t.getStatus().equals("IN_PROGRESS"))) {
+//                            System.out.println("senioritate: " + dev.getSeniority());
+//                            System.out.println("experienta: " + dev.getExpertiseArea());
+//                            System.out.println("prioritate tichet" + t.getBusinessPriority());
+//                            System.out.println("tip tichet" + t.getType());
+//                            t.setAssignedTo("");
+//                            System.out.println("se deasigneaza tichetul cu id ul " + t.getId());
+                            dev.getTickets().remove(t);
+                            dev.getGaveupTickets().add(t);
+                        }
                     }
                     veziTichete.setInventarTichete(inventarTichete);
                 }

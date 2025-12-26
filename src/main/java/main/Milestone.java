@@ -35,6 +35,7 @@ public class Milestone {
     private String status;
     private ArrayList<Ticket> inventarTichete;
     private boolean inactivity;
+    private String lastTimestampOfTicket;
 
     private ArrayList<Developer> observatoriNotificari = new ArrayList<>();
     // constructor
@@ -73,6 +74,7 @@ public class Milestone {
         this.isBlockedBy = new ArrayList<>();
         this.last3days = 0;
         this.inactivity = false;
+        this.lastTimestampOfTicket = createdAt;
     }
 
     /**
@@ -117,7 +119,7 @@ public class Milestone {
     /**
      * Returneaza care e ultimul tichet setat CLOSE.
      * @param m
-     * @param inventarTichete
+     * @param inventarTichet
      * @return
      */
     public int ultimulTichetAsignat(final Milestone m,
@@ -132,10 +134,11 @@ public class Milestone {
         Collections.sort(ticks, new Comparator<Ticket>() {
             @Override
             public int compare(final Ticket o1, final Ticket o2) {
-               int comparSolved = o2.getSolvedAt().compareTo(o1.getSolvedAt());
+               int comparSolved = o2.getUltimulTimestampCR().compareTo(o1.getUltimulTimestampCR());
                return comparSolved;
             }
         });
+        this.lastTimestampOfTicket = ticks.get(0).getUltimulTimestampCR();
         return ticks.get(0).getId();
     }
 
@@ -340,6 +343,9 @@ public class Milestone {
     public ArrayList<Developer> getAssignedDevelopers() {
         return assigneddevelopers;
     }
+    public String getLastTimestampOfTicket() {
+        return lastTimestampOfTicket;
+    }
     // setteri
 
     /**
@@ -485,9 +491,11 @@ public class Milestone {
     public void setAssigneddevelopers(final ArrayList<Developer> assigneddevelopers) {
         this.assigneddevelopers = assigneddevelopers;
     }
-
     public void setIsBlockedBy(final ArrayList<String> isBlockedBy) {
         this.isBlockedBy = isBlockedBy;
+    }
+    public void setLastTimestampOfTicket(String lastTimestampOfTicket) {
+        this.lastTimestampOfTicket = lastTimestampOfTicket;
     }
 
     /**

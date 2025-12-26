@@ -115,17 +115,26 @@ public class InfoMilestones {
                 System.out.println(milestone.getDueDate());
                 System.out.println(timestamp);
                 int days = daystillDeadline(milestone.getDueDate(), timestamp);
-                System.out.println("sunt " + days + "zile ");
-                System.out.println("milestone cu numele " + milestone.getName()
-                        + " are inactivitate " + milestone.getInactivity());
+//                System.out.println("sunt " + days + "zile ");
+//                System.out.println("milestone cu numele " + milestone.getName()
+//                        + " are inactivitate " + milestone.getInactivity());
                     int ticketID = ultimulTichetAsignat(milestone, inventarTichete);
                     Ticket t = returnTicket(inventarTichete, ticketID);
                         if (days < 0) {
                             if (milestone.getInactivity()) {
+//                                int db = daystillDeadline(t.getUltimulTimestampCR(),
+//                                        milestone.getDueDate());
                                 int db = daystillDeadline(t.getUltimulTimestampCR(),
                                         milestone.getDueDate());
-                                milestone.setOverdueBy(db);
-                                milestone.setDaysUntilDue(0);
+                                if (db < 0) {
+                                    db = daystillDeadline(milestone.getDueDate(),
+                                            t.getUltimulTimestampCR());
+                                    milestone.setOverdueBy(0);
+                                    milestone.setDaysUntilDue(db);
+                                } else {
+                                    milestone.setOverdueBy(db);
+                                    milestone.setDaysUntilDue(0);
+                                }
                             } else {
                                 int db = daystillDeadline(timestamp, milestone.getDueDate());
                                 milestone.setOverdueBy(db);

@@ -19,18 +19,21 @@ public class NextPriority implements SpecialMention {
     public void interactiuniTichete(final Milestone milestone,
                                     final String date,
                                     final ArrayList<Ticket> inventarTichete) {
-        LocalDate dataMilestone = LocalDate.parse(milestone.getCreatedAt());
+        LocalDate dataMilestone = LocalDate.parse(milestone.getLastTimestampOfTicket());
         LocalDate data = LocalDate.parse(date);
-        int daysBetween = (int) ChronoUnit.DAYS.between(dataMilestone, data) + 1;
+        int daysBetween = (int) ChronoUnit.DAYS.between(dataMilestone, data);
         if (milestone.getLast3days() != (daysBetween) / MagicNumbersInt.trei.getValue()
                 && daysBetween > 0
                 && !milestone.isBlocking()) {
+            System.out.println(daysBetween + " zile intre");
+            System.out.println(milestone.getLast3days());
             System.out.println("Intra aici sa schimbe prioritatea");
             int[] idTick = milestone.getTickets();
             for (int i = 0; i < idTick.length; i++) {
                 for (int j = 0; j < inventarTichete.size(); j++) {
                     Ticket t = inventarTichete.get(j);
                     if (t.getId() == idTick[i]) {
+                        System.out.println("SCHIMBA PRIORITATEA TICHETULUI " + t.getId());
                         if (t.getBusinessPriority().equals("LOW")) {
                             t.setBusinessPriority("MEDIUM");
                         } else if (t.getBusinessPriority().equals("MEDIUM")) {
