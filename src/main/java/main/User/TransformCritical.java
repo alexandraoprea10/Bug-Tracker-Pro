@@ -28,7 +28,9 @@ public class TransformCritical implements SpecialMention {
             for (int i = 0; i < idTicket.length; i++) {
             for (int j = 0; j < inventarTichete.size(); j++) {
                 Ticket ticket = inventarTichete.get(j);
-                if (ticket.getId() == idTicket[i]) {
+                if (ticket.getId() == idTicket[i]
+                        && !ticket.getStatus().equals("CLOSED")) {
+                    System.out.println("INTRU AICI BAAAAA LA TRANSFORM CRTICAL");
                     // System.out.println(ticket.getId());
                     ticket.setBusinessPriority("CRITICAL");
                 }

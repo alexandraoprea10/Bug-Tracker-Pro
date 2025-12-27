@@ -83,6 +83,7 @@ public class Milestone {
      */
     public void notificareDevelopers(final String message) {
         for (int i = 0; i < this.observatoriNotificari.size(); i++) {
+            // System.out.println("PRIMESTE ACEASTA NOTIFICARE" + this.observatoriNotificari.get(i).getUsername());
             Developer dev = this.observatoriNotificari.get(i);
             dev.primesteNotificare(message);
         }

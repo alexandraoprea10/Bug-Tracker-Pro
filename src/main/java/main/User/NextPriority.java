@@ -32,7 +32,7 @@ public class NextPriority implements SpecialMention {
             for (int i = 0; i < idTick.length; i++) {
                 for (int j = 0; j < inventarTichete.size(); j++) {
                     Ticket t = inventarTichete.get(j);
-                    if (t.getId() == idTick[i]) {
+                    if (t.getId() == idTick[i] && !t.getStatus().equals("CLOSED")) {
                         System.out.println("SCHIMBA PRIORITATEA TICHETULUI " + t.getId());
                         if (t.getBusinessPriority().equals("LOW")) {
                             t.setBusinessPriority("MEDIUM");

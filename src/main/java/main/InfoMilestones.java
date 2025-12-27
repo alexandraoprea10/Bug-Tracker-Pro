@@ -4,11 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import main.Ticket.Ticket;
+import main.User.Developer;
 
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import static main.App.returnMilestone;
 import static main.App.returnTicket;
 
 public class InfoMilestones {
@@ -215,7 +218,8 @@ public class InfoMilestones {
      * @return
      */
     public ObjectNode viewMilestonesDeveloper(final ArrayList<Milestone> milestones,
-                                              final String timestamp, final String username) {
+                                              final String timestamp, final String username,
+                                              final ArrayList<Ticket> inventarTichete) {
         ObjectNode finalNode = mapper.createObjectNode();
         ArrayNode arrayNode = mapper.createArrayNode();
         Collections.sort(milestones, new Comparator<Milestone>() {
@@ -275,6 +279,24 @@ public class InfoMilestones {
                     milestone.setOverdueBy(0);
                     milestone.setDaysUntilDue(days);
                 }
+                if (milestone.getCompletionPercentage() == 1.0) {
+                    LocalDate dueDate = LocalDate.parse(milestone.getDueDate());
+                    int idTicket = ultimulTichetAsignat(milestone, inventarTichete);
+                    if (returnTicket(inventarTichete, idTicket) != null && returnTicket(inventarTichete, idTicket).getUltimulTimestampCR() != null) {
+                        String cand = returnTicket(inventarTichete, idTicket).getUltimulTimestampCR();
+                        LocalDate solved = LocalDate.parse(cand);
+                        int daysBetween = (int) ChronoUnit.DAYS.between(dueDate, solved) + 1;
+                        if (daysBetween > 0) {
+                            milestone.setOverdueBy(daysBetween);
+                            milestone.setDaysUntilDue(0);
+                        } else if (daysBetween < 0) {
+                            int daysBetween2 = (int) ChronoUnit.DAYS.between(solved, dueDate) + 1;
+                            milestone.setOverdueBy(0);
+                            milestone.setDaysUntilDue(daysBetween2);
+                        }
+                        System.out.println("ATATEA ZILE INTRE BAI NEBUNO " + daysBetween);
+                    }
+                }
                 node.put("daysUntilDue", milestone.getDaysUntilDue());
                 node.put("overdueBy", milestone.getOverdueBy());
                 ArrayNode printOpenTickets = mapper.createArrayNode();
@@ -295,6 +317,14 @@ public class InfoMilestones {
                 LinkedHashMap<String, Vector<Integer>> repartition = milestone.getRepartition();
                 ArrayNode printRepartition = mapper.createArrayNode();
                 String[] numeDeveloperi = repartition.keySet().toArray(new String[0]);
+                Arrays.sort(numeDeveloperi, new Comparator<String>() {
+                    @Override
+                    public int compare(final String o1, final String o2) {
+                        Vector<Integer> list1 = repartition.get(o1);
+                        Vector<Integer> list2 = repartition.get(o2);
+                        return Integer.compare(list1.size(), list2.size());
+                    }
+                });
                 for (int i = 0; i < numeDeveloperi.length; i++) {
                     String dev = numeDeveloperi[i];
                     Vector<Integer> tich = repartition.get(dev);

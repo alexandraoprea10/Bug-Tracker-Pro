@@ -444,11 +444,13 @@ public class VeziTichete {
             String[] assignedDev = milestone.getAssignedDevs();
             for (int k =  0; k < assignedDev.length; k++) {
                 if (assignedDev[k].equals(username)) {
+                    System.out.println("HAIDE CU DEVELOPERII " + assignedDev[k]);
                     int[] ticketsID = milestone.getTickets();
                     for (int t = 0;  t < ticketsID.length; t++) {
                         ObjectNode node = mapper.createObjectNode();
                         Ticket ticket = returnTicket(inventarTich, ticketsID[t]);
                         if (ticket != null && ticket.getStatus().equals("OPEN")) {
+                            System.out.println("SE ADAUGA TICHETUL CU ID " + ticket.getId());
                             node.put("id", ticket.getId());
                             node.put("type", ticket.getType());
                             node.put("title", ticket.getTitle());
@@ -605,12 +607,24 @@ public class VeziTichete {
                     if (action.equals("STATUS_CHANGED")) {
                         printHistory.put("from",  history.getFrom());
                         printHistory.put("to",  history.getTo());
+                        printHistory.put("by", history.getBy());
+                        printHistory.put("timestamp", history.getTimestamp());
+                        printHistory.put("action", history.getAction());
                     } else if (action.equals("ADDED_TO_MILESTONE")) {
                         printHistory.put("milestone",  history.getMilestone());
+                        printHistory.put("by", history.getBy());
+                        printHistory.put("timestamp", history.getTimestamp());
+                        printHistory.put("action", history.getAction());
+                    } else if (action.equals("REMOVED_FROM_DEV")) {
+                        printHistory.put("from", history.getFrom());
+                        printHistory.put("timestamp", history.getTimestamp());
+                        printHistory.put("action", history.getAction());
+                        printHistory.put("by", history.getBy());
+                    } else {
+                        printHistory.put("by", history.getBy());
+                        printHistory.put("timestamp", history.getTimestamp());
+                        printHistory.put("action", history.getAction());
                     }
-                    printHistory.put("by", history.getBy());
-                    printHistory.put("timestamp", history.getTimestamp());
-                    printHistory.put("action", history.getAction());
                     historyNode.add(printHistory);
                 }
             }
@@ -885,11 +899,15 @@ public class VeziTichete {
         double sumBUG = 0.0;
         double sumFEATURE = 0.0;
         double sumUI = 0.0;
+        int low = 0;
+        int medium = 0;
+        int high = 0;
+        int critical = 0;
         for (int m = 0; m < inventarTichete.size(); m++) {
             Ticket t = inventarTichete.get(m);
             if (t.getStatus().equals("CLOSED") || t.getStatus().equals("RESOLVED")) {
                 LocalDate date1 = LocalDate.parse(t.getAssignedAt());
-                LocalDate date2 = LocalDate.parse(t.getUltimulTimestampCR());
+                LocalDate date2 = LocalDate.parse(t.getSolvedAt());
                 int daysBetween = (int) ChronoUnit.DAYS.between(date1, date2) + 1;
                 t.setDaysToResolveEfficiency(daysBetween);
                 if (t.isBUG()) {
@@ -906,7 +924,7 @@ public class VeziTichete {
                 } else if (t.isUI()) {
                     uit++;
                     UIFeedback ui = (UIFeedback) t;
-                    double value = (ui.getUsabilityScore() + ui.getbusinessvalueCode())
+                    double value = (double) (ui.getUsabilityScore() + ui.getbusinessvalueCode())
                             / ui.getDaysToResolveEfficiency();
                     double res = (value * MagicNumbersDouble.osuta.getValue())
                             / MagicNumbersDouble.douazeci.getValue();
@@ -915,7 +933,7 @@ public class VeziTichete {
                 } else if (t.isFeature()) {
                     feature++;
                     FeatureRequest fr =  (FeatureRequest) t;
-                    double value = (fr.getBusinessvalueCode() + fr.getCustomerdemandCode())
+                    double value = (double) (fr.getBusinessvalueCode() + fr.getCustomerdemandCode())
                             / fr.getDaysToResolveEfficiency();
                     double res = (value * MagicNumbersDouble.osuta.getValue())
                             / MagicNumbersDouble.douazeci.getValue();
@@ -923,16 +941,20 @@ public class VeziTichete {
                     t.setCalculateEfficiency(res);
                 }
                 if (t.getBusinessPriority().equals("LOW")) {
-                    this.setlowPriority(this.getlowPriority() + 1);
+                    low++;
                 } else if (t.getBusinessPriority().equals("MEDIUM")) {
-                    this.setmediumPriority(this.getmediumPriority() + 1);
+                    medium++;
                 } else if (t.getBusinessPriority().equals("HIGH")) {
-                    this.sethighPriority(this.gethighPriority() + 1);
+                    high++;
                 } else if (t.getBusinessPriority().equals("CRITICAL")) {
-                    this.setcriticalPriority(this.getcriticalPriority() + 1);
+                    critical++;
                 }
             }
         }
+        this.setlowPriority(low);
+        this.setmediumPriority(medium);
+        this.sethighPriority(high);
+        this.setcriticalPriority(critical);
         double resBUG = sumBUG /  bugt;
         double resFEATURE = sumFEATURE / feature;
         double resUI = sumUI /  uit;
@@ -1106,12 +1128,18 @@ public class VeziTichete {
      * @param tichete
      * @return
      */
-    public int calculateclosedTickets(final ArrayList<Ticket> tichete) {
+    public int calculateclosedTickets(final ArrayList<Ticket> tichete,
+                                      final String timestamp) {
         int count = 0;
         for (int i = 0; i < tichete.size(); i++) {
             Ticket t = tichete.get(i);
             if (t.getStatus().equals("CLOSED")) {
-                count++;
+                LocalDate timpInchis = LocalDate.parse(t.getSolvedAt());
+                LocalDate now = LocalDate.parse(timestamp);
+                int daysBetween = (int) ChronoUnit.DAYS.between(timpInchis, now);
+                System.out.println("TIMP INTRE ESTE DE " + daysBetween);
+                if (daysBetween <= 32)
+                    count++;
             }
         }
         return count;
@@ -1169,14 +1197,20 @@ public class VeziTichete {
      * @param tichete
      * @return
      */
-    public int calculateHighPriority(final ArrayList<Ticket> tichete) {
+    public int calculateHighPriority(final ArrayList<Ticket> tichete,
+                                     final String timestamp) {
         int count = 0;
         for (int i = 0; i < tichete.size(); i++) {
             Ticket t = tichete.get(i);
             if (t.getStatus().equals("CLOSED")
                     && (t.getBusinessPriority().equals("HIGH")
                     || t.getBusinessPriority().equals("CRITICAL"))) {
-                count++;
+                LocalDate timpInchis = LocalDate.parse(t.getSolvedAt());
+                LocalDate now = LocalDate.parse(timestamp);
+                int daysBetween = (int) ChronoUnit.DAYS.between(timpInchis, now);
+                System.out.println("TIMP INTRE ESTE DE " + daysBetween);
+                if (daysBetween <= 32)
+                    count++;
             }
         }
         return count;
@@ -1201,18 +1235,29 @@ public class VeziTichete {
      * @param ticket
      * @return
      */
-    public double calculateAvgTime(final ArrayList<Ticket> ticket) {
+    public double calculateAvgTime(final ArrayList<Ticket> ticket,
+                                   final String timestamp) {
         double sum = 0;
         for (int i = 0; i < ticket.size(); i++) {
             if (ticket.get(i).getStatus().equals("CLOSED")) {
-                sum = sum + ticket.get(i).getAverageResolutionTime();
+                LocalDate timpInchis = LocalDate.parse(ticket.get(i).getSolvedAt());
+                LocalDate now = LocalDate.parse(timestamp);
+                int daysBetween = (int) ChronoUnit.DAYS.between(timpInchis, now);
+                System.out.println("TIMP INTRE ESTE DE " + daysBetween);
+                if (daysBetween <= 32) {
+                    System.out.println("IA ZI FRATE PENTRU TICHETUL " + ticket.get(i).getId() + " AVEM ASSIGNED AT " + ticket.get(i).getAssignedAt() + " SI REZOLVAT LA " + ticket.get(i).getUltimulTimestampCR() + " si zile intre " + ticket.get(i).getAverageResolutionTime());
+                    sum = sum + ticket.get(i).getAverageResolutionTime();
+                }
             }
         }
-        int nr = calculateclosedTickets(ticket);
+        int nr = calculateclosedTickets(ticket, timestamp);
         if (nr == 0) {
             return 0.0;
         }
-        double res = sum / nr;
+        double res = (double) sum / nr;
+        System.out.println("SUMA " + sum);
+        System.out.println("NUMAR" + nr);
+        System.out.println("HAIDE CU REZULTATUL " + res);
         return Math.round(res * MagicNumbersDouble.osuta.getValue())
                 / MagicNumbersDouble.osuta.getValue();
     }
@@ -1224,7 +1269,7 @@ public class VeziTichete {
      * @return
      */
     public ArrayList<PerformanceReport> calculatePerformance(
-            final List<Users> useri, final Manager manager) {
+            final List<Users> useri, final Manager manager, final String timestamp) {
         setImpactandOthers();
         ArrayList<PerformanceReport> rep = new ArrayList<>();
         for (int i = 0; i < manager.getSubordinates().size(); i++) {
@@ -1246,24 +1291,24 @@ public class VeziTichete {
                             calculateFeature(dev.getTickets()),
                             calculateUI(dev.getTickets()));
                     double performance = 0.0;
-                    double avgRes = calculateAvgTime(dev.getTickets());
+                    double avgRes = calculateAvgTime(dev.getTickets(), timestamp);
                     if (averageResolvedTickets != 0
                             || standardDeviation != 0 || ticketDiveristyFactor != 0) {
                         double value  = max(0.0, MagicNumbersDouble.zerocinci.getValue()
-                                * calculateclosedTickets(dev.getTickets())
+                                * calculateclosedTickets(dev.getTickets(), timestamp)
                                 - ticketDiveristyFactor) + MagicNumbersInt.cinci.getValue();
                         performance = Math.round(value * MagicNumbersDouble.osuta.getValue())
                                 / MagicNumbersDouble.osuta.getValue();
                     }
                     dev.setPerformanceScore(performance);
                     PerformanceReport report = new PerformanceReport(usernameCurent,
-                            calculateclosedTickets(dev.getTickets()),
+                            calculateclosedTickets(dev.getTickets(), timestamp),
                             avgRes, performance, dev.getSeniority());
                     rep.add(report);
             } else if (dev.getSeniority().equals("MID")) {
-                double closedTickets = calculateclosedTickets(dev.getTickets());
-                double highPriorityTicket = calculateHighPriority(dev.getTickets());
-                double avgRes = calculateAvgTime(dev.getTickets());
+                double closedTickets = calculateclosedTickets(dev.getTickets(), timestamp);
+                double highPriorityTicket = calculateHighPriority(dev.getTickets(), timestamp);
+                double avgRes = calculateAvgTime(dev.getTickets(), timestamp);
                 double performance = 0.0;
                 if (closedTickets != 0 || highPriorityTicket != 0 || avgRes != 0) {
                     double value  = max(0, MagicNumbersDouble.zerocinci.getValue()
@@ -1275,13 +1320,13 @@ public class VeziTichete {
                 }
                 dev.setPerformanceScore(performance);
                 PerformanceReport report = new PerformanceReport(usernameCurent,
-                        calculateclosedTickets(dev.getTickets()), avgRes,
+                        calculateclosedTickets(dev.getTickets(), timestamp), avgRes,
                         performance, dev.getSeniority());
                 rep.add(report);
             } else if (dev.getSeniority().equals("SENIOR")) {
-                double closedTickets = calculateclosedTickets(dev.getTickets());
-                double highPriorityTicket = calculateHighPriority(dev.getTickets());
-                double avgRes = calculateAvgTime(dev.getTickets());
+                double closedTickets = calculateclosedTickets(dev.getTickets(), timestamp);
+                double highPriorityTicket = calculateHighPriority(dev.getTickets(), timestamp);
+                double avgRes = calculateAvgTime(dev.getTickets(), timestamp);
                 double performance = 0.0;
                 if (closedTickets != 0 || highPriorityTicket != 0 || avgRes != 0) {
                     double value = max(0, MagicNumbersDouble.zerocinci.getValue()
@@ -1292,7 +1337,7 @@ public class VeziTichete {
                             / MagicNumbersDouble.osuta.getValue();
                 }
                 PerformanceReport report = new PerformanceReport(usernameCurent,
-                        calculateclosedTickets(dev.getTickets()), avgRes,
+                        calculateclosedTickets(dev.getTickets(), timestamp), avgRes,
                         performance, dev.getSeniority());
                 rep.add(report);
                 dev.setPerformanceScore(performance);
