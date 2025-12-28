@@ -185,7 +185,6 @@ public abstract class Developer extends Users {
             }
         }
         if (ok == 0) {
-            System.out.println("S A ADAUGAT NOTIFICAREA BAAAA");
             Notifications notif = new Notifications(message);
             this.notifications.add(notif);
         }

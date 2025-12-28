@@ -444,13 +444,11 @@ public class VeziTichete {
             String[] assignedDev = milestone.getAssignedDevs();
             for (int k =  0; k < assignedDev.length; k++) {
                 if (assignedDev[k].equals(username)) {
-                    System.out.println("HAIDE CU DEVELOPERII " + assignedDev[k]);
                     int[] ticketsID = milestone.getTickets();
                     for (int t = 0;  t < ticketsID.length; t++) {
                         ObjectNode node = mapper.createObjectNode();
                         Ticket ticket = returnTicket(inventarTich, ticketsID[t]);
                         if (ticket != null && ticket.getStatus().equals("OPEN")) {
-                            System.out.println("SE ADAUGA TICHETUL CU ID " + ticket.getId());
                             node.put("id", ticket.getId());
                             node.put("type", ticket.getType());
                             node.put("title", ticket.getTitle());
@@ -784,7 +782,6 @@ public class VeziTichete {
             if (t.getStatus().equals("OPEN") || t.getStatus().equals("IN_PROGRESS")) {
                 if (t.isBUG()) {
                     bug++;
-                    System.out.println("tichetul are impactul " + t.getCalculateImpact());
                     sumimpactBUG = sumimpactBUG + t.getCalculateImpact();
                     sumRiskBUG = sumRiskBUG + t.getCalculateRisk();
                 } else if (t.isUI()) {
@@ -1137,9 +1134,9 @@ public class VeziTichete {
                 LocalDate timpInchis = LocalDate.parse(t.getSolvedAt());
                 LocalDate now = LocalDate.parse(timestamp);
                 int daysBetween = (int) ChronoUnit.DAYS.between(timpInchis, now);
-                System.out.println("TIMP INTRE ESTE DE " + daysBetween);
-                if (daysBetween <= 32)
+                if (daysBetween <= MagicNumbersInt.treizecisidoi.getValue()) {
                     count++;
+                }
             }
         }
         return count;
@@ -1208,9 +1205,9 @@ public class VeziTichete {
                 LocalDate timpInchis = LocalDate.parse(t.getSolvedAt());
                 LocalDate now = LocalDate.parse(timestamp);
                 int daysBetween = (int) ChronoUnit.DAYS.between(timpInchis, now);
-                System.out.println("TIMP INTRE ESTE DE " + daysBetween);
-                if (daysBetween <= 32)
+                if (daysBetween <= MagicNumbersInt.treizecisidoi.getValue()) {
                     count++;
+                }
             }
         }
         return count;
@@ -1243,9 +1240,15 @@ public class VeziTichete {
                 LocalDate timpInchis = LocalDate.parse(ticket.get(i).getSolvedAt());
                 LocalDate now = LocalDate.parse(timestamp);
                 int daysBetween = (int) ChronoUnit.DAYS.between(timpInchis, now);
-                System.out.println("TIMP INTRE ESTE DE " + daysBetween);
-                if (daysBetween <= 32) {
-                    System.out.println("IA ZI FRATE PENTRU TICHETUL " + ticket.get(i).getId() + " AVEM ASSIGNED AT " + ticket.get(i).getAssignedAt() + " SI REZOLVAT LA " + ticket.get(i).getUltimulTimestampCR() + " si zile intre " + ticket.get(i).getAverageResolutionTime());
+                if (daysBetween <= MagicNumbersInt.treizecisidoi.getValue()) {
+                    System.out.println("IA ZI FRATE PENTRU TICHETUL "
+                            + ticket.get(i).getId() + " AVEM ASSIGNED AT "
+                            + ticket.get(i).getAssignedAt()
+                            + " SI REZOLVAT LA "
+                            + ticket.get(i).getSolvedAt() + " si zile intre "
+                            + ticket.get(i).getAverageResolutionTime());
+                    System.out.println("AVEM NEBUNIA ASTA "
+                            + ticket.get(i).getUltimulTimestampCR());
                     sum = sum + ticket.get(i).getAverageResolutionTime();
                 }
             }
@@ -1329,10 +1332,12 @@ public class VeziTichete {
                 double avgRes = calculateAvgTime(dev.getTickets(), timestamp);
                 double performance = 0.0;
                 if (closedTickets != 0 || highPriorityTicket != 0 || avgRes != 0) {
+                    System.out.println("TICHETE CU PRIORITATEA HIGH " + highPriorityTicket);
                     double value = max(0, MagicNumbersDouble.zerocinci.getValue()
                             * closedTickets + 1.0 * highPriorityTicket
                             - MagicNumbersDouble.zerocinci.getValue() * avgRes)
                             + MagicNumbersInt.treizeci.getValue();
+                    System.out.println("VALUE " + value);
                     performance = Math.round(value * MagicNumbersDouble.osuta.getValue())
                             / MagicNumbersDouble.osuta.getValue();
                 }

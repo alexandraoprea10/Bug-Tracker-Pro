@@ -305,7 +305,6 @@ public class App {
             ticket.setSolvedAt("");
             ticket.setStatus("IN_PROGRESS");
         } else if (ticket.getStatus().equals("CLOSED")) {
-            ticket.setUltimulTimestampCR(ticket.getSolvedAt());
             ticket.setStatus("RESOLVED");
         }
     }
@@ -396,7 +395,14 @@ public class App {
         }
         return -1;
     }
-    public static int verifyIfAllMilestonesAreCompleted(ArrayList<Milestone> milestones) {
+
+    /**
+     * Verifica daca toate tichetele din milestone au fost rezolvate.
+     * @param milestones
+     * @return
+     */
+    public static int verifyIfAllMilestonesAreCompleted(final
+                                                        ArrayList<Milestone> milestones) {
         for (int  i = 0; i < milestones.size(); i++) {
             Milestone milestone = milestones.get(i);
             if (milestone.getOpenTickets().length != 0) {
@@ -495,7 +501,6 @@ public class App {
                     LocalDate currentDate = LocalDate.parse(timestamp);
                     LocalDate dateMilestone = LocalDate.parse(milestone.getDueDate());
                     int daysBetween = (int) ChronoUnit.DAYS.between(currentDate, dateMilestone) + 1;
-                    System.out.println("PENTRU MILESTONE UL " + milestone.getName() + " MAI SUNT " + daysBetween + " zile pana la due date");
                     if (daysBetween == 2  && !milestone.isBlocking()) {
                         // System.out.println("INTRA AICI PENTRU MILESTONE UL NEBUN");
                         milestone.vineDueDate();
@@ -620,7 +625,13 @@ public class App {
                             Ticket t = inventarTichete.get(p);
                             Users usr2 = returnUser(useri, t.getAssignedTo());
                             Developer dev = (Developer) usr2;
-                            if (dev != null && !dev.rezolvaTichetul(dev.getSeniority(), t.getExpertiseArea(), t.getBusinessPriority(), t.getType()) && (t.getStatus().equals("OPEN") || t.getStatus().equals("IN_PROGRESS") || t.getStatus().equals("RESOLVED"))) {
+                            if (dev != null
+                                    && !dev.rezolvaTichetul(dev.getSeniority(),
+                                    t.getExpertiseArea(), t.getBusinessPriority(),
+                                    t.getType())
+                                    && (t.getStatus().equals("OPEN")
+                                    || t.getStatus().equals("IN_PROGRESS")
+                                    || t.getStatus().equals("RESOLVED"))) {
 //                            System.out.println("senioritate: " + dev.getSeniority());
 //                            System.out.println("experienta: " + dev.getExpertiseArea());
 //                            System.out.println("prioritate tichet" + t.getBusinessPriority());
@@ -634,13 +645,17 @@ public class App {
                                 t.setAssignedTo("");
                                 t.setAssignedAt("");
                                 t.setSolvedAt("");
-                                Milestone milestone = returnByUserame(milestones, dev.getUsername());
-                                LinkedHashMap<String, Vector<Integer>> repartition = milestone.getRepartition();
-                                Vector<Integer> ticheteAsignate = repartition.get(dev.getUsername());
+                                Milestone milestone =
+                                        returnByUserame(milestones, dev.getUsername());
+                                LinkedHashMap<String, Vector<Integer>>
+                                        repartition = milestone.getRepartition();
+                                Vector<Integer> ticheteAsignate =
+                                        repartition.get(dev.getUsername());
                                 if (ticheteAsignate != null) {
                                     ticheteAsignate.remove(Integer.valueOf(t.getId()));
                                 }
-                                History history = new History.Builder("REMOVED_FROM_DEV", "system", timestamp)
+                                History history = new History.Builder("REMOVED_FROM_DEV",
+                                        "system", timestamp)
                                         .from(username)
                                         .build();
                                 t.getHistories().add(history);
@@ -932,9 +947,12 @@ public class App {
                         Users usr = returnUser(useri, username);
                         Developer dev = (Developer) usr;
                         if (dev != null
-                                && !dev.rezolvaTichetul(dev.getSeniority(), ticket.getExpertiseArea(),
-                                ticket.getBusinessPriority(), ticket.getType()) && (ticket.getStatus().equals("OPEN")
-                                || ticket.getStatus().equals("IN_PROGRESS") || ticket.getStatus().equals("RESOLVED"))) {
+                                && !dev.rezolvaTichetul(dev.getSeniority(),
+                                ticket.getExpertiseArea(),
+                                ticket.getBusinessPriority(), ticket.getType())
+                                && (ticket.getStatus().equals("OPEN")
+                                || ticket.getStatus().equals("IN_PROGRESS")
+                                || ticket.getStatus().equals("RESOLVED"))) {
                             dev.getTickets().remove(ticket);
                             dev.getGaveupTickets().add(ticket);
                             ticket.setIsAVailableForAssignment(true);
@@ -943,12 +961,14 @@ public class App {
                             ticket.setAssignedAt("");
                             ticket.setSolvedAt("");
                             Milestone milestone = returnByUserame(milestones, dev.getUsername());
-                            LinkedHashMap<String, Vector<Integer>> repartition = milestone.getRepartition();
+                            LinkedHashMap<String, Vector<Integer>>
+                                    repartition = milestone.getRepartition();
                             Vector<Integer> ticheteAsignate = repartition.get(dev.getUsername());
                             if (ticheteAsignate != null) {
                                 ticheteAsignate.remove(Integer.valueOf(ticket.getId()));
                             }
-                            History history = new History.Builder("REMOVED_FROM_DEV", "system", timestamp)
+                            History history = new History.Builder("REMOVED_FROM_DEV",
+                                    "system", timestamp)
                                     .from(username)
                                     .build();
                             ticket.getHistories().add(history);
@@ -966,7 +986,6 @@ public class App {
                                 String nimName = checkforTicket(milestones, ticketID);
                                 Milestone milestone = returnMilestone(milestones, nimName);
                                 if (!milestone.isBlocking()) {
-                                    System.out.println("tichetul cu id " + ticketID + " care se afla in milestone-ul " + nimName + " care e " + milestone.isBlocking() + " i se schimba prioritatea de la " + ticket.getBusinessPriority());
                                     nextStatus(ticket, timestamp);
                                 }
                                 if (!ticket.isNuMaiPuneInHistory()) {
@@ -992,7 +1011,6 @@ public class App {
                                 String nimName = checkforTicket(milestones, ticketID);
                                 Milestone milestone = returnMilestone(milestones, nimName);
                                 if (!milestone.isBlocking()) {
-                                    System.out.println("tichetul cu id " + ticketID + " care se afla in milestone-ul " + nimName + " care e " + milestone.isBlocking() + " i se schimba prioritatea LA UNDO de la " + ticket.getBusinessPriority());
                                     previousStatus(ticket);
                                 }
                                 if (!ticket.isNuMaiPuneInHistory()) {
@@ -1159,7 +1177,8 @@ public class App {
                             }
                             }
                         }
-                        if (milestone.getTickets().length == 0 || milestone.getCompletionPercentage() == 1.0) {
+                        if (milestone.getTickets().length == 0
+                                || milestone.getCompletionPercentage() == 1.0) {
                             milestone.setCompletionPercentage(1.0);
                             milestone.setStatus("COMPLETED");
                         }
@@ -1168,7 +1187,13 @@ public class App {
                         Ticket t = inventarTichete.get(p);
                         Users usr2  = returnUser(useri, t.getAssignedTo());
                         Developer dev = (Developer) usr2;
-                        if (dev != null && !dev.rezolvaTichetul(dev.getSeniority(), t.getExpertiseArea(), t.getBusinessPriority(), t.getType()) && (t.getStatus().equals("OPEN") || t.getStatus().equals("IN_PROGRESS") || t.getStatus().equals("RESOLVED"))) {
+                        if (dev != null
+                                && !dev.rezolvaTichetul(dev.getSeniority(),
+                                        t.getExpertiseArea(), t.getBusinessPriority(),
+                                        t.getType())
+                                && (t.getStatus().equals("OPEN")
+                                || t.getStatus().equals("IN_PROGRESS")
+                                || t.getStatus().equals("RESOLVED"))) {
 //                            System.out.println("senioritate: " + dev.getSeniority());
 //                            System.out.println("experienta: " + dev.getExpertiseArea());
 //                            System.out.println("prioritate tichet" + t.getBusinessPriority());
@@ -1183,19 +1208,25 @@ public class App {
                             t.setAssignedAt("");
                             t.setSolvedAt("");
                             Milestone milestone = returnByUserame(milestones, dev.getUsername());
-                            LinkedHashMap<String, Vector<Integer>> repartition = milestone.getRepartition();
-                            Vector<Integer> ticheteAsignate = repartition.get(dev.getUsername());
+                            LinkedHashMap<String, Vector<Integer>>
+                                    repartition = milestone.getRepartition();
+                            Vector<Integer> ticheteAsignate =
+                                    repartition.get(dev.getUsername());
                             if (ticheteAsignate != null) {
                                 ticheteAsignate.remove(Integer.valueOf(t.getId()));
                             }
-                            History history = new History.Builder("REMOVED_FROM_DEV", "system", timestamp)
+                            History history = new History.Builder("REMOVED_FROM_DEV",
+                                    "system", timestamp)
                                     .from(username)
                                     .build();
                             t.getHistories().add(history);
                         }
                         System.out.println("tichetul cu id ul " + t.getId()
                                 + " are prioritatea " + t.getBusinessPriority()
-                                + " si status " + t.getStatus() + " si e asignat de " + t.getAssignedTo());
+                                + " si status " + t.getStatus()
+                                + " si e asignat de " + t.getAssignedTo()
+                                + " si s-a rezolvat ultima data "
+                                + t.getUltimulTimestampCR());
                     }
                     veziTichete.setInventarTichete(inventarTichete);
                 }

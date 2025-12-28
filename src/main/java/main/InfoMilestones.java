@@ -4,14 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import main.Ticket.Ticket;
-import main.User.Developer;
 
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import static main.App.returnMilestone;
 import static main.App.returnTicket;
 
 public class InfoMilestones {
@@ -115,18 +112,11 @@ public class InfoMilestones {
                 }
                 node.put("status", milestone.getStatus());
                 node.put("isBlocked", milestone.isBlocking());
-                System.out.println(milestone.getDueDate());
-                System.out.println(timestamp);
                 int days = daystillDeadline(milestone.getDueDate(), timestamp);
-//                System.out.println("sunt " + days + "zile ");
-//                System.out.println("milestone cu numele " + milestone.getName()
-//                        + " are inactivitate " + milestone.getInactivity());
                     int ticketID = ultimulTichetAsignat(milestone, inventarTichete);
                     Ticket t = returnTicket(inventarTichete, ticketID);
                         if (days < 0) {
                             if (milestone.getInactivity()) {
-//                                int db = daystillDeadline(t.getUltimulTimestampCR(),
-//                                        milestone.getDueDate());
                                 int db = daystillDeadline(t.getUltimulTimestampCR(),
                                         milestone.getDueDate());
                                 if (db < 0) {
@@ -282,8 +272,11 @@ public class InfoMilestones {
                 if (milestone.getCompletionPercentage() == 1.0) {
                     LocalDate dueDate = LocalDate.parse(milestone.getDueDate());
                     int idTicket = ultimulTichetAsignat(milestone, inventarTichete);
-                    if (returnTicket(inventarTichete, idTicket) != null && returnTicket(inventarTichete, idTicket).getUltimulTimestampCR() != null) {
-                        String cand = returnTicket(inventarTichete, idTicket).getUltimulTimestampCR();
+                    if (returnTicket(inventarTichete, idTicket) != null
+                            && returnTicket(inventarTichete,
+                            idTicket).getUltimulTimestampCR() != null) {
+                        String cand = returnTicket(inventarTichete,
+                                idTicket).getUltimulTimestampCR();
                         LocalDate solved = LocalDate.parse(cand);
                         int daysBetween = (int) ChronoUnit.DAYS.between(dueDate, solved) + 1;
                         if (daysBetween > 0) {
@@ -294,7 +287,6 @@ public class InfoMilestones {
                             milestone.setOverdueBy(0);
                             milestone.setDaysUntilDue(daysBetween2);
                         }
-                        System.out.println("ATATEA ZILE INTRE BAI NEBUNO " + daysBetween);
                     }
                 }
                 node.put("daysUntilDue", milestone.getDaysUntilDue());

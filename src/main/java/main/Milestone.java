@@ -83,7 +83,8 @@ public class Milestone {
      */
     public void notificareDevelopers(final String message) {
         for (int i = 0; i < this.observatoriNotificari.size(); i++) {
-            // System.out.println("PRIMESTE ACEASTA NOTIFICARE" + this.observatoriNotificari.get(i).getUsername());
+            // System.out.println("PRIMESTE ACEASTA NOTIFICARE"
+            // + this.observatoriNotificari.get(i).getUsername());
             Developer dev = this.observatoriNotificari.get(i);
             dev.primesteNotificare(message);
         }
@@ -344,6 +345,11 @@ public class Milestone {
     public ArrayList<Developer> getAssignedDevelopers() {
         return assigneddevelopers;
     }
+
+    /**
+     * Ultima data cand a fost asignat un tichet ca si "CLOSED".
+     * @return
+     */
     public String getLastTimestampOfTicket() {
         return lastTimestampOfTicket;
     }
@@ -492,9 +498,19 @@ public class Milestone {
     public void setAssigneddevelopers(final ArrayList<Developer> assigneddevelopers) {
         this.assigneddevelopers = assigneddevelopers;
     }
+
+    /**
+     * Lista cu toate milestone-urile blocante pentru milestone-ul curent.
+     * @param isBlockedBy
+     */
     public void setIsBlockedBy(final ArrayList<String> isBlockedBy) {
         this.isBlockedBy = isBlockedBy;
     }
+
+    /**
+     * Ultima data cand a fost asignat un tichet ca si "CLOSED".
+     * @param lastTimestampOfTicket
+     */
     public void setLastTimestampOfTicket(String lastTimestampOfTicket) {
         this.lastTimestampOfTicket = lastTimestampOfTicket;
     }

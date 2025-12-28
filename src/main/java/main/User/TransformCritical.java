@@ -21,7 +21,6 @@ public class TransformCritical implements SpecialMention {
         LocalDate dataMilestone = LocalDate.parse(milestone.getDueDate());
         LocalDate data = LocalDate.parse(date);
         int daysBetween = (int) ChronoUnit.DAYS.between(data, dataMilestone) + 1;
-        // System.out.println(daysBetween);
         if (daysBetween == 2) {
             // System.out.println("INTRU IN CRITICAL STRATEGY");
             int[] idTicket = milestone.getTickets();
@@ -30,8 +29,6 @@ public class TransformCritical implements SpecialMention {
                 Ticket ticket = inventarTichete.get(j);
                 if (ticket.getId() == idTicket[i]
                         && !ticket.getStatus().equals("CLOSED")) {
-                    System.out.println("INTRU AICI BAAAAA LA TRANSFORM CRTICAL");
-                    // System.out.println(ticket.getId());
                     ticket.setBusinessPriority("CRITICAL");
                 }
             }

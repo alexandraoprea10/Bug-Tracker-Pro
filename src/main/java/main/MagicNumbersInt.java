@@ -11,7 +11,8 @@ public enum MagicNumbersInt {
     unsprezece(11),
     doisprezece(12),
     cincisprezece(15),
-    treizeci(30);
+    treizeci(30),
+    treizecisidoi(32);
     private final int value;
     MagicNumbersInt(final int value) {
         this.value = value;
