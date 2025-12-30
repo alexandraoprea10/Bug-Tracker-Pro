@@ -1240,15 +1240,14 @@ public class VeziTichete {
                 LocalDate timpInchis = LocalDate.parse(ticket.get(i).getSolvedAt());
                 LocalDate now = LocalDate.parse(timestamp);
                 int daysBetween = (int) ChronoUnit.DAYS.between(timpInchis, now);
-                if (daysBetween <= MagicNumbersInt.treizecisidoi.getValue()) {
-                    System.out.println("IA ZI FRATE PENTRU TICHETUL "
-                            + ticket.get(i).getId() + " AVEM ASSIGNED AT "
-                            + ticket.get(i).getAssignedAt()
-                            + " SI REZOLVAT LA "
-                            + ticket.get(i).getSolvedAt() + " si zile intre "
-                            + ticket.get(i).getAverageResolutionTime());
-                    System.out.println("AVEM NEBUNIA ASTA "
-                            + ticket.get(i).getUltimulTimestampCR());
+                int ziua = now.getDayOfMonth();
+                if (daysBetween - ziua > 0) {
+//                    System.out.println("IA ZI FRATE PENTRU TICHETUL "
+//                            + ticket.get(i).getId() + " AVEM ASSIGNED AT "
+//                            + ticket.get(i).getAssignedAt()
+//                            + " SI REZOLVAT LA "
+//                            + ticket.get(i).getSolvedAt() + " si zile intre "
+//                            + ticket.get(i).getAverageResolutionTime());
                     sum = sum + ticket.get(i).getAverageResolutionTime();
                 }
             }
@@ -1258,9 +1257,6 @@ public class VeziTichete {
             return 0.0;
         }
         double res = (double) sum / nr;
-        System.out.println("SUMA " + sum);
-        System.out.println("NUMAR" + nr);
-        System.out.println("HAIDE CU REZULTATUL " + res);
         return Math.round(res * MagicNumbersDouble.osuta.getValue())
                 / MagicNumbersDouble.osuta.getValue();
     }
@@ -1332,14 +1328,11 @@ public class VeziTichete {
                 double avgRes = calculateAvgTime(dev.getTickets(), timestamp);
                 double performance = 0.0;
                 if (closedTickets != 0 || highPriorityTicket != 0 || avgRes != 0) {
-                    System.out.println("TICHETE CU PRIORITATEA HIGH " + highPriorityTicket);
                     double value = max(0, MagicNumbersDouble.zerocinci.getValue()
                             * closedTickets + 1.0 * highPriorityTicket
-                            - MagicNumbersDouble.zerocinci.getValue() * avgRes)
+                            - MagicNumbersDouble.zerocinci.getValue() * calculateAvgTime(dev.getTickets(), timestamp))
                             + MagicNumbersInt.treizeci.getValue();
-                    System.out.println("VALUE " + value);
-                    performance = Math.round(value * MagicNumbersDouble.osuta.getValue())
-                            / MagicNumbersDouble.osuta.getValue();
+                    performance = (double) Math.floor(value * 100.0) / 100.0;
                 }
                 PerformanceReport report = new PerformanceReport(usernameCurent,
                         calculateclosedTickets(dev.getTickets(), timestamp), avgRes,

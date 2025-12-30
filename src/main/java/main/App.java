@@ -240,29 +240,6 @@ public class App {
         return 0;
     }
     /**
-     * Printeaza userii
-     * @param useri
-     */
-    public static void printUser(final List<Users> useri) {
-        for (int i = 0; i < useri.size(); i++) {
-            Users user = useri.get(i);
-            System.out.println(user.getUsername());
-            System.out.println(user.getMail());
-            System.out.println(user.getRole());
-            if (user.getRole().equals("DEVELOPER")) {
-                Developer dev = (Developer) user;
-                System.out.println(dev.getDate());
-                System.out.println(dev.getSeniority());
-                System.out.println(dev.getExpertiseArea());
-            } else if (user.getRole().equals("MANAGER")) {
-                Manager manager = (Manager) user;
-                System.out.println(manager.getHireDate());
-                System.out.println(manager.getSubordinates());
-            }
-        }
-    }
-
-    /**
      * Verific daca a trecut perioada de testare
      * @param startTimestamp inceput perioada de testare
      * @param currentTimestamp perioada curenta
@@ -305,6 +282,7 @@ public class App {
             ticket.setSolvedAt("");
             ticket.setStatus("IN_PROGRESS");
         } else if (ticket.getStatus().equals("CLOSED")) {
+             ticket.setUltimulTimestampCR(ticket.getSolvedAt());
             ticket.setStatus("RESOLVED");
         }
     }
@@ -478,12 +456,13 @@ public class App {
             TicketSearch ticketSearch = new TicketSearch();
             DevelopersSearch developersSearch = new DevelopersSearch();
             for (int i = 0; i < inputJson.size(); i++) {
-                System.out.println("==============INCEPUTCOMANDA==============");
+                // System.out.println("==============INCEPUTCOMANDA==============");
                 String command = inputJson.get(i).get("command").asText();
-                System.out.println("COMANDA ESTE: " + command);
+                // System.out.println("COMANDA ESTE: " + command);
                 String username = inputJson.get(i).get("username").asText();
                 Users user = returnUser(useri, username);
                 String timestamp = inputJson.get(i).get("timestamp").asText();
+                // System.out.println("SUNTEM LA TIMESTAMP-UL " + timestamp);
                 if (okstartTesting == 0) {
                     okstartTesting = 1;
                     timestampTesting = timestamp;
@@ -1221,16 +1200,16 @@ public class App {
                                     .build();
                             t.getHistories().add(history);
                         }
-                        System.out.println("tichetul cu id ul " + t.getId()
-                                + " are prioritatea " + t.getBusinessPriority()
-                                + " si status " + t.getStatus()
-                                + " si e asignat de " + t.getAssignedTo()
-                                + " si s-a rezolvat ultima data "
-                                + t.getUltimulTimestampCR());
+//                        System.out.println("tichetul cu id ul " + t.getId()
+//                                + " are prioritatea " + t.getBusinessPriority()
+//                                + " si status " + t.getStatus()
+//                                + " si e asignat de " + t.getAssignedTo()
+//                                + " si s-a rezolvat ultima data "
+//                                + t.getUltimulTimestampCR());
                     }
                     veziTichete.setInventarTichete(inventarTichete);
                 }
-                System.out.println("==============SFARSITCOMANDA==============");
+                //System.out.println("==============SFARSITCOMANDA==============");
             }
         } catch (IOException e) {
             return;
