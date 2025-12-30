@@ -1,10 +1,10 @@
-package main;
+package main.Milestones;
 
 import main.Ticket.Ticket;
-import main.User.Developer;
-import main.User.NextPriority;
-import main.User.SpecialMention;
-import main.User.TransformCritical;
+import main.User.DeveloperTypes.Developer;
+import main.User.ModifyTickets.NextPriority;
+import main.User.ModifyTickets.SpecialMention;
+import main.User.ModifyTickets.TransformCritical;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -181,9 +181,9 @@ public class Milestone {
     private boolean nextPriorityStrategy(final String date) {
         LocalDate now = LocalDate.parse(date);
         LocalDate due = LocalDate.parse(dueDate);
-        LocalDate createdAt = LocalDate.parse(getCreatedAt());
+        LocalDate created = LocalDate.parse(this.createdAt);
         int daysBetween = (int) ChronoUnit.DAYS.between(now, due) + 1;
-        int db = (int) ChronoUnit.DAYS.between(createdAt, now) + 1;
+        int db = (int) ChronoUnit.DAYS.between(created, now) + 1;
         int before = this.getLast3days();
         // this.setLast3days(db / 3);
         if (before != this.getLast3days()
@@ -511,7 +511,7 @@ public class Milestone {
      * Ultima data cand a fost asignat un tichet ca si "CLOSED".
      * @param lastTimestampOfTicket
      */
-    public void setLastTimestampOfTicket(String lastTimestampOfTicket) {
+    public void setLastTimestampOfTicket(final String lastTimestampOfTicket) {
         this.lastTimestampOfTicket = lastTimestampOfTicket;
     }
 

@@ -1,4 +1,4 @@
-package main;
+package main.MagicNumbers;
 
 public enum MagicNumbersDouble {
     zerotrei(0.3),

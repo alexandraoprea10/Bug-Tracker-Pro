@@ -1,7 +1,7 @@
-package main.User;
+package main.User.ModifyTickets;
 
-import main.MagicNumbersInt;
-import main.Milestone;
+import main.MagicNumbers.MagicNumbersInt;
+import main.Milestones.Milestone;
 import main.Ticket.Ticket;
 
 import java.time.LocalDate;

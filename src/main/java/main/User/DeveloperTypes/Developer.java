@@ -1,7 +1,8 @@
-package main.User;
+package main.User.DeveloperTypes;
 
-import main.MagicNumbersInt;
+import main.MagicNumbers.MagicNumbersInt;
 import main.Notifications;
+import main.User.Users;
 
 import java.util.ArrayList;
 

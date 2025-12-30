@@ -1,6 +1,6 @@
-package main.User;
+package main.User.DeveloperTypes;
 
-import main.MagicNumbersInt;
+import main.MagicNumbers.MagicNumbersInt;
 
 public class MidDeveloper extends Developer {
     public MidDeveloper(final String username, final String mail,

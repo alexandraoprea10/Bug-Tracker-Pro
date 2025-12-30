@@ -1,6 +1,6 @@
-package main.User;
+package main.User.ModifyTickets;
 
-import main.Milestone;
+import main.Milestones.Milestone;
 import main.Ticket.Ticket;
 
 import java.time.LocalDate;

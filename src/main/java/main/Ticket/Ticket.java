@@ -1,7 +1,7 @@
 package main.Ticket;
 
-import main.MagicNumbersInt;
-import main.Milestone;
+import main.MagicNumbers.MagicNumbersInt;
+import main.Milestones.Milestone;
 
 import java.util.ArrayList;
 import java.util.List;

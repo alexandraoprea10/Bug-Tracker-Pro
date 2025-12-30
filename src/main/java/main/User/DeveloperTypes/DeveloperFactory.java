@@ -1,4 +1,4 @@
-package main.User;
+package main.User.DeveloperTypes;
 
 public abstract class DeveloperFactory {
     /**

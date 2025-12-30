@@ -1,7 +1,7 @@
 package main.Ticket;
 
-import main.MagicNumbersDouble;
-import main.MagicNumbersInt;
+import main.MagicNumbers.MagicNumbersDouble;
+import main.MagicNumbers.MagicNumbersInt;
 
 public class FeatureRequest extends Ticket {
     private String businessValue;

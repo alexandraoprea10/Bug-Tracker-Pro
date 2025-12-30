@@ -1,4 +1,4 @@
-package main.User;
+package main.User.DeveloperTypes;
 
 public class JuniorDeveloper extends Developer {
     public JuniorDeveloper(final String username, final String mail,

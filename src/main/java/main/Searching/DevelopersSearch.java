@@ -1,7 +1,7 @@
-package main;
+package main.Searching;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import main.User.Developer;
+import main.User.DeveloperTypes.Developer;
 import main.User.Manager;
 import main.User.Users;
 

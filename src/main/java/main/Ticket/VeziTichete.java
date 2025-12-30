@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import main.MagicNumbersDouble;
-import main.MagicNumbersInt;
-import main.Milestone;
+import main.MagicNumbers.MagicNumbersDouble;
+import main.MagicNumbers.MagicNumbersInt;
+import main.Milestones.Milestone;
 import main.PerformanceReport;
-import main.User.Developer;
+import main.User.DeveloperTypes.Developer;
 import main.User.Manager;
 import main.User.Users;
 
@@ -571,7 +571,60 @@ public class VeziTichete {
         finalNode.set("assignedTickets", arrayNode);
         return finalNode;
     }
+    /**
+     * Creeaza lista de tichete pentru history din persp developer.
+     * @param milestones
+     * @param username
+     * @param useri
+     * @param tickets
+     */
+    public void createListTicketForManager(final ArrayList<Milestone> milestones,
+                                           final String username, final ArrayList<Users> useri,
+                                           final ArrayList<Ticket> tickets) {
+        for (int k = 0; k < milestones.size(); k++) {
+            Milestone milestone = milestones.get(k);
+            if (milestone.getCreatedBy().equals(username)) {
+                String[] assignedDev = milestone.getAssignedDevs();
+                for (int p = 0; p < assignedDev.length; p++) {
+                    for (int m = 0;
+                         m < returnUser(useri,
+                                 assignedDev[p]).getTickets().size();
+                         m++) {
+                        Ticket t = returnUser(useri,
+                                assignedDev[p]).getTickets().get(m);
+                        tickets.add(t);
+                    }
+                    for (int m = 0;
+                         m < returnUser(useri,
+                                 assignedDev[p]).getGaveupTickets().size(); m++) {
+                        Ticket t = returnUser(useri,
+                                assignedDev[p]).getGaveupTickets().get(m);
+                        tickets.add(t);
+                    }
+                }
+            }
+        }
+    }
 
+    /**
+     * Creeaza lista de tichete pentru history din persp developer.
+     * @param useri
+     * @param username
+     * @param allTickets
+     */
+    public void createListTicketForDeveloper(final ArrayList<Users> useri, final String username,
+                                             final ArrayList<Ticket> allTickets) {
+        for (int m = 0;
+             m < returnUser(useri, username).getTickets().size(); m++) {
+            Ticket t = returnUser(useri, username).getTickets().get(m);
+            allTickets.add(t);
+        }
+        for (int m = 0;
+             m < returnUser(useri, username).getGaveupTickets().size(); m++) {
+            Ticket t = returnUser(useri, username).getGaveupTickets().get(m);
+            allTickets.add(t);
+        }
+    }
     /**
      * Printeaza istoricul tichetelor.
      * @param tickets
@@ -1330,9 +1383,11 @@ public class VeziTichete {
                 if (closedTickets != 0 || highPriorityTicket != 0 || avgRes != 0) {
                     double value = max(0, MagicNumbersDouble.zerocinci.getValue()
                             * closedTickets + 1.0 * highPriorityTicket
-                            - MagicNumbersDouble.zerocinci.getValue() * calculateAvgTime(dev.getTickets(), timestamp))
+                            - MagicNumbersDouble.zerocinci.getValue()
+                            * calculateAvgTime(dev.getTickets(), timestamp))
                             + MagicNumbersInt.treizeci.getValue();
-                    performance = (double) Math.floor(value * 100.0) / 100.0;
+                    performance = (double) Math.floor(value * MagicNumbersDouble.osuta.getValue())
+                            / MagicNumbersDouble.osuta.getValue();
                 }
                 PerformanceReport report = new PerformanceReport(usernameCurent,
                         calculateclosedTickets(dev.getTickets(), timestamp), avgRes,
