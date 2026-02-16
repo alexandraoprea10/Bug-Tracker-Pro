@@ -52,4 +52,8 @@ Acelasi lucru se intampla si pentru
 16. GENERATETICKETRUSKREPORT
 17. GENERATERESOLUTIONEFFICIENCYREPORT
 18. GENERATEPERFORMANCEREPORT
+Initial facusem aproximare cu 2 zecimale (cu Math.round(value * 100.0) / 100.0) Dar pentru t19, era o problema. Rezultatul era 32.83 si mie imi dadea 32.84.(Rezultatul este 32.835).
+
+CE AM MAI ADAUGAT?
+Pentru t18 si t19 am abordat o noua problema: ce se intampla daca un developer nu mai poate rezolva tichetul?( due to expertiseArea, Seniority, etc). Daca nu mai poate rezolva tihcetul, il elimin din lista de tichete asignate, adica deasignez tichetul din lista de tichete a developerului. Mai mult, am modificat si timpul de rezolvare a unor tichete. Inainte verificam daca timestamp-ul este divizibil cu 3, dar nu era bine. Acum fac diferenta si impart la 3. Daca rezultatul e diferit de ultima impartire, trec la next priority.
 
