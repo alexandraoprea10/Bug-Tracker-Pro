@@ -1,59 +1,75 @@
-Citirea: Ca la tema 1, cu JsonNode, ObjNode, ArrayNode, etc. 
-PACHETE:
-1. PACHETUL TICKET
-Contine clasele:
-a) Ticket- clasa de baza cu componentele necesare pentru a crea un tichet. Singurul camp suplimentar este description.
-b) UI - PRIMUL DESIGN PATTERN! BUILDER! Am folosit builder pentru ca tichetul poate avea mai multe campuri optionale. Este mai eficient si codul arata mai elegant daca am un singur constructor privat si cate un constructor pentru fiecare field optional.(fata de multi constructori la care difera doar parametri).
-c) Feature - nu e de tip builder, campurile sunt obligatorii toate si nu ar fi avut sens.
-d) BUG - din nou, BUILDER. Il folosesc cu acelasi scop ca la UI
-e) Vezi Tichete - clasa in care am un singur camp, o lista de inventar tichete si mai multe atribute speciale pentru printare. Clasa contine multe metode care ma ajuta sa printez anumite detalii specifice pentru fiecare tip de tichet, in functie de rolul userului(developer/ manager).
-2. PACHETUL USER
-a) Users- clasa de baza cu atributele specifice
-b) Developer - clasa care extinde users
-c) Manager - clasa care extinde users
-d) Reporter - clasa care extinde users
-e) DeveloperFactory - Fabrica de developers
-f) JuniorDeveloper - tip de developer
-g) MidDeveloper - tip de developer
-h) SeniorDeveloper - tip de developer
-i) NextPriority/TransformCritical - clase specifice pentru interactiunea la 3 zile dupa crearea unui Milestone
-j) interfata SpecialMention - pentru i).
-CLASA MILESTONE- clasa de baza pt MIlestones
-CLASA INFOMILESTONE- clasa helper pentru a apela metode pentru printarea detaliilor despre milestones.
-CLASA NOTIFICATIONS- clasa de baza pentru notificari
-CLASA SEARCH - pentru cautare
-CLASELE TICKETSEARCH/DEVELOPERSSEARCH - pentru cautare detaliata
-INTERAFATA OBSERVATOR - pentru NOtificari(folosesc observer pattern)
+**Citire si Structura**
 
-COMENZI:
-1. REPORT TICKET-  crearea Tichetelor- folosesc BUILDER/nu, in functie de tipul tichetului. Primesc titlul, tipul, timestampul, restul atributelor obligatorii si optionale. Apelez constructorii din clasele facute anterior si folosesc builder pentru UI/BUG ca sa adaug campurile optionale.
-2. VIEWTICKET - Ma folosesc de clasa viewtickets si printez toate tichetele(care sunt puse in inventar tichete- lista de tichete). Printez cu ObjNode, etc.
-3. CREATEMILESTONE - Creez milestone-ul si citesc parametri. Pentru edgeCases, verific exceptiile date in cerinta.
-DUpa crearea unui milestone, incep interactiunile cu tichete. Pentru asta, folosesc STRATEGY PATTERN. Am interfata specialmentiomn ce reprezinta diferitele schimbari pe care le pot avea tichetele din milestone-ul respectiv. Interfata e implementata de clasele nextpriority si transformcritical.(numele sunt destul de sugestive pentru ceea ce fac fiecare).
-4. VIEWMILESTONES - Afiseaza toate milestone-urile create.
-5. ASSIGNTICKET - Asigneaza tichete userilor. In clasa users este cate o lista de tichete asignate fiecaruia. Trebuie sa verific daca user-ul poate rezolva tichetul(daca are expertiseArea potrivita, seniority si daca milestone-ul din care face parte nu e blocat. Daca toate se respecta, atunci se adauga la lista de tichete tichetul cu id-ul dat.
-Pentru verificarea rezolvarii ticetului, folosesc FACTORY METHOD Pentru a coda prioritatile si specializarile.
-PENTRU JUNIOR - COD 2(POATE LOW/MEDIUM SI BUG + UI)
-PENTRU MID - COD 3(POATE LOW/MEDIUM/HIGHT SI BUG + UI + FR)
-PENTRU SENIOR - COD 4 SI 3(POATE LOW/MED/HIGH/CRITICAL SI BUG+ UI+ FR). Pentru asta clasa Developer devine abstracta si clasele JuniorDeveloper, MidDeveloper, SeniorDeveloper implementeaza metodele absracte gettickettype, accesspriority. Folosesc factory method pentru ca este un mod mai elegant de a crea developeri, in functie de tipul lor.
-6. VIEWASSIGNEDTICKETS - Au acces doar developerii si printeaza lista de tichete asignata anterior.
-7. UNDOASSIGNEDTICKETS - Sterg din lista de tichete tichetul cu id-ul repsectiv, DAR EU NU FAC ASTA! Creez o alta lista care se numeste gaveupTickets si adaug tichetul acolo, dar il elimin din lista de tichete initiala.(Am nevoie de fostele tichete in comanda pentru history).
-8. ADDCOMMENT - Adauga comentariu la un tichet. Lista de comenatrii pentru fiecare tichet. Adaug acolo comentariul primit.
-9. UNDOADDOCOMMENT -ELimina comentariul facut mai devreme si il sterge din lista de comentarii ale tichetului respectiv.
-10. CHANGESTATUS - Trece tichetul la urmatorul status. Daca e low, trece mai departe la medium. Cand ajunge la resolved, atunci seteaza si campul "solved at" din clasa ticket. Cand ajunge la resolved/closed, seteaza si campul ultimultimestampCR(pentru calcul la eficienta).
-11. UNDOCHANGESTATUS - Sterge statusul anterior si trece la cel precdent.
-12. PRINTICKETHISTORY - Printeaza istoricul unui tichet. Daca userul este delveloper, atunci vede toate tichetele. Daca e manager, vede tichetele asignate developerilor din milestone-urile create.
-13. SEARCH - Cauta in inventarTichete si in useri(lista de users) obiectele care dau match pe criteriile date.
-14. VIEWNOTIFICATIONS - Printeaza notificarile tichetelor
-Pentru notifications am folosit OBSERVER PATTERN. Am in clasa MIlestone 3 metode(milestonecreat, vineduedate, atrecutdue) care sunt apelate pentru a notifica developerul ca s-a intamplat o modificare. Observerii sunt developerii si milestone-urile sunt cele care genereaza notificari.
-15. GENERATETECUSTOMERIMPACTREPORT
-Calculez nr de tichete open/ in progress pentru fiecare tip de tichete si afisez si nr lor in functie de prioritate, apoi cu ajutorul metodelor date de enunt fac calculele necesare. 
-Acelasi lucru se intampla si pentru
-16. GENERATETICKETRUSKREPORT
-17. GENERATERESOLUTIONEFFICIENCYREPORT
-18. GENERATEPERFORMANCEREPORT
-Initial facusem aproximare cu 2 zecimale (cu Math.round(value * 100.0) / 100.0) Dar pentru t19, era o problema. Rezultatul era 32.83 si mie imi dadea 32.84.(Rezultatul este 32.835).
+Citirea datelor se realizeaza utilizand JsonNode, ObjectNode, ArrayNode, etc.
 
-CE AM MAI ADAUGAT?
-Pentru t18 si t19 am abordat o noua problema: ce se intampla daca un developer nu mai poate rezolva tichetul?( due to expertiseArea, Seniority, etc). Daca nu mai poate rezolva tihcetul, il elimin din lista de tichete asignate, adica deasignez tichetul din lista de tichete a developerului. Mai mult, am modificat si timpul de rezolvare a unor tichete. Inainte verificam daca timestamp-ul este divizibil cu 3, dar nu era bine. Acum fac diferenta si impart la 3. Daca rezultatul e diferit de ultima impartire, trec la next priority.
+**Pachete si Clase**
 
+1. **Pachetul Ticket**
+Acest pachet gestioneaza toate tipurile de tichete si operatiunile asociate.
+a) **Ticket** – clasa de baza pentru tichete, continand campurile necesare pentru crearea unui tichet. Singurul camp suplimentar este description.
+b) **UI** – implementare a Builder Pattern pentru tichete UI. Folosirea Builder-ului permite un singur constructor privat si metode pentru setarea campurilor optionale, eliminand nevoia de mai multi constructori cu parametri diferiti.
+c) **Feature** – clasa pentru tichete de tip Feature; toate campurile sunt obligatorii, deci Builder-ul nu este necesar.
+d) **Bug** – implementare similara cu UI, utilizand Builder pentru gestionarea campurilor optionale.
+e) **ViewTickets** – clasa care contine o lista de tichete si metode speciale pentru printarea detaliilor, in functie de rolul utilizatorului (Developer / Manager).
+1.2. **Pachetul ModifyTickets** 
+a) **NextPriority / TransformCritical** – clase pentru interactiunile la 3 zile dupa crearea unui milestone.
+b) **SpecialMention** – interfata utilizata pentru clasele de mai sus.
+
+
+2. **Pachetul User**
+Acest pachet gestioneaza utilizatorii si tipurile lor specifice.
+a) **Users** – clasa de baza pentru utilizatori.
+b) **Developer, Manager, Reporter** – clase care extind Users.
+2.2. **Pachetul developerTypes**
+a) **DeveloperFactory** – fabrica pentru crearea developerilor.
+b) **JuniorDeveloper, MidDeveloper, SeniorDeveloper** – implementari specifice pentru diferite nivele de developer.
+
+3. **Pachetul commands**
+Fiecare comanda este implementata intr-un pachet separat in cadrul proiectului.
+a) **Report Ticket** – creare tichete folosind Builder (UI / Bug) sau constructor normal (Feature). Se primesc titlul, tipul, timestamp-ul si atributele obligatorii si optionale.
+b) **View ticket** – afisare tichete din inventar folosind ViewTickets si ObjectNode.
+c) **Create milestone** – creare milestone si citire parametri; pentru edge cases se verifica exceptiile. Interactiile cu tichete se realizeaza prin Strategy Pattern (interfata SpecialMention implementata de NextPriority si TransformCritical).
+d) **View milestones** – afiseaza toate milestone-urile create.
+e) **Assign ticket** – asignarea tichetelor utilizatorilor. Se verifica compatibilitatea userului cu tichetul (expertiseArea, seniority, blocare milestone). Prioritatile sunt gestionate prin Factory Method pentru developerii Junior, Mid si Senior.
+f) **View assigned tickets** – afiseaza tichetele asignate unui developer.
+g) **Undo assigned tickets** – muta tichetul din lista principala in gaveupTickets pentru pastrarea istoricului.
+h) **Add comment** – adauga comentariu la un tichet.
+i) **Undo add comment** – sterge comentariul adaugat anterior.
+j) **Change status** – trece tichetul la urmatorul status; la resolved se seteaza campurile solvedAt si ultimTimestampCR.
+k) **Undo change status** – revine la statusul anterior.
+l) **Print ticket history** – afiseaza istoricul tichetului, diferentiat dupa rol (developer / manager).
+m) **Search** – cautare in inventar tichete si lista de users, pe baza criteriilor date.
+n) **View notifications** – afiseaza notificarile tichetelor; implementare Observer Pattern (milestones sunt observabile, developers sunt observatori).
+o) **Generate customer impact report** – calculeaza nr. de tichete open / in progress pe tip si prioritate.
+p) **Generate ticket risk report** – similar cu raportul de impact.
+q) **Generate resolution efficiency report** – calculeaza eficienta rezolvarii tichetelor.
+r) **Generate performance report** – calculeaza performanta dezvoltatorilor.
+
+4. **Pachetul helpers**
+a) **CheckingHelpers** - clasa ce contine metode ajutatoare de verificare a unor conditii
+b) **HelperMethods** - clasa ce contine metode ajutatoare
+c) **PrintingHelpers** - clasa ce contine metode ajutatoare de printare
+d) **ReturnHelpers** - clasa ce contine metode ajutatoare de returnare a unor entitati
+e) **WorkingWithMilestones** - clasa ce contine metode ajutatoare pentru reactualizarea milestone-urilor inainte si dupa un timestamp.
+
+5. **Pachetul magicNumbers**
+a) **MagicNumbersDouble** - clasa ce contine numere de tip double
+b) **MagicNumbersInt** - clasa ce contine numere de tip Integer
+
+6. **Pachetul milestones**
+a) **Milestone** – clasa de baza pentru milestones.
+b) **InfoMilestone** – clasa helper pentru apelarea metodelor de printare a detaliilor despre milestones.
+
+7. **Pachetul searching**
+a) **DevelopersSearch** - clasa in care se cauta developeri dupa anumite filtre
+b) **TicketSearch** - clasa in care se cauta tichete dupa anumite filtre
+
+8. **Clase suplimentare**
+
+a) **Notifications** – clasa de baza pentru notificari.
+b) **PerformanceReport** - clasa de baza pentru raportul de performanta a useri-lor.
+
+
+9. **Observatii suplimentare:**
+a) Pentru t18 si t19 s-a abordat problema developerilor care nu mai pot rezolva un tichet (expertiseArea, seniority etc.).
+b) Tichetele sunt deasignate si timpul de rezolvare recalculat.
