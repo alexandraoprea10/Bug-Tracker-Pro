@@ -1,75 +1,91 @@
-**Citire si Structura**
+# BugTrackerPro – Issue Tracking & Analytics System
 
-Citirea datelor se realizeaza utilizand JsonNode, ObjectNode, ArrayNode, etc.
-
-**Pachete si Clase**
-
-1. **Pachetul Ticket**
-Acest pachet gestioneaza toate tipurile de tichete si operatiunile asociate.
-a) **Ticket** – clasa de baza pentru tichete, continand campurile necesare pentru crearea unui tichet. Singurul camp suplimentar este description.
-b) **UI** – implementare a Builder Pattern pentru tichete UI. Folosirea Builder-ului permite un singur constructor privat si metode pentru setarea campurilor optionale, eliminand nevoia de mai multi constructori cu parametri diferiti.
-c) **Feature** – clasa pentru tichete de tip Feature; toate campurile sunt obligatorii, deci Builder-ul nu este necesar.
-d) **Bug** – implementare similara cu UI, utilizand Builder pentru gestionarea campurilor optionale.
-e) **ViewTickets** – clasa care contine o lista de tichete si metode speciale pentru printarea detaliilor, in functie de rolul utilizatorului (Developer / Manager).
-1.2. **Pachetul ModifyTickets** 
-a) **NextPriority / TransformCritical** – clase pentru interactiunile la 3 zile dupa crearea unui milestone.
-b) **SpecialMention** – interfata utilizata pentru clasele de mai sus.
+## 📖 Data Input
+Data parsing is efficiently handled using Jackson's JSON tree model APIs (`JsonNode`, `ObjectNode`, `ArrayNode`, etc.). This approach ensures dynamic extraction and mapping of configuration parameters, user profiles, and commands directly from raw JSON structures.
 
 
-2. **Pachetul User**
-Acest pachet gestioneaza utilizatorii si tipurile lor specifice.
-a) **Users** – clasa de baza pentru utilizatori.
-b) **Developer, Manager, Reporter** – clase care extind Users.
-2.2. **Pachetul developerTypes**
-a) **DeveloperFactory** – fabrica pentru crearea developerilor.
-b) **JuniorDeveloper, MidDeveloper, SeniorDeveloper** – implementari specifice pentru diferite nivele de developer.
+## 📦 Project Architecture & Package Structure
 
-3. **Pachetul commands**
-Fiecare comanda este implementata intr-un pachet separat in cadrul proiectului.
-a) **Report Ticket** – creare tichete folosind Builder (UI / Bug) sau constructor normal (Feature). Se primesc titlul, tipul, timestamp-ul si atributele obligatorii si optionale.
-b) **View ticket** – afisare tichete din inventar folosind ViewTickets si ObjectNode.
-c) **Create milestone** – creare milestone si citire parametri; pentru edge cases se verifica exceptiile. Interactiile cu tichete se realizeaza prin Strategy Pattern (interfata SpecialMention implementata de NextPriority si TransformCritical).
-d) **View milestones** – afiseaza toate milestone-urile create.
-e) **Assign ticket** – asignarea tichetelor utilizatorilor. Se verifica compatibilitatea userului cu tichetul (expertiseArea, seniority, blocare milestone). Prioritatile sunt gestionate prin Factory Method pentru developerii Junior, Mid si Senior.
-f) **View assigned tickets** – afiseaza tichetele asignate unui developer.
-g) **Undo assigned tickets** – muta tichetul din lista principala in gaveupTickets pentru pastrarea istoricului.
-h) **Add comment** – adauga comentariu la un tichet.
-i) **Undo add comment** – sterge comentariul adaugat anterior.
-j) **Change status** – trece tichetul la urmatorul status; la resolved se seteaza campurile solvedAt si ultimTimestampCR.
-k) **Undo change status** – revine la statusul anterior.
-l) **Print ticket history** – afiseaza istoricul tichetului, diferentiat dupa rol (developer / manager).
-m) **Search** – cautare in inventar tichete si lista de users, pe baza criteriilor date.
-n) **View notifications** – afiseaza notificarile tichetelor; implementare Observer Pattern (milestones sunt observabile, developers sunt observatori).
-o) **Generate customer impact report** – calculeaza nr. de tichete open / in progress pe tip si prioritate.
-p) **Generate ticket risk report** – similar cu raportul de impact.
-q) **Generate resolution efficiency report** – calculeaza eficienta rezolvarii tichetelor.
-r) **Generate performance report** – calculeaza performanta dezvoltatorilor.
+### 🎫 Ticket Management
 
-4. **Pachetul helpers**
-a) **CheckingHelpers** - clasa ce contine metode ajutatoare de verificare a unor conditii
-b) **HelperMethods** - clasa ce contine metode ajutatoare
-c) **PrintingHelpers** - clasa ce contine metode ajutatoare de printare
-d) **ReturnHelpers** - clasa ce contine metode ajutatoare de returnare a unor entitati
-e) **WorkingWithMilestones** - clasa ce contine metode ajutatoare pentru reactualizarea milestone-urilor inainte si dupa un timestamp.
+#### Package: `ticket`
+Manages the core issue ecosystem, lifecycle, and specialized visualization formats.
+* **`Ticket`**: The base entity class containing standard properties required for issue logging, augmented with an extra `description` field.
+* **`UI`**: Implements the **Builder Pattern** for UI-type tickets. Encapsulates optional UI parameters within a single private constructor and fluid setter methods, eliminating parameter pollution.
+* **`Feature`**: A concrete class representing feature requests. Uses a standard constructor since all its configuration fields are strictly mandatory.
+* **`Bug`**: Implements the **Builder Pattern** to handle varied optional diagnostic fields (e.g., environment setups, reproduction steps).
+* **`ViewTickets`**: An inventory utility wrapper managing lists of issues alongside security filters for role-based printing (tailoring layouts for *Developer* vs. *Manager* permissions).
 
-5. **Pachetul magicNumbers**
-a) **MagicNumbersDouble** - clasa ce contine numere de tip double
-b) **MagicNumbersInt** - clasa ce contine numere de tip Integer
-
-6. **Pachetul milestones**
-a) **Milestone** – clasa de baza pentru milestones.
-b) **InfoMilestone** – clasa helper pentru apelarea metodelor de printare a detaliilor despre milestones.
-
-7. **Pachetul searching**
-a) **DevelopersSearch** - clasa in care se cauta developeri dupa anumite filtre
-b) **TicketSearch** - clasa in care se cauta tichete dupa anumite filtre
-
-8. **Clase suplimentare**
-
-a) **Notifications** – clasa de baza pentru notificari.
-b) **PerformanceReport** - clasa de baza pentru raportul de performanta a useri-lor.
+#### Package: `modifyTickets`
+Handles post-creation mutations and automated lifecycle shifts.
+* **`SpecialMention` `[Interface]`**: The core abstraction layer driving automated priority shifts.
+* **`NextPriority` / `TransformCritical`**: Implementations triggered exactly 3 days post-milestone creation to escalate ticket weights using the **Strategy Pattern**.
 
 
-9. **Observatii suplimentare:**
-a) Pentru t18 si t19 s-a abordat problema developerilor care nu mai pot rezolva un tichet (expertiseArea, seniority etc.).
-b) Tichetele sunt deasignate si timpul de rezolvare recalculat.
+### 👤 User Directory
+
+#### Package: `user`
+* **`Users`**: The structural baseline object representing a generic platform member.
+* **`Developer`, `Manager`, `Reporter`**: Specialized domain actors extending the core `Users` blueprint.
+
+#### Package: `developerTypes`
+* **`DeveloperFactory`**: A creational **Factory Pattern** implementation abstracting developer initialization.
+* **`JuniorDeveloper`, `MidDeveloper`, `SeniorDeveloper`**: Distinct runtime roles enforcing seniority levels and individual baseline processing power.
+
+
+### 🕹️ Operations
+
+#### Package: `commands`
+Each executable simulation flow is strictly isolated into dedicated execution blocks:
+* **`Report Ticket`**: Creates issues via standard instantiation (`Feature`) or fluent components (`UI`/`Bug` Builders). Injects dynamic timestamps, core data tags, and optional attributes.
+* **`View ticket`**: Formats and exports the active ticket inventory safely into structured raw JSON via `ObjectNode`.
+* **`Create milestone`**: Generates new project checkpoints with thorough exception handling for semantic boundary checks. Manages delayed ticket impacts via the `SpecialMention` escalation interface (**Strategy Pattern**).
+* **`View milestones`**: Iterates over and prints the current status of all project milestones.
+* **`Assign ticket`**: Dispatches specific tasks to developers. It evaluates strict safety locks, mapping constraints like matching `expertiseArea`, required `seniority`, and milestone blocks. Work assignments leverage a **Factory Method** tuned specifically for `Junior`, `Mid`, and `Senior` performance curves.
+* **`View assigned tickets`**: Aggregates and dumps issues tied to a single target developer profile.
+* **`Undo assigned tickets`**: Rolls back an allocation, pushing the task into `gaveupTickets` to preserve assignment history logs.
+* **`Add comment`** & **`Undo add comment`**: Appends or deletes discussion points attached to an issue.
+* **`Change status`** & **`Undo change status`**: Transitions tickets sequentially. When marked as `resolved`, it permanently writes lifecycle endpoints (`solvedAt`) and cache timestamps (`ultimTimestampCR`).
+* **`Print ticket history`**: Traces historic changes, optimizing the visual breakdown according to the querying user's authorization level (*Developer* vs. *Manager*).
+* **`Search`**: A multi-criteria filtering engine traversing the complete user registry and ticket cache.
+* **`View notifications`**: An asynchronous message distribution layer leveraging the **Observer Pattern** (where project milestones act as observables/subjects, and developer profiles act as registered observers).
+* **`Generate customer impact report`**: Aggregates total `open` / `in progress` tasks segmented clearly by issue type and priority.
+* **`Generate ticket risk report`**: Performs analytical risk scans similar to the customer impact workflow.
+* **`Generate resolution efficiency report`**: Tracks individual performance metrics to measure aggregate fix speeds.
+* **`Generate performance report`**: Runs comparative calculations evaluating overall development quality.
+
+
+### 🌐 Project Infrastructure & Search
+
+#### Package: `milestones`
+* **`Milestone`**: Core structural entity modeling project release targets and timelines.
+* **`InfoMilestone`**: A helper class decoupling display layers from baseline milestone entities.
+
+#### Package: `searching`
+* **`DevelopersSearch`**: Provides structural filtering loops to isolate target developers based on queries.
+* **`TicketSearch`**: Evaluates active system collections to locate specific tasks matching user filters.
+
+#### Root Level Extensions
+* **`Notifications`**: Standard object structure modeling cross-platform event updates.
+* **`PerformanceReport`**: Base data representation powering metrics analytics and velocity charts.
+
+
+### ⚡ Utilities & Constants
+
+#### Package: `helpers`
+Decoupled logic containers designed to keep core simulation components clean and maintainable:
+* **`CheckingHelpers`** – Evaluates boundary conditions and rule constraint safety.
+* **`HelperMethods`** – Core shared business logic utilities.
+* **`PrintingHelpers`** – Standardizes complex text and console output formatting.
+* **`ReturnHelpers`** – Handles safe data filtering and sub-entity extraction.
+* **`WorkingWithMilestones`** – Recalculates, shifts, and triggers updates on milestones relative to execution timestamps.
+
+#### Package: `magicNumbers`
+Centralized application configurations and mathematical boundaries:
+* **`MagicNumbersDouble`** – Stores constant `Double` values used throughout analytics calculations.
+* **`MagicNumbersInt`** – Holds system structural indices, boundaries, and integer defaults.
+
+
+### 💡 Core Notes & Implementation Safeguards
+* **Assignment Failures (Tests 18 & 19)**: Implements specialized handling for developers unable to clear an assigned task due to operational conflicts (such as unexpected `expertiseArea` mismatches or lack of `seniority`).
+* **Resource Balancing**: Issues are automatically unassigned and the estimated completion timelines are dynamically adjusted across remaining tickets to prevent layout drift.
