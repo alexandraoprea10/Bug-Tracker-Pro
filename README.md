@@ -1,10 +1,14 @@
 # BugTrackerPro – Issue Tracking & Analytics System
 
-## 📖 Data Input
-Data parsing is efficiently handled using Jackson's JSON tree model APIs (`JsonNode`, `ObjectNode`, `ArrayNode`, etc.). This approach ensures dynamic extraction and mapping of configuration parameters, user profiles, and commands directly from raw JSON structures.
-
+## 📖 Overview
+This repository contains an advanced issue tracking software and workflow simulation system. It models user roles (Managers, Reporters, and Developers grouped by seniority), manages ticket life cycles (Bugs, Features, and UI tasks) via various design patterns, and generates deep analytical performance, resolution efficiency, and risk reports from structured tracking inputs.
 
 ## 📦 Project Architecture & Package Structure
+
+### 🗺️ Core Architecture
+* **`Ticket` / `Users` Base Layers**: Foundation models managing generic issue tracking parameters and platform user registries.
+* **`Main`**: The operational driver of the application. Orchestrates system loops, command indexing, and active project state evaluations.
+* **`Data Input`**: Data reading is efficiently handled using Jackson's JSON tree model APIs (`JsonNode`, `ObjectNode`, `ArrayNode`, etc.). This layer ensures dynamic extraction and mapping of configuration parameters, user profiles, and tracking commands directly from raw JSON structures.
 
 ### 🎫 Ticket Management
 
